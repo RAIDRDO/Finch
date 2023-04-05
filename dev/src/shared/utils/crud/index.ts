@@ -23,6 +23,7 @@ export function constructReadQueryFn(url: string) {
         'Accept': 'application/json; odata=nometadata'
       }
     });
+    console.log(data)
     return data.value;
   };
 };
@@ -34,7 +35,7 @@ export async function createQuery(
   token: string,
   callback?: Function | null
 ) {
-  const url = `${config.apiUrl}web/Lists/GetByTitle('${listTitle}')/items`
+  const url = `${config.apiUrl}web/lists/GetByTitle('${listTitle}')/items`
   try {
     await axios.post(url, data, {
       headers: {

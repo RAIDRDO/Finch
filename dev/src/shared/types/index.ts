@@ -14,52 +14,52 @@ export interface IPostEntity extends Omit<IEntity, "Id"> {
 
 
 export interface Documents{
-  DocumentId:string,
-  CatergoryId:string,
-  Organisation_Id:string,
+  Document:string,
+  Catergory:string,
+  Organisation:string,
   CreatedAt:string,
   EditedAt:string,
-  SectionIds:string,
-  CurrentCommitId:string,
-  CurrentMergeId:string
+  Sections:string,
+  CurrentCommit:string,
+  CurrentMerge:string
 }
 
 
 export interface Sections{
-  SectionId:string,
-  DocumentId:string,
+  Section:string,
+  Document:string,
   Content:string,
   CreatedAt:string,
   EditedAt:string,
-  SectionIds:string,
-  CurrentHash:string,
 }
 
-export interface Sections{
-  ChangeId:string,
-  SectionId:string,
-  DocumentId:string,
+export interface Changes{
+  Change:string,
+  Section:string,
+  Document:string,
   Content:string,
-  CreatedAt:string,
-  Hash:string,
+  ChangedAt:string,
+  User:string
+  Diff:string
 }
 
 
 export interface Commits{
-  CommitId:string,
-  DocumentId:string,
+  CommitKey:string,
+  Document:string,
   ChangeTree:string,
-  CreatedAt:string,
   CommittedAt:string,
   CommitMsg:string,
+  User:string
+
 }
 
 
 
 export interface Merges{
-  MergeId:string,
-  DocumentId:string,
-  CommitIds:string,
+  Merge:string,
+  Document:string,
+  CommitKey:string,
   CreatedAt:string,
   ApprovedBy:string,
   MergeMsg:string,
@@ -67,12 +67,12 @@ export interface Merges{
 
 
 export interface Users{
-  UserId:string,
+  User:string,
   email:string
 }
 
 export interface Permissions{
-  UserId:string,
+  User:string,
   document:string
   view:boolean,
   edit:boolean
