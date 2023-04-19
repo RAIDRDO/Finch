@@ -4,11 +4,14 @@
 
 import ClippedDrawer from "../components/ClippedDrawer"
 import DocumentCard from "../components/ui/DocumentCard";
+import OrgansationCard from "../components/ui/OrgansationCard";
 export default function Home() {
   return (
     <>
     <div>
-      <DocumentCard></DocumentCard>
+      {/* <DocumentCard></DocumentCard> */}
+      <OrgansationCard></OrgansationCard>
+
     </div>
     </>
   );

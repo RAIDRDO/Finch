@@ -28,30 +28,22 @@ import {
 
 
 
-import { MoreVertical , X ,Calendar} from "lucide-react"
+import { MoreVertical , X ,User} from "lucide-react"
 
-import { cn } from "@/lib/utils"
 
-const DocumentCard = () => {
+const OrgansationCard = () => {
     return ( 
         <div>
-            {/* <div className="h-80 w-80 border-slate-300 bg-slate-100 rounded-sm shadow">
-                <div className="flex flex-col justify-center items-center h-full">
-                    
-                </div>
-            </div> */}
-            <Card className="w-[270px]">
+            <Card className="w-[440px]">
+                <CardHeader className="text-lg font-bold">Organization name </CardHeader>
                 <CardContent>
-                    <div className="w-[200px] h-[200px]">
-                        
-                    </div>
+                    description
                 </CardContent>
-                <CardFooter className="flex flex-row justify-between px-5">
+                                <CardFooter className="flex flex-row justify-between pr-5">
                     <div className="flex flex-col">
-                    <h1 className="text-base font-bold">Document Name</h1>
                     <div className="flex flex-row items-center text-slate-500 mt-1">
-                        <Calendar className="w-3 h-3 mr-1"></Calendar>
-                        <p className="text-sm">description</p>
+                        <User className="w-4 h-4 mr-1"></User>
+                        <p className="">Owner Name</p>
                     </div>
                     </div>
                     <div>
@@ -70,7 +62,7 @@ const DocumentCard = () => {
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
                             <p className="">
-                            Delete Document 
+                            Delete Organization 
                             </p>
                             <X className="w-5 h-5  ml-1" />
                             </div>
@@ -79,13 +71,13 @@ const DocumentCard = () => {
     <AlertDialogHeader>
       <AlertDialogTitle>Are you sure absolutely sure?</AlertDialogTitle>
       <AlertDialogDescription>
-        This action cannot be undone. This will permanently delete this document
+        This action cannot be undone. This will permanently delete this Organization 
         and remove your data from our servers.
       </AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
       <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction className="bg-red-500 hover:bg-red-600">Delete Document</AlertDialogAction>
+      <AlertDialogAction className="bg-red-500 hover:bg-red-600">Delete Organization</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>
@@ -98,9 +90,8 @@ const DocumentCard = () => {
                 </CardFooter>
             </Card>
 
-            
         </div>
      );
 }
  
-export default DocumentCard;
+export default OrgansationCard;
