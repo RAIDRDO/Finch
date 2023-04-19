@@ -323,7 +323,7 @@ const merges:Merges ={
 Merge:uuidv4(),
 Document:DocumentId,
 CreatedAt:Date(),
-CommitKey:CommitId,
+Commit:CommitId,
 ApprovedBy:OwnerId,
 MergeMsg:faker.git.commitMessage()
 }

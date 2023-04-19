@@ -59,7 +59,7 @@ export interface Commits{
 export interface Merges{
   Merge:string,
   Document:string,
-  CommitKey:string,
+  Commit:string,
   CreatedAt:string,
   ApprovedBy:string,
   MergeMsg:string,

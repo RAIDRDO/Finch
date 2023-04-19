@@ -3,11 +3,13 @@
 // Custom imports - hooks, utilities, components, configs, then styles
 
 import ClippedDrawer from "../components/ClippedDrawer"
-
+import DocumentCard from "../components/ui/DocumentCard";
 export default function Home() {
   return (
     <>
-      <ClippedDrawer />
+    <div>
+      <DocumentCard></DocumentCard>
+    </div>
     </>
   );
 }
