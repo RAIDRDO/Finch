@@ -6,6 +6,11 @@
       "dom.iterable",
       "esnext"
     ],
+    // "baseUrl": ".",
+    "paths": {
+    "@/*": ["./src/*"],
+  }
+    ,
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -22,5 +27,6 @@
   },
   "include": [
     "src"
-, "src/seed_db.ts"  ]
+, "src/seed_db.ts"  ],
+
 }
