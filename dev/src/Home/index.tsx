@@ -6,13 +6,15 @@ import ClippedDrawer from "../components/ClippedDrawer"
 import DocumentCard from "../components/ui/DocumentCard";
 import OrgansationCard from "../components/ui/OrgansationCard";
 import MergeItem from "@/components/ui/MergeItem";
+import NavBar from "@/components/ui/NavBar";
 export default function Home() {
   return (
     <>
     <div>
       {/* <DocumentCard></DocumentCard> */}
       {/* <OrgansationCard></OrgansationCard> */}
-      <MergeItem></MergeItem>
+      {/* <MergeItem></MergeItem> */}
+      <NavBar></NavBar>
     </div>
     </>
   );
