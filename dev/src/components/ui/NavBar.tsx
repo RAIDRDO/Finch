@@ -21,7 +21,7 @@ const NavBar = () => {
     return ( 
 
         <header className="sticky top-0 z-[40] w-full border-b bg-background/95 shadow-sm backdrop-blur">
-            <div className="container h-14 flex flex-row justify-between  items-center ">
+    <div className="h-14 flex flex-row justify-between mx-20 items-center ">
             <div className="text-lg font-extrabold">
                 Finch
             </div>
@@ -35,8 +35,7 @@ const NavBar = () => {
 
             </div>
 
-    <div> 
-
+    <div >
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="hover:cursor-pointer hover:ring-offset-2 ring-2 ">
