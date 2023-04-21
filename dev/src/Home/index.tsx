@@ -10,7 +10,7 @@ import NavBar from "@/components/ui/NavBar";
 import Footer from "@/components/ui/Footer";
 import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
-import { Plus,GitPullRequest,FilePlus } from "lucide-react";
+import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
@@ -24,8 +24,12 @@ export default function Home() {
             <Button className="w-72 h-24 justify-between text-black  text-base font-semibold bg-white hover:bg-slate-100 border shadow-sm "> Review Merge Request <GitPullRequest></GitPullRequest></Button> 
         </div>
         <div className="flex flex-col space-y-4">
-            <div>
+            <div className="flex flex-row justify-between">
               <p className="font-bold text-xl">Recent Documents</p>
+              <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400">
+                View All 
+                <ArrowRight className="ml-2"></ArrowRight>
+              </Button>
             </div>
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
@@ -36,8 +40,12 @@ export default function Home() {
             </div>
         </div>
          <div className="flex flex-col space-y-4">
-            <div>
+            <div className="flex flex-row justify-between">
               <p className="font-bold text-xl">Organizations</p>
+              <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400">
+                View All 
+                <ArrowRight className="ml-2"></ArrowRight>
+              </Button>
             </div>
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
