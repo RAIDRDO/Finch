@@ -5,6 +5,7 @@ import Organizations from './pages/Organizations';
 import Category from './pages/Catergory';
 import Documents from './pages/Documents';
 import Merges from './pages/Merges';
+import Editor from './pages/Editor';
 import './App.css';
 
 // Create client
@@ -19,7 +20,8 @@ function App() {
           {/* <Route path='/organizations' element={<Organizations />} /> */}
           {/* <Route path='/category' element={<Category />} /> */}
           {/* <Route path='/documents' element={<Documents />} /> */}
-          <Route path='/' element={<Merges />} />
+          {/* <Route path='/Merges' element={<Merges />} /> */}
+          <Route path='/' element={<Editor />} />
 
         </Routes>
       </QueryClientProvider>
