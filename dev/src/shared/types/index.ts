@@ -33,6 +33,8 @@ export interface Sections{
   EditedAt:string,
 }
 
+export interface CellProps extends Array<Sections> {}
+
 export interface Changes{
   Change:string,
   Section:string,

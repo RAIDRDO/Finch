@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { ChevronsUpDown , MoreHorizontal ,X} from "lucide-react";
 import {
   Popover,
@@ -35,11 +35,13 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { Textarea } from "@/components/ui/textarea"
+import {Sections} from '@/shared/types' 
 
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
-const EditorCell = () => {
+const EditorCell = ({Cellprop,Delete,Edit}:any) => {
     const [Classification, setClassification] = useState("");
+ 
 
     return ( 
         <div className="flex flex-col border shadow-sm rounded-sm">
@@ -81,7 +83,7 @@ const EditorCell = () => {
 
 
 
-        <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
+        <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer" onClick={()=>Delete(Cellprop.Section)}>
                             <p className="">
                             Delete Cell 
                             </p>
@@ -94,7 +96,7 @@ const EditorCell = () => {
                    
               
          </div>
-         <Textarea placeholder="Type your text here." />
+         <Textarea placeholder="Type your text here."  onChange={(e)=>{Edit(Cellprop.Section,e.target.value)}} />
  
         </div>
      );
