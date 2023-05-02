@@ -11,6 +11,7 @@ import Footer from "@/components/ui/Footer";
 import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog"
 
 import {
   Dialog,
@@ -23,7 +24,31 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import { Catergory } from "@/shared/types";
+import { config } from "@/config";
+import useToken from "@/shared/utils/crud/useToken";
+import { createQuery } from "@/shared/utils/crud";
+
 export default function Category() {
+  const token = useToken()
+  const [CatergoryName, setCatergoryName] = useState("");
+   const AddCategory = (Categorydata:Catergory)=> {
+      const payload = {
+           __metadata:{
+        type: `SP.Data.${config.ListNames.Catergory}ListItem`,
+
+    },
+      
+      ...Categorydata
+      }
+      createQuery(config.ListNames.Catergory,payload,token.data.FormDigestValue)
+      try {
+        return true
+      } catch (error) {
+        console.log(error)
+      }
+  }
   return (
     <>
     <NavBar></NavBar>
@@ -41,22 +66,32 @@ export default function Category() {
         </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>                Add Category </DialogTitle>
+          <DialogTitle>       Add Category </DialogTitle>
           <DialogDescription>
             Type in your new category name and click create .
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="organization_name" className="text-right">
+            <Label htmlFor="category_name" className="text-right">
               Category Name
             </Label>
-            <Input id="organization_name" value="Pedro Duarte" className="col-span-3" />
+            <Input id="category_name"  className="col-span-3" onChange={
+              (e) => {
+                setCatergoryName(e.target.value);
+              }
+            } />
           </div>
         
         </div>
         <DialogFooter>
-          <Button type="submit">Create</Button>
+          <DialogPrimitive.Close asChild>
+          <Button type="submit" onClick={
+            () => {
+              AddCategory({Cat:CatergoryName,Org:"test",Owner:"test"})
+            }
+          }>Create</Button>
+          </DialogPrimitive.Close>
         </DialogFooter>
       </DialogContent>
     </Dialog>

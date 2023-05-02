@@ -16,12 +16,12 @@ function App() {
     <HashRouter>
       <QueryClientProvider client={queryClient}>
         <Routes>
-          {/* <Route path='/' element={<Home />} /> */}
-          {/* <Route path='/organizations' element={<Organizations />} /> */}
-          {/* <Route path='/category' element={<Category />} /> */}
-          {/* <Route path='/documents' element={<Documents />} /> */}
-          {/* <Route path='/Merges' element={<Merges />} /> */}
-          <Route path='/' element={<Editor />} />
+          <Route path='/' element={<Home />} />
+          <Route path='/organizations' element={<Organizations />} />
+          <Route path='/category' element={<Category />} />
+          <Route path='/documents' element={<Documents />} /> 
+          <Route path='/merges' element={<Merges />} />
+          <Route path='/editor' element={<Editor />} />
 
         </Routes>
       </QueryClientProvider>

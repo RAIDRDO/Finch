@@ -37,7 +37,6 @@ const Editor = () => {
         editedCell.EditedAt = Date()
         Cells[index]=editedCell;
         setCells(Cells)
-        console.log(Cells)
     }
 
 

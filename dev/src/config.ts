@@ -7,7 +7,9 @@ export const config = {
             Commits:"Commits",
           Merges:"Merges",
         Users:"Users",
-      Permissions:"Permissions"},
+      Permissions:"Permissions",
+      Organisation:"Organisations",
+      Catergory:"Catergories"},
   staleTime: Infinity,
   //Any other configs
   tokenRefreshTime: 25 * 60 * 1000

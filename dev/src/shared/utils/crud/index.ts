@@ -4,12 +4,12 @@ import { config } from '../../../config';
 // Construct a SharePoint REST API endpoint URI
 export function constructUrl(
   listTitle: string,
-  selectStr: string,
+  selectStr?: string,
   expandStr?: string,
   filterStr?: string
 ) {
-  return `${config.apiUrl}web/Lists/GetByTitle('${listTitle}')/items?` + 
-    `$select=${selectStr}` +
+  return `${config.apiUrl}web/lists/GetByTitle('${listTitle}')/items?` + 
+    `${selectStr ? '&$select=' + selectStr:''}` +
     `${expandStr ? '&$expand=' + expandStr : ''}` +
     `${filterStr ? '&$filter=' + filterStr : ''}` +
     `&$top=5000`;
@@ -20,13 +20,26 @@ export function constructReadQueryFn(url: string) {
   return async () => {
     const { data } = await axios.get(url, {
       headers: {
-        'Accept': 'application/json; odata=nometadata'
+        'Accept': 'application/json; odata=verbose'
       }
     });
     console.log(data)
     return data.value;
   };
 };
+
+export function constructCreateQueryFn(url: string) {
+  return async () => {
+    const { data } = await axios.post(url, {
+      headers: {
+        'Accept': 'application/json; odata=verbose'
+      }
+    });
+    return data;
+  }
+};
+
+
 
 // Create query
 export async function createQuery(
@@ -58,7 +71,7 @@ export async function updateQuery(
   token: string,
   callback?: Function | null
 ) {
-  const url = `${config.apiUrl}web/Lists/GetByTitle('${listTitle}')/items(${itemId})`
+  const url = `${config.apiUrl}web/lists/GetByTitle('${listTitle}')/items(${itemId})`
   try {
     await axios.post(url, data, {
       headers: {
@@ -83,7 +96,7 @@ export async function deleteQuery(
   token: string,
   callback?: Function | null
 ) {
-  const url = `${config.apiUrl}web/Lists/GetByTitle('${listTitle}')/items(${itemId})`
+  const url = `${config.apiUrl}web/lists/GetByTitle('${listTitle}')/items(${itemId})`
   try {
     await axios.post(url, undefined, {
       headers: {

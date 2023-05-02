@@ -82,3 +82,16 @@ export interface Permissions{
   isOwner:boolean
 }
 
+
+export interface Organisation{
+org:string,
+owner:string
+desc:string
+name:string
+}
+
+export interface Catergory{
+Cat:string,
+Org:string,
+Owner:string
+}

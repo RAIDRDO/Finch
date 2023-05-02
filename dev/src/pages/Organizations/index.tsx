@@ -33,7 +33,7 @@ export default function Organizations() {
             <div className="flex flex-row justify-between">
               <p className="font-bold text-xl">Organizations</p>
 
-                 <Dialog>
+      <Dialog>
       <DialogTrigger asChild>
             <Button className="">
                 Add Organization 

@@ -16,13 +16,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
+import { useNavigate } from "react-router-dom"
 const NavBar = () => {
+    const navigate = useNavigate()
     return ( 
 
         <header className="sticky top-0 z-[40] w-full border-b bg-background/95 shadow-sm backdrop-blur">
     <div className="h-14 flex flex-row justify-between mx-20 items-center ">
-            <div className="text-lg font-extrabold">
+            <div className="text-lg font-extrabold hover:cursor-pointer" onClick={()=>{
+                navigate("/")
+            }}>
                 Finch
             </div>
 
