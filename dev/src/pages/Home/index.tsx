@@ -36,7 +36,14 @@ export default function Home() {
   const token = useToken()
   const [OrgName, setOrgName] = useState("");
   const [OrgDescription, setOrgDescription] = useState("");
-  const GetOrgnisations = useQuery("Orgnisations",constructReadQueryFn(constructUrl(config.ListNames.Organisation)))
+  const [OrgData, setOrgData] = useState();
+  const GetOrgnisations = useQuery({queryKey:["Orgnisations"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation))
+,onSuccess(data) {
+    setOrgData(data)
+}
+},)
+
   const GetDocuments = useQuery("Documents",constructReadQueryFn(constructUrl(config.ListNames.Documents)))
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
@@ -47,9 +54,9 @@ export default function Home() {
       
       ...Organisationdata
       }
-      createQuery(config.ListNames.Organisation,payload,token.data.FormDigestValue)
+      const res = createQuery(config.ListNames.Organisation,payload,token.data.FormDigestValue)
       try {
-        return true
+        return res
       } catch (error) {
         console.log(error)
       }
@@ -99,9 +106,10 @@ export default function Home() {
                   desc:OrgDescription,
                   name:OrgName
 
+                })?.then((res)=>{
+                    navigate(`/organization/${res.d.org}`)
                 })
 
-                navigate("/organizations")
               
               }
             }>Create</Button>
@@ -135,7 +143,7 @@ export default function Home() {
             <div className="flex flex-row justify-between">
               <p className="font-bold text-xl">Organizations</p>
               <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400" onClick={()=>{
-                                                navigate("/organizations")
+                                                navigate(`/organizations`)
 
               }}>
                 View All 

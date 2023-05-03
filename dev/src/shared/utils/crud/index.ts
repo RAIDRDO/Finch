@@ -50,7 +50,7 @@ export async function createQuery(
 ) {
   const url = `${config.apiUrl}web/lists/GetByTitle('${listTitle}')/items`
   try {
-    await axios.post(url, data, {
+    const res = await axios.post(url, data, {
       headers: {
         'Accept': 'application/json; odata=verbose',
         'content-type': 'application/json; odata=verbose',
@@ -58,6 +58,7 @@ export async function createQuery(
       }
     });
     callback && callback();
+    return res.data
   } catch (error) {
     console.log('Error:', error);
   }

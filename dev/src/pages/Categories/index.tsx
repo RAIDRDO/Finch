@@ -30,7 +30,7 @@ import { config } from "@/config";
 import useToken from "@/shared/utils/crud/useToken";
 import { createQuery } from "@/shared/utils/crud";
 
-export default function Category() {
+export default function Categories() {
   const token = useToken()
   const [CatergoryName, setCatergoryName] = useState("");
    const AddCategory = (Categorydata:Catergory)=> {
