@@ -32,7 +32,7 @@ import { MoreVertical , X ,Calendar} from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const DocumentCard = () => {
+const DocumentCard = ({DocId}:{DocId:string}) => {
     return ( 
         <div>
             {/* <div className="h-80 w-80 border-slate-300 bg-slate-100 rounded-sm shadow">
@@ -40,7 +40,7 @@ const DocumentCard = () => {
                     
                 </div>
             </div> */}
-            <Card className="w-[270px]">
+            <Card className="w-[270px]"  onClick={()=>(console.log(DocId))}>
                 <CardContent>
                     <div className="w-[200px] h-[200px]">
                         

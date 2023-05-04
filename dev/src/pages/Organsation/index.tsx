@@ -1,7 +1,3 @@
-// External library imports - utilities before UI components
-
-// Custom imports - hooks, utilities, components, configs, then styles
-
 import ClippedDrawer from "../../components/ClippedDrawer"
 import DocumentCard from "../../components/ui/DocumentCard";
 import OrgansationCard from "../../components/ui/OrgansationCard";
@@ -12,7 +8,7 @@ import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
 import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { v4 as uuid } from 'uuid';
+
 import {
   Dialog,
   DialogContent,
@@ -25,72 +21,55 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react";
-import { Documents ,Catergory} from "@/shared/types";
+import { Catergory } from "@/shared/types";
 import { config } from "@/config";
 import useToken from "@/shared/utils/crud/useToken";
-import { constructReadQueryFn, constructUrl, createQuery } from "@/shared/utils/crud";
-import { useQuery ,useQueryClient} from "react-query";
-import { useNavigate, useLocation ,useParams} from "react-router-dom";
-
-export default function Category() {
-  const token = useToken()
-  const navigate = useNavigate()
-  const params = useParams();
-  const queryClient = useQueryClient()
-  const [DocumentName, setDocumentName] = useState("");
-  const [Catergories, setCatergories] = useState<any>();
-  const [Documents, setDocuments] = useState<any>();
-   const GetCatergories = useQuery({queryKey:["Catergories"]
-    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Cat eq "${params.CatId}"`))
-  ,onSuccess(data) {
-      setCatergories(data[0])
-  }
-  },)
-
-  const GetDocuments = useQuery({queryKey:["Documents"]
-  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents))
-,onSuccess(data) {
-  setDocuments(data)
-}
-},) 
+import { createQuery } from "@/shared/utils/crud";
+import {useLocation} from 'react-router-dom';
 
 
-   const AddDocument = (Documentsdata:Documents)=> {
-      const payload = {
-           __metadata:{
-        type: `SP.Data.${config.ListNames.Documents}ListItem`,
-
-    },
-      
-      ...Documentsdata
-      }
-      const res = createQuery(config.ListNames.Documents,payload,token.data.FormDigestValue)
-      try {
-        return res
-      } catch (error) {
-        console.log(error)
-      }
-  }
-  return (
-    <>
-    <NavBar></NavBar>
+const Organsation = () => {
+    const location = useLocation()
+    console.log(location)
+    const token = useToken()
+    const [CatergoryName, setCatergoryName] = useState("");
+     const AddCategory = (Categorydata:Catergory)=> {
+        const payload = {
+             __metadata:{
+          type: `SP.Data.${config.ListNames.Catergory}ListItem`,
+  
+      },
+        
+        ...Categorydata
+        }
+        createQuery(config.ListNames.Catergory,payload,token.data.FormDigestValue)
+        try {
+          return true
+        } catch (error) {
+          console.log(error)
+        }
+    }
+    return ( 
+        <>
+        
+        <NavBar></NavBar>
     <div>
       <div className="flex flex-col mt-10 mx-20 space-y-12">
          <div className="flex flex-col space-y-4">
             <div className="flex flex-row justify-between">
-              <p className="font-bold text-xl">Documents</p>
+              <p className="font-bold text-xl">Category</p>
                  <Dialog>
       <DialogTrigger asChild>
             <Button className="">
-                Add Documents 
+                Add Category 
                 <Plus className="ml-2"></Plus>
               </Button>      
         </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>       Add Documents </DialogTitle>
+          <DialogTitle>       Add Category </DialogTitle>
           <DialogDescription>
-            Type in your new Documents name and click create .
+            Type in your new category name and click create .
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -100,7 +79,7 @@ export default function Category() {
             </Label>
             <Input id="category_name"  className="col-span-3" onChange={
               (e) => {
-                setDocumentName(e.target.value);
+                setCatergoryName(e.target.value);
               }
             } />
           </div>
@@ -110,10 +89,7 @@ export default function Category() {
           <DialogPrimitive.Close asChild>
           <Button type="submit" onClick={
             () => {
-              console.log(Catergories)
-              AddDocument({Document:uuid(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:""})?.then(()=>
-                {queryClient.invalidateQueries("Documents")}
-              )
+              AddCategory({Cat:CatergoryName,Org:"test",Owner:"test"})
             }
           }>Create</Button>
           </DialogPrimitive.Close>
@@ -129,13 +105,9 @@ export default function Category() {
             </div>
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
-              {
-                Documents?.map((data:any)=>{
-                  return <DocumentCard key={data.Document} DocId={data.Document} ></DocumentCard>
-
-                })
-              }
-
+              <OrgansationCard></OrgansationCard>
+              <OrgansationCard></OrgansationCard>
+              <OrgansationCard></OrgansationCard>
 
             </div>
         </div>
@@ -145,5 +117,10 @@ export default function Category() {
     </div>
     <Footer></Footer>
     </>
-  );
+        
+        
+        
+     );
 }
+ 
+export default Organsation;

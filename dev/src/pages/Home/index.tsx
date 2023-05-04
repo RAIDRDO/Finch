@@ -134,7 +134,7 @@ export default function Home() {
             <div className="flex flex-row justify-evenly">
               {GetDocuments.data?.map((item:Documents)=>{
                 console.log(item)
-                return <DocumentCard></DocumentCard>
+                return <DocumentCard DocId={item.Document}></DocumentCard>
               })}
               
             </div>

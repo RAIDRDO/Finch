@@ -76,9 +76,9 @@ export default function Documents() {
             </div>
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
+              {/* <DocumentCard></DocumentCard>
               <DocumentCard></DocumentCard>
-              <DocumentCard></DocumentCard>
-              <DocumentCard></DocumentCard>
+              <DocumentCard></DocumentCard> */}
 
             </div>
         </div>

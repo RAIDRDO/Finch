@@ -36,6 +36,9 @@ import { Button } from "@/components/ui/button"
 
 import { Textarea } from "@/components/ui/textarea"
 import {Sections} from '@/shared/types' 
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
+
 
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
@@ -96,7 +99,8 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
                    
               
          </div>
-         <Textarea placeholder="Type your text here."  onChange={(e)=>{Edit(Cellprop.Section,e.target.value)}} />
+
+         <SimpleMDE placeholder="Type your text here."  onChange={(e)=>{Edit(Cellprop.Section,e)}} />
  
         </div>
      );
