@@ -51,6 +51,7 @@ const Editor = () => {
 
     const addCell = (DocId:string) => {
         console.log("add cell")
+        SaveCells()
         const CellData:Sections = {
             Section:uuidv4(),
             Document:DocId,
@@ -80,6 +81,7 @@ const Editor = () => {
     }
 
     const  DeleteCell = (SectionId: string) =>{
+        SaveCells()
         const deleteCell:Sections = Cells.filter((cell) => cell.Section == SectionId)[0];
         deleteQuery(config.ListNames.Sections,deleteCell.Id!,token.data.FormDigestValue).then(() => {
         queryClient.invalidateQueries("Sections")
