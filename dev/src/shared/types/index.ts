@@ -26,9 +26,11 @@ export interface Documents{
 
 
 export interface Sections{
+  Id?:number
   Section:string,
   Document:string,
   Content:string,
+  Hash:string
   CreatedAt:string,
   EditedAt:string,
 }

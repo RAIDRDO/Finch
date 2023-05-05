@@ -238,6 +238,7 @@ const section:Sections = {
 Document:DocumentId,
 Section:key,
 Content:contents[key],
+Hash:"",
 CreatedAt:Date(),
 EditedAt:Date(),
 }
