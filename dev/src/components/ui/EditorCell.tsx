@@ -100,7 +100,7 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
               
          </div>
 
-         <SimpleMDE placeholder="Type your text here."  onChange={(e:any)=>{Edit(Cellprop.Section,e)}} />
+         <SimpleMDE value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Section,e)}} />
  
         </div>
      );

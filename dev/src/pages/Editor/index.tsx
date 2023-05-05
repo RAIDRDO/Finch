@@ -29,13 +29,19 @@ import useToken from "@/shared/utils/crud/useToken";
 import CryptoJS from 'crypto-js';
 
 
+interface IsEdited{
+    Edited?:boolean
+}
+
+interface IsEditeds extends Array<IsEdited>{}
+
 const Editor = () => {
     const token = useToken()
     const navigate = useNavigate()
     const params = useParams();
     const queryClient = useQueryClient()
-
     const [Cells, setCells] = useState<CellProps>([]);
+    const [IsEdited, setIsEdited] = useState<any>({});
     const GetSections = useQuery({queryKey:["Sections"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq "test_doc_id"`))
   ,onSuccess(data) {
@@ -89,18 +95,29 @@ const Editor = () => {
         editedCell.EditedAt = Date()
         editedCell.Hash = ""
         console.log(editedCell.Hash)
-
         Cells[index]=editedCell;
+        if (IsEdited[SectionId] == undefined){
+            const edited:any = {}
+            edited[SectionId] = {Edited:true}
+            setIsEdited((prevState:any)=>({...prevState,...edited}))
+        }
+
+
         setCells(Cells)
     }
     const filterDataPayload = (data:any) =>{
         const  {Id,Old_Id,...NewData} = data
         return NewData
     }
+    const FilterEdited = (Cells:CellProps) =>{
+        const filtered = Cells.filter((cell) =>  Object.keys(IsEdited).includes(cell.Section))
+        return filtered
+    }
 
-    const SaveCells = (Cells:CellProps) =>{
+    const SaveCells = () =>{
             console.log("save cells")
-            Cells.map((cell:Sections) => {
+            const EditedCells = FilterEdited(Cells)
+            EditedCells.map((cell:Sections) => {
                 const data = filterDataPayload(cell)
                 const payload = {
                     __metadata:{
@@ -110,13 +127,13 @@ const Editor = () => {
                
                ...data
                }
-               const res = updateQuery(config.ListNames.Sections,cell.Id,payload,token.data.FormDigestValue).then((res) => {
+               updateQuery(config.ListNames.Sections,cell.Id,payload,token.data.FormDigestValue).then(() => {
                 queryClient.invalidateQueries("Sections")
-                return res
+              }).then(() => {
+                setIsEdited({})
               })
               try {
                 
-                return res
               } catch (error) {
                 console.log(error)
               }
@@ -153,7 +170,7 @@ const Editor = () => {
           </MenubarSub>
           <MenubarSeparator />
           <MenubarItem onClick={()=>{
-            SaveCells(Cells)
+            SaveCells()
           }}>
             Save <MenubarShortcut>⌘S</MenubarShortcut>
           </MenubarItem>
