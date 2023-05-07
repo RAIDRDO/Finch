@@ -56,7 +56,6 @@ const Editor = () => {
             Section:uuidv4(),
             Document:DocId,
             Content:"",
-            Hash:"",
             CreatedAt:Date(),
             EditedAt:"",
             }
@@ -95,8 +94,6 @@ const Editor = () => {
         const index = Cells.indexOf(editedCell);
         editedCell.Content = Content
         editedCell.EditedAt = Date()
-        editedCell.Hash = ""
-        console.log(editedCell.Hash)
         Cells[index]=editedCell;
         if (IsEdited[SectionId] == undefined){
             const edited:any = {}

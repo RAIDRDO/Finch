@@ -1,3 +1,5 @@
+import { config } from "@/config";
+
 import {
   Card,
   CardContent,
@@ -31,19 +33,35 @@ import {
 import { MoreVertical , X ,User} from "lucide-react"
 
 
-const OrgansationCard = () => {
+import { Organisation} from "@/shared/types"
+import { useQuery ,useQueryClient} from "react-query";
+import useToken from "@/shared/utils/crud/useToken";
+import { deleteQuery } from "@/shared/utils/crud"
+import { useNavigate, useLocation ,useParams} from "react-router-dom";
+
+const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
+      const token = useToken()
+    const queryClient = useQueryClient()
+      const navigate = useNavigate()
+
+    const  Delete = (Id: number) =>{
+        deleteQuery(config.ListNames.Organisation,Id,token.data.FormDigestValue).then(() => {
+        queryClient.invalidateQueries("Orgnisations")
+        })
+        
+    }
     return ( 
         <div>
             <Card className="w-[440px]">
-                <CardHeader className="text-lg font-bold">Organization name </CardHeader>
-                <CardContent>
-                    description
+                <CardHeader className="text-lg font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/organization/${org}`)}>{name}</CardHeader>
+                <CardContent className="hover:cursor-pointer" onClick={()=>navigate(`/organization/${org}`)}>
+                    {desc}
                 </CardContent>
                                 <CardFooter className="flex flex-row justify-between pr-5">
                     <div className="flex flex-col">
                     <div className="flex flex-row items-center text-slate-500 mt-1">
                         <User className="w-4 h-4 mr-1"></User>
-                        <p className="">Owner Name</p>
+                        <p className="">{owner}</p>
                     </div>
                     </div>
                     <div>
@@ -77,7 +95,7 @@ const OrgansationCard = () => {
     </AlertDialogHeader>
     <AlertDialogFooter>
       <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction className="bg-red-500 hover:bg-red-600">Delete Organization</AlertDialogAction>
+      <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={()=>Delete(Id!)}>Delete Organization</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>

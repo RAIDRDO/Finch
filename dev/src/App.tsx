@@ -26,7 +26,7 @@ function App() {
 
           <Route path='/documents' element={<Documents />} /> 
           <Route path='/merges' element={<Merges />} />
-          <Route path='/editor' element={<Editor />} />
+          <Route path='/editor/:DocId' element={<Editor />} />
 
         </Routes>
       </QueryClientProvider>

@@ -33,6 +33,8 @@ import { createQuery } from "@/shared/utils/crud";
 export default function Categories() {
   const token = useToken()
   const [CatergoryName, setCatergoryName] = useState("");
+  const [CatergoryDescription, setCatergoryDescription] = useState("");
+
    const AddCategory = (Categorydata:Catergory)=> {
       const payload = {
            __metadata:{
@@ -64,34 +66,35 @@ export default function Categories() {
                 <Plus className="ml-2"></Plus>
               </Button>      
         </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>       Add Category </DialogTitle>
+          <DialogTitle>                Add Category </DialogTitle>
           <DialogDescription>
-            Type in your new category name and click create .
+            Type in your new Category name and click create .
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="category_name" className="text-right">
-              Category Name
+              Organization Name
             </Label>
             <Input id="category_name"  className="col-span-3" onChange={
-              (e) => {
-                setCatergoryName(e.target.value);
-              }
+              (e)=>{setCatergoryName(e.target.value)}
+            } />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="category_desc" className="text-right">
+              Organization Description 
+            </Label>
+            <Input id="category_desc" className="col-span-3" onChange={
+              (e)=>{setCatergoryDescription(e.target.value)}
             } />
           </div>
         
         </div>
         <DialogFooter>
-          <DialogPrimitive.Close asChild>
-          <Button type="submit" onClick={
-            () => {
-              AddCategory({Cat:CatergoryName,Org:"test",Owner:"test"})
-            }
-          }>Create</Button>
-          </DialogPrimitive.Close>
+          <Button type="submit"
+          >Create</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -104,9 +107,9 @@ export default function Categories() {
             </div>
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
+              {/* <OrgansationCard></OrgansationCard>
               <OrgansationCard></OrgansationCard>
-              <OrgansationCard></OrgansationCard>
-              <OrgansationCard></OrgansationCard>
+              <OrgansationCard></OrgansationCard> */}
 
             </div>
         </div>

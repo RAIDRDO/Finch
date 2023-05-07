@@ -33,6 +33,7 @@ import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import { useQuery ,useQueryClient} from "react-query";
 import { v4 as uuidv4 } from 'uuid';
 import React from "react";
+import CategoryCard from "@/components/ui/CategoryCard";
 export default function Organization() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -110,7 +111,7 @@ export default function Organization() {
           <DialogPrimitive.Close asChild>
           <Button type="submit" onClick={
             () => {
-              AddCategory({Cat:uuidv4(),Org:OrgData.org,Owner:"test"})?.then((res) => {
+              AddCategory({Cat:uuidv4(),Org:OrgData.org,Owner:"test",Name:CatergoryName})?.then((res) => {
                 queryClient.invalidateQueries("Catergories")
                 return res
               }).then((res) => {
@@ -134,7 +135,7 @@ export default function Organization() {
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
               {Catergories?.map((item:Catergory) => {
-                return <OrgansationCard></OrgansationCard>
+                return <CategoryCard key={item.Cat} {...item}></CategoryCard>
 
               })} 
 

@@ -111,7 +111,7 @@ export default function Category() {
           <Button type="submit" onClick={
             () => {
               console.log(Catergories)
-              AddDocument({Document:uuid(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:""})?.then(()=>
+              AddDocument({Document:uuid(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName})?.then(()=>
                 {queryClient.invalidateQueries("Documents")}
               )
             }
@@ -131,7 +131,7 @@ export default function Category() {
             <div className="flex flex-row justify-evenly">
               {
                 Documents?.map((data:any)=>{
-                  return <DocumentCard key={data.Document} DocId={data.Document} ></DocumentCard>
+                  return <DocumentCard key={data.Document} {...data} ></DocumentCard>
 
                 })
               }

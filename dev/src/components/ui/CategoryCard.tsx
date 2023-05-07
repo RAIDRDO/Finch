@@ -30,44 +30,36 @@ import {
 
 
 
-import { MoreVertical , X ,Calendar} from "lucide-react"
-import { useNavigate, useLocation ,useParams} from "react-router-dom";
+import { MoreVertical , X ,User} from "lucide-react"
 
-import { cn } from "@/lib/utils"
-import {Documents} from "@/shared/types"
+import {Catergory} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery } from "@/shared/utils/crud"
+import { useNavigate, useLocation ,useParams} from "react-router-dom";
 
-const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,Name}:Documents) => {
+const CategoryCard = ({Id,Cat,Name,Org,Owner}:Catergory) => {
     const token = useToken()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
+
     const  Delete = (Id: number) =>{
-        deleteQuery(config.ListNames.Documents,Id,token.data.FormDigestValue).then(() => {
-        queryClient.invalidateQueries("Documents")
+        deleteQuery(config.ListNames.Catergory,Id,token.data.FormDigestValue).then(() => {
+        queryClient.invalidateQueries("Catergories")
         })
         
-    }  
-  return ( 
+    }
+    return ( 
         <div>
-            {/* <div className="h-80 w-80 border-slate-300 bg-slate-100 rounded-sm shadow">
-                <div className="flex flex-col justify-center items-center h-full">
-                    
-                </div>
-            </div> */}
-            <Card className="w-[270px] ">
-                <CardContent>
-                    <div className="w-[200px] h-[200px] hover:cursor-pointer" onClick={()=>navigate(`/editor/${Document}`)}>
-                        
-                    </div>
+            <Card className="w-[440px]">
+                <CardHeader className="text-lg font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/category/${Cat}`)}>{Name}</CardHeader>
+                <CardContent  className="hover:cursor-pointer" onClick={()=>navigate(`/category/${Cat}`)}>
                 </CardContent>
-                <CardFooter className="flex flex-row justify-between px-5">
+                                <CardFooter className="flex flex-row justify-between pr-5">
                     <div className="flex flex-col">
-                    <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/editor/${Document}`)}>{Name}</h1>
                     <div className="flex flex-row items-center text-slate-500 mt-1">
-                        <Calendar className="w-3 h-3 mr-1"></Calendar>
-                        <p className="text-sm">{Date.parse(EditedAt)}</p>
+                        <User className="w-4 h-4 mr-1"></User>
+                        <p className="">{Owner}</p>
                     </div>
                     </div>
                     <div>
@@ -86,7 +78,7 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
                             <p className="">
-                            Delete Document 
+                            Delete Category 
                             </p>
                             <X className="w-5 h-5  ml-1" />
                             </div>
@@ -95,13 +87,13 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
     <AlertDialogHeader>
       <AlertDialogTitle>Are you sure absolutely sure?</AlertDialogTitle>
       <AlertDialogDescription>
-        This action cannot be undone. This will permanently delete this document
+        This action cannot be undone. This will permanently delete this Category 
         and remove your data from our servers.
       </AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
       <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={()=>Delete(Id!)}>Delete Document</AlertDialogAction>
+      <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={()=>Delete(Id!)}>Delete Category</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>
@@ -114,9 +106,8 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
                 </CardFooter>
             </Card>
 
-            
         </div>
      );
 }
  
-export default DocumentCard;
+export default CategoryCard;

@@ -213,7 +213,8 @@ Sections:JSON.stringify(SectionIds),
 CreatedAt:Date(),
 EditedAt:Date(),
 CurrentCommit:"",
-CurrentMerge:""
+CurrentMerge:"",
+Name:""
 }
 
 
@@ -238,7 +239,6 @@ const section:Sections = {
 Document:DocumentId,
 Section:key,
 Content:contents[key],
-Hash:"",
 CreatedAt:Date(),
 EditedAt:Date(),
 }

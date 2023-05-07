@@ -14,6 +14,7 @@ export interface IPostEntity extends Omit<IEntity, "Id"> {
 
 
 export interface Documents{
+  Id?:number
   Document:string,
   Catergory:string,
   Organisation:string,
@@ -22,6 +23,7 @@ export interface Documents{
   Sections:string,
   CurrentCommit:string,
   CurrentMerge:string
+  Name:string
 }
 
 
@@ -30,7 +32,6 @@ export interface Sections{
   Section:string,
   Document:string,
   Content:string,
-  Hash:string
   CreatedAt:string,
   EditedAt:string,
 }
@@ -86,6 +87,7 @@ export interface Permissions{
 
 
 export interface Organisation{
+Id?:number
 org:string,
 owner:string
 desc:string
@@ -93,7 +95,9 @@ name:string
 }
 
 export interface Catergory{
+Id?:number
 Cat:string,
 Org:string,
 Owner:string
+Name:string
 }
