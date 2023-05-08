@@ -12,7 +12,7 @@ import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
 import useToken from "@/shared/utils/crud/useToken";
-import { constructReadQueryFn, constructUrl, createQuery } from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery} from "@/shared/utils/crud";
 import {Organisation,Documents} from "@/shared/types/";
 import { config } from "@/config";
 import { v4 as uuidv4 } from 'uuid';
@@ -44,7 +44,7 @@ export default function Home() {
 }
 },)
 
-  const GetDocuments = useQuery("Documents",constructReadQueryFn(constructUrl(config.ListNames.Documents)))
+  const GetDocuments = useQuery({queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents))})
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
            __metadata:{
@@ -133,7 +133,6 @@ export default function Home() {
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
               {GetDocuments.data?.map((item:Documents)=>{
-                console.log(item)
                 return <DocumentCard key={item.Document} {...item}></DocumentCard>
               })}
               

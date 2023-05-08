@@ -35,7 +35,7 @@ import { MoreVertical , X ,User} from "lucide-react"
 import {Catergory} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
-import { deleteQuery } from "@/shared/utils/crud"
+import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 
 const CategoryCard = ({Id,Cat,Name,Org,Owner}:Catergory) => {
@@ -46,6 +46,13 @@ const CategoryCard = ({Id,Cat,Name,Org,Owner}:Catergory) => {
     const  Delete = (Id: number) =>{
         deleteQuery(config.ListNames.Catergory,Id,token.data.FormDigestValue).then(() => {
         queryClient.invalidateQueries("Catergories")
+        }).then(() => {
+          CascadeDelete(token.data.FormDigestValue,Cat,"CAT").then(() => {
+            queryClient.invalidateQueries({queryKey: ["Documents"]})
+            queryClient.invalidateQueries({queryKey: ["Catergories"]})
+
+          })
+
         })
         
     }

@@ -36,7 +36,7 @@ import { MoreVertical , X ,User} from "lucide-react"
 import { Organisation} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
-import { deleteQuery } from "@/shared/utils/crud"
+import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 
 const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
@@ -47,6 +47,13 @@ const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
     const  Delete = (Id: number) =>{
         deleteQuery(config.ListNames.Organisation,Id,token.data.FormDigestValue).then(() => {
         queryClient.invalidateQueries("Orgnisations")
+        }).then(() => {
+          CascadeDelete(token.data.FormDigestValue,org,"ORG").then(() => {
+            queryClient.invalidateQueries({queryKey: ["Documents"]})
+            queryClient.invalidateQueries({queryKey: ["Catergories"]})
+
+          })
+
         })
         
     }

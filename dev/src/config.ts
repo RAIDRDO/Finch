@@ -11,6 +11,7 @@ export const config = {
       Organisation:"Organisations",
       Catergory:"Catergories"},
   staleTime: Infinity,
+  DevMode:true,
   //Any other configs
   tokenRefreshTime: 25 * 60 * 1000
 }

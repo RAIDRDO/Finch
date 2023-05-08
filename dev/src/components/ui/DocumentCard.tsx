@@ -37,7 +37,7 @@ import { cn } from "@/lib/utils"
 import {Documents} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
-import { deleteQuery } from "@/shared/utils/crud"
+import { deleteQuery ,CascadeDelete} from "@/shared/utils/crud"
 
 const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,Name}:Documents) => {
     const token = useToken()
@@ -46,6 +46,12 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
     const  Delete = (Id: number) =>{
         deleteQuery(config.ListNames.Documents,Id,token.data.FormDigestValue).then(() => {
         queryClient.invalidateQueries("Documents")
+        }).then(() => {
+          CascadeDelete(token.data.FormDigestValue,Document,"DOC").then(() => {
+            queryClient.invalidateQueries({queryKey: ["Documents"]})
+
+          })
+
         })
         
     }  

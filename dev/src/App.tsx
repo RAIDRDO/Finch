@@ -9,13 +9,27 @@ import './App.css';
 import Organization from './pages/Organization';
 import Categories from './pages/Categories';
 import Category from './pages/Category';
+import React from 'react';
+import { config } from './config';
 // Create client
 const queryClient = new QueryClient();
+const ReactQueryDevtoolsProduction = React.lazy(() =>
+  import('react-query/devtools/development').then(d => ({
+    default: d.ReactQueryDevtools,
+  }))
+)
 
 function App() {
+  const [showDevtools, setShowDevtools] = React.useState(config.DevMode)
+
   return (
     <HashRouter>
       <QueryClientProvider client={queryClient}>
+         {showDevtools ? (
+        <React.Suspense fallback={null}>
+          <ReactQueryDevtoolsProduction />
+        </React.Suspense>
+      ) : null}
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/organizations' element={<Organizations />} />

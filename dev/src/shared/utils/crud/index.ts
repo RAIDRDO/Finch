@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { config } from '../../../config';
+import { Console } from 'console';
 
 // Construct a SharePoint REST API endpoint URI
 export function constructUrl(
@@ -23,7 +24,7 @@ export function constructReadQueryFn(url: string) {
         'Accept': 'application/json; odata=verbose'
       }
     });
-    console.log(data)
+    // console.log(data)
     return data.value;
   };
 };
@@ -38,6 +39,16 @@ export function constructCreateQueryFn(url: string) {
     return data;
   }
 };
+
+export async function ReadQuery(url: string) {
+const { data } = await axios.get(url, {
+      headers: {
+        'Accept': 'application/json; odata=verbose'
+      }
+    });
+    console.log(data)
+    return data.value;
+}
 
 
 
@@ -114,3 +125,43 @@ export async function deleteQuery(
     console.log('Error:', error);
   }
 };
+
+
+export async function CascadeDelete(token:string,UUID:string,level:string,) {
+  if (level =="ORG"){
+    const cats = await ReadQuery(constructUrl(config.ListNames.Catergory,undefined,undefined,`Org eq "${UUID}"`))
+    const docs = await ReadQuery(constructUrl(config.ListNames.Documents,undefined,undefined,`Organisation eq "${UUID}"`))
+    cats.forEach(async (cat:any) => {
+      await deleteQuery(config.ListNames.Catergory,cat.Id,token)
+    })
+    docs.forEach(async (doc:any) => {
+      const sections = await ReadQuery(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq "${doc.Document}"`))
+      sections.forEach(async (section:any) => {
+        await deleteQuery(config.ListNames.Sections,section.Id,token)
+      })
+      await deleteQuery(config.ListNames.Documents,doc.Id,token)
+    }
+    )
+  }
+
+  else if (level =="CAT"){
+    const docs = await ReadQuery(constructUrl(config.ListNames.Documents,undefined,undefined,`Catergory eq "${UUID}"`))
+    docs.forEach(async (doc:any) => {
+      const sections = await ReadQuery(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq "${doc.Document}"`))
+      sections.forEach(async (section:any) => {
+        await deleteQuery(config.ListNames.Sections,section.Id,token)
+      })
+      await deleteQuery(config.ListNames.Documents,doc.Id,token)
+    }
+    )
+  }
+  else if (level =="DOC"){
+    const sections = await ReadQuery(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq "${UUID}"`))
+    sections.forEach(async (section:any) => {
+      await deleteQuery(config.ListNames.Sections,section.Id,token)
+    })}
+
+   else{
+    console.log("Error: CascadeDelete invalid level")
+  }
+}
