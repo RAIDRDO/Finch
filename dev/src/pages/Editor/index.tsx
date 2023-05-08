@@ -43,7 +43,7 @@ const Editor = () => {
     const [Cells, setCells] = useState<CellProps>([]);
     const [IsEdited, setIsEdited] = useState<any>({});
     const GetSections = useQuery({queryKey:["Sections"]
-    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq "test_doc_id"`))
+    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq "${params.DocId}"`))
   ,onSuccess(data) {
       setCells(data)
   }
@@ -245,7 +245,7 @@ const Editor = () => {
         ))}
         </div>
 
-        <PlusCircle className='mt-2 text-slate-400 hover:text-slate-500 hover:cursor-pointer' size={32} onClick={()=>{addCell("test_doc_id")}} />
+        <PlusCircle className='mt-2 text-slate-400 hover:text-slate-500 hover:cursor-pointer' size={32} onClick={()=>{addCell(params.DocId!)}} />
         </div>
 
 
