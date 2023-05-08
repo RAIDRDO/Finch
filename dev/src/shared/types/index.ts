@@ -12,6 +12,12 @@ export interface IPostEntity extends Omit<IEntity, "Id"> {
 }
 
 
+export interface Logs{
+    index:string;
+    log_type:string;
+    log_msg:string;
+}
+
 
 export interface Documents{
   Id?:number

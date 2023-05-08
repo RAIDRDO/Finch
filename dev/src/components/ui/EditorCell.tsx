@@ -44,7 +44,6 @@ type Checked = DropdownMenuCheckboxItemProps["checked"]
 
 const EditorCell = ({Cellprop,Delete,Edit}:any) => {
     const [Classification, setClassification] = useState("");
-    console.log("rendered")
 
     return ( 
         <div className="flex flex-col border shadow-sm rounded-sm">

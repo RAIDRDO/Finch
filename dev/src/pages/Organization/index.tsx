@@ -115,7 +115,6 @@ export default function Organization() {
                 queryClient.invalidateQueries("Catergories")
                 return res
               }).then((res) => {
-                console.log(res)
                 navigate(`/category/${res.d.Cat}`)
               })
             }

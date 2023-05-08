@@ -49,6 +49,8 @@
     "jquery": "^3.6.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.162.0",
+    "nanoid": "^4.0.2",
+    "object-inspect": "^1.12.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
@@ -94,6 +96,7 @@
     "@faker-js/faker": "^7.6.0",
     "@types/crypto-js": "^4.1.1",
     "@types/lodash": "^4.14.192",
+    "@types/object-inspect": "^1.8.1",
     "@types/uuid": "^9.0.1"
   }
 }

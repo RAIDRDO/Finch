@@ -110,7 +110,6 @@ export default function Category() {
           <DialogPrimitive.Close asChild>
           <Button type="submit" onClick={
             () => {
-              console.log(Catergories)
               AddDocument({Document:uuid(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName})?.then(()=>
                 {queryClient.invalidateQueries("Documents")}
               )

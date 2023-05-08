@@ -51,7 +51,6 @@ const Editor = () => {
   },)
 
     const addCell = (DocId:string) => {
-        console.log("add cell")
         SaveCells()
         const CellData:Sections = {
             Section:uuidv4(),
@@ -90,7 +89,6 @@ const Editor = () => {
     }
 
     const EditCell = (SectionId: string,Content:string ) =>{
-        console.log("edit cell")
         const editedCell = Cells.filter((cell) => cell.Section == SectionId)[0];
         const index = Cells.indexOf(editedCell);
         editedCell.Content = Content
@@ -115,7 +113,6 @@ const Editor = () => {
     }
 
     const SaveCells = () =>{
-            console.log("save cells")
             const EditedCells = FilterEdited(Cells)
             EditedCells.map((cell:Sections) => {
                 const data = filterDataPayload(cell)

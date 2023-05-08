@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { config } from '../../../config';
-import { Console } from 'console';
 
 // Construct a SharePoint REST API endpoint URI
 export function constructUrl(
@@ -46,7 +45,6 @@ const { data } = await axios.get(url, {
         'Accept': 'application/json; odata=verbose'
       }
     });
-    console.log(data)
     return data.value;
 }
 
