@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import EditorCell from "@/components/ui/EditorCell";
 import {CellProps,Sections} from '@/shared/types' 
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle,ArrowLeft } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { faker } from '@faker-js/faker';
 import {
@@ -42,6 +42,7 @@ const Editor = () => {
     const queryClient = useQueryClient()
     const [Cells, setCells] = useState<CellProps>([]);
     const [IsEdited, setIsEdited] = useState<any>({});
+    const GetDocuments = useQuery({queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq "${params.DocId}"`))})
     const GetSections = useQuery({queryKey:["Sections"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq "${params.DocId}"`))
   ,onSuccess(data) {
@@ -143,9 +144,12 @@ const Editor = () => {
 
 
     return ( 
-        <div>
-        <Input className='w-36'></Input>
-        <div className=''>
+    <div>
+      <div className='flex flex-row items-center mt-4 ml-4'>
+        <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900'></ArrowLeft>
+    <div className=' flex flex-col'>
+    <Input className='w-36 ml-3' disabled></Input>
+
     <Menubar className='border-none'>
       <MenubarMenu>
         <MenubarTrigger>File</MenubarTrigger>
@@ -236,7 +240,10 @@ const Editor = () => {
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
-        </div>
+    </div>
+
+      </div>
+   
         <div className="flex flex-row justify-center">
         <div className='flex flex-col w-9/12  items-center'>
         <div className="flex flex-col w-9/12 h-full bg-slate-50">
