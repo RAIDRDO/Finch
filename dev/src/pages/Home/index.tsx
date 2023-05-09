@@ -36,7 +36,7 @@ export default function Home() {
   const token = useToken()
   const [OrgName, setOrgName] = useState("");
   const [OrgDescription, setOrgDescription] = useState("");
-  const [OrgData, setOrgData] = useState<any>();
+  const [OrgData, setOrgData] = useState<any>([]);
   const GetOrgnisations = useQuery({queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation))
 ,onSuccess(data) {

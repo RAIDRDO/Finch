@@ -62,6 +62,7 @@ export async function createQuery(
     const res = await axios.post(url, data, {
       headers: {
         'Accept': 'application/json; odata=verbose',
+
         'content-type': 'application/json; odata=verbose',
         'X-RequestDigest': token
       }
