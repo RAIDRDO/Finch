@@ -20,7 +20,7 @@ export function constructReadQueryFn(url: string) {
   return async () => {
     const { data } = await axios.get(url, {
       headers: {
-        'Accept': 'application/json; odata=verbose'
+        'Accept': 'application/json'
       }
     });
     console.log(data)
@@ -32,7 +32,7 @@ export function constructCreateQueryFn(url: string) {
   return async () => {
     const { data } = await axios.post(url, {
       headers: {
-        'Accept': 'application/json; odata=verbose'
+        'Accept': 'application/json'
       }
     });
     return data;
@@ -42,7 +42,7 @@ export function constructCreateQueryFn(url: string) {
 export async function ReadQuery(url: string) {
 const { data } = await axios.get(url, {
       headers: {
-        'Accept': 'application/json; odata=verbose'
+        'Accept': 'application/json'
       }
     });
     return data.value;
@@ -61,9 +61,9 @@ export async function createQuery(
   try {
     const res = await axios.post(url, data, {
       headers: {
-        'Accept': 'application/json; odata=verbose',
+        'Accept': 'application/json',
 
-        'content-type': 'application/json; odata=verbose',
+        'content-type': 'application/json',
         'X-RequestDigest': token
       }
     });
@@ -86,8 +86,8 @@ export async function updateQuery(
   try {
     await axios.post(url, data, {
       headers: {
-        'Accept': 'application/json; odata=verbose',
-        'content-type': 'application/json; odata=verbose',
+        'Accept': 'application/json',
+        'content-type': 'application/json',
         'X-RequestDigest': token,
         'IF-MATCH': '*',
         'X-HTTP-METHOD': 'MERGE'
@@ -111,8 +111,8 @@ export async function deleteQuery(
   try {
     await axios.post(url, undefined, {
       headers: {
-        'Accept': 'application/json; odata=verbose',
-        'content-type': 'application/json; odata=verbose',
+        'Accept': 'application/json',
+        'content-type': 'application/json',
         'X-RequestDigest': token,
         'IF-MATCH': '*',
         'X-HTTP-METHOD': 'DELETE'
