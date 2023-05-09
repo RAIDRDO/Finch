@@ -152,7 +152,10 @@ export default function Home() {
             <div className="border"></div>
             {GetOrgnisations.isSuccess?
             <div className="flex flex-row justify-evenly">
-            {OrgData?.map((item:any)=>{
+            {
+            OrgData?.map((item:any)=>{
+                          console.log(OrgData)
+
                           return     <OrgansationCard key={item.org} {...item}></OrgansationCard>
 
             })}
