@@ -46,6 +46,8 @@ export default function Organization() {
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,`org eq '${params.OrgId}'`))
 ,onSuccess(data) {
     setOrgData(data[0])
+    console.log("check org data")
+    console.log(OrgData)
 }
 },)
  const GetCatergories = useQuery({queryKey:["Catergories"]
