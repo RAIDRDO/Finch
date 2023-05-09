@@ -113,6 +113,7 @@ export default function Organization() {
           <DialogPrimitive.Close asChild>
           <Button type="submit" onClick={
             () => {
+              console.log("btn click",OrgData)
               AddCategory({Cat:uuidv4(),Org:OrgData.org,Owner:"test",Name:CatergoryName})?.then((res) => {
                 queryClient.invalidateQueries("Catergories")
                 return res
