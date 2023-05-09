@@ -1,5 +1,5 @@
 export const config = {
-  apiUrl: 'http://127.0.0.1:5000/ravenpoint/_api/',
+  apiUrl: 'https://5000-poipiii-finch-3c4uzaiy27c.ws-us96b.gitpod.io/ravenpoint/_api/',
   // Insert list IDs, e.g.
   ListNames: {Documents:"Documents",
               Sections:"Sections",
