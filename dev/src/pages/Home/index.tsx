@@ -151,7 +151,7 @@ export default function Home() {
             </div>
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
-              {OrgData.map((item:any)=>{
+              {OrgData?.map((item:any)=>{
                             return     <OrgansationCard key={item.org} {...item}></OrgansationCard>
 
               })}
