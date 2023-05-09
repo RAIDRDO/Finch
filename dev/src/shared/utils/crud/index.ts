@@ -61,9 +61,9 @@ export async function createQuery(
   try {
     const res = await axios.post(url, data, {
       headers: {
-        'Accept': 'application/json',
+        'Accept': 'application/json; odata=verbose',
 
-        'content-type': 'application/json',
+        'content-type': 'application/json; odata=verbose',
         'X-RequestDigest': token
       }
     });
@@ -86,8 +86,8 @@ export async function updateQuery(
   try {
     await axios.post(url, data, {
       headers: {
-        'Accept': 'application/json',
-        'content-type': 'application/json',
+        'Accept': 'application/json; odata=verbose',
+        'content-type': 'application/json; odata=verbose',
         'X-RequestDigest': token,
         'IF-MATCH': '*',
         'X-HTTP-METHOD': 'MERGE'
@@ -111,8 +111,8 @@ export async function deleteQuery(
   try {
     await axios.post(url, undefined, {
       headers: {
-        'Accept': 'application/json',
-        'content-type': 'application/json',
+        'Accept': 'application/json; odata=verbose',
+        'content-type': 'application/json; odata=verbose',
         'X-RequestDigest': token,
         'IF-MATCH': '*',
         'X-HTTP-METHOD': 'DELETE'
