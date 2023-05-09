@@ -43,13 +43,13 @@ export default function Organization() {
   const [Catergories, setCatergories] = useState<any>();
   const token = useToken()
   const GetOrgnisations = useQuery({queryKey:["Orgnisations"]
-  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,`org eq "${params.OrgId}"`))
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,`org eq '${params.OrgId}'`))
 ,onSuccess(data) {
     setOrgData(data[0])
 }
 },)
  const GetCatergories = useQuery({queryKey:["Catergories"]
-  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`org eq "${params.OrgId}"`))
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Org eq '${params.OrgId}'`))
 ,onSuccess(data) {
     setCatergories(data)
 }
