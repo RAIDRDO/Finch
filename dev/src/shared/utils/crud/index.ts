@@ -23,7 +23,7 @@ export function constructReadQueryFn(url: string) {
         'Accept': 'application/json; odata=verbose'
       }
     });
-    // console.log(data)
+    console.log(data)
     return data.value;
   };
 };
