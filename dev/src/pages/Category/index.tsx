@@ -41,7 +41,7 @@ export default function Category() {
   const [Catergories, setCatergories] = useState<any>();
   const [Documents, setDocuments] = useState<any>();
    const GetCatergories = useQuery({queryKey:["Catergories"]
-    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Cat eq "${params.CatId}"`))
+    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Cat eq '${params.CatId}'`))
   ,onSuccess(data) {
       setCatergories(data[0])
   }

@@ -42,9 +42,9 @@ const Editor = () => {
     const queryClient = useQueryClient()
     const [Cells, setCells] = useState<CellProps>([]);
     const [IsEdited, setIsEdited] = useState<any>({});
-    const GetDocuments = useQuery({queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq "${params.DocId}"`))})
+    const GetDocuments = useQuery({queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${params.DocId}'`))})
     const GetSections = useQuery({queryKey:["Sections"]
-    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq "${params.DocId}"`))
+    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${params.DocId}'`))
   ,onSuccess(data) {
       setCells(data)
   }
