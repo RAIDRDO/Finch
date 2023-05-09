@@ -36,7 +36,7 @@ export default function Home() {
   const token = useToken()
   const [OrgName, setOrgName] = useState("");
   const [OrgDescription, setOrgDescription] = useState("");
-  const [OrgData, setOrgData] = useState();
+  const [OrgData, setOrgData] = useState<any>();
   const GetOrgnisations = useQuery({queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation))
 ,onSuccess(data) {
@@ -151,7 +151,7 @@ export default function Home() {
             </div>
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
-              {GetOrgnisations.data?.map((item:any)=>{
+              {OrgData.data?.map((item:any)=>{
                             return     <OrgansationCard key={item.org} {...item}></OrgansationCard>
 
               })}
