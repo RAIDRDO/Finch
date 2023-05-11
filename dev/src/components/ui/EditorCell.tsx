@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useState,useEffect } from "react"
+import { useState,useEffect,useMemo } from "react"
 import { ChevronsUpDown , MoreHorizontal ,X} from "lucide-react";
 import {
   Popover,
@@ -36,15 +36,40 @@ import { Button } from "@/components/ui/button"
 
 import { Textarea } from "@/components/ui/textarea"
 import {Sections} from '@/shared/types' 
-import SimpleMDE from "react-simplemde-editor";
+import SimpleMdeReact from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 
+import SimpleMDE from "easymde";
 
+import rehypeRaw from "rehype-raw";
+import rehypeStringify from "rehype-stringify";
+import remarkGfm from 'remark-gfm'
+
+import ReactDOMServer from "react-dom/server";
+import ReactMarkdown from 'react-markdown'
+import remarkMermaid from "@/lib/remark-mermaid-v2";
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
 const EditorCell = ({Cellprop,Delete,Edit}:any) => {
     const [Classification, setClassification] = useState("");
+     const rehypePlugins :any = [rehypeRaw,rehypeStringify]
+    const remarkPlugins :any = [remarkGfm,remarkMermaid]
+    const customRendererOptions = useMemo(() => {
+    return {
+            previewRender(text:any) {
+        return ReactDOMServer.renderToString(
+                  <div className='prose break-words p-4 overflow-y-auto'>
+                <ReactMarkdown
+            children={text}
+            remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}
+          />
+                  </div>
 
+    
+        );
+      },
+    } as SimpleMDE.Options;
+  }, []);
     return ( 
         <div className="flex flex-col border shadow-sm rounded-sm">
             <div className=" p-4 flex flex-row justify-between">
@@ -99,7 +124,7 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
               
          </div>
 
-         <SimpleMDE value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Section,e)}} />
+         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Section,e)}} />
  
         </div>
      );

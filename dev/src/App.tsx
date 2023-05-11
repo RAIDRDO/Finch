@@ -11,6 +11,7 @@ import Categories from './pages/Categories';
 import Category from './pages/Category';
 import React from 'react';
 import { config } from './config';
+import Test from './pages/test';
 // Create client
 const queryClient = new QueryClient();
 const ReactQueryDevtoolsProduction = React.lazy(() =>
@@ -41,7 +42,7 @@ function App() {
           <Route path='/documents' element={<Documents />} /> 
           <Route path='/merges' element={<Merges />} />
           <Route path='/editor/:DocId' element={<Editor />} />
-
+          <Route path='/test' element={<Test></Test>} />
         </Routes>
       </QueryClientProvider>
     </HashRouter>
