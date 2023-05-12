@@ -27,6 +27,7 @@ import { constructReadQueryFn, constructUrl, createQuery ,deleteQuery,updateQuer
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import useToken from "@/shared/utils/crud/useToken";
 import CryptoJS from 'crypto-js';
+import MarkdownCell from '@/components/ui/MarkdownCell';
 
 
 interface IsEdited{
@@ -245,7 +246,11 @@ const Editor = () => {
         <div className='flex flex-col w-9/12  items-center'>
         <div className="flex flex-col w-9/12 h-full bg-slate-50">
         {Cells.map((CellData:Sections) => (
+
             <EditorCell Cellprop={CellData} Delete = {DeleteCell} Edit={EditCell} key={CellData.Section}></EditorCell>
+     
+            // <MarkdownCell  text={CellData.Content}></MarkdownCell>
+
         ))}
         </div>
 

@@ -40,7 +40,7 @@ import SimpleMdeReact from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 
 import SimpleMDE from "easymde";
-
+import { Switch } from "./switch";
 import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from 'remark-gfm'
@@ -48,22 +48,29 @@ import remarkGfm from 'remark-gfm'
 import ReactDOMServer from "react-dom/server";
 import ReactMarkdown from 'react-markdown'
 import remarkMermaid from "@/lib/remark-mermaid-v2";
+import MarkdownRendrer from "./MarkdownRenderer";
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
 const EditorCell = ({Cellprop,Delete,Edit}:any) => {
+
+    const [IsEdit, setIsEdit] = useState<boolean>(false);
     const [Classification, setClassification] = useState("");
-     const rehypePlugins :any = [rehypeRaw,rehypeStringify]
-    const remarkPlugins :any = [remarkGfm,remarkMermaid]
+    useEffect(() => {
+        if (Cellprop.Content == "") {
+            setIsEdit(true);
+        }
+        else{
+            setIsEdit(false);
+
+        }
+    }, [])
+
     const customRendererOptions = useMemo(() => {
     return {
-            previewRender(text:any) {
+            previewRender(text:string) {
         return ReactDOMServer.renderToString(
-                  <div className='prose break-words p-4 overflow-y-auto'>
-                <ReactMarkdown
-            children={text}
-            remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}
-          />
-                  </div>
+              
+                <MarkdownRendrer text={text}></MarkdownRendrer>
 
     
         );
@@ -71,7 +78,8 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
     } as SimpleMDE.Options;
   }, []);
     return ( 
-        <div className="flex flex-col border shadow-sm rounded-sm">
+      <>
+       {IsEdit? <div className="flex flex-col border shadow-sm rounded-sm">
             <div className=" p-4 flex flex-row justify-between">
 
                 <DropdownMenu>
@@ -98,7 +106,6 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
 
             </DropdownMenu>
 
-
              <Popover>
                         <PopoverTrigger asChild>
                             <div className="p-2 rounded-full hover:bg-slate-200 hover:cursor-pointer">
@@ -109,7 +116,7 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
                         <PopoverContent className="w-auto flex flex-col px-0 ">
 
 
-
+        
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer" onClick={()=>Delete(Cellprop.Section)}>
                             <p className="">
                             Delete Cell 
@@ -124,9 +131,24 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
               
          </div>
 
-         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Section,e)}} />
+         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Section,e)}} onBlur={()=>{
+          setIsEdit(false);
+         }} />
  
+        </div> : 
+        
+        <div className="flex flex-col hover:rounded-sm bg-white hover:border hover:border-blue-300" onClick={(e:any)=>{
+          if (e.detail===2){
+            setIsEdit(true);
+          }
+        }}>
+            <MarkdownRendrer  text={Cellprop.Content}></MarkdownRendrer>
         </div>
+        }
+
+      </>
+       
+        
      );
 }
  
