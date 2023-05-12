@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useState,useEffect,useMemo } from "react"
-import { ChevronsUpDown , MoreHorizontal ,X} from "lucide-react";
+import { ChevronsUpDown , Eye, MoreHorizontal ,X} from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -49,6 +49,7 @@ import ReactDOMServer from "react-dom/server";
 import ReactMarkdown from 'react-markdown'
 import remarkMermaid from "@/lib/remark-mermaid-v2";
 import MarkdownRendrer from "./MarkdownRenderer";
+import { Toggle } from "./toggle";
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
 const EditorCell = ({Cellprop,Delete,Edit}:any) => {
@@ -105,8 +106,15 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
       </DropdownMenuContent>
 
             </DropdownMenu>
+            <div className="flex flex-row items-center">
+              <Button className="bg-transparent hover:bg-transparent text-slate-500 hover:text-slate-700" onClick={
+                ()=>{setIsEdit(false)}
+              }>
+                render 
+              <Eye className="ml-2"></Eye>
+              </Button>
 
-             <Popover>
+  <Popover>
                         <PopoverTrigger asChild>
                             <div className="p-2 rounded-full hover:bg-slate-200 hover:cursor-pointer">
                                 <MoreHorizontal className="w-54 h-6  text-slate-600" />
@@ -128,12 +136,12 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
                         </PopoverContent>
                     </Popover>
                    
+            </div>
+           
               
          </div>
 
-         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Section,e)}} onBlur={()=>{
-          setIsEdit(false);
-         }} />
+         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Section,e)}}  />
  
         </div> : 
         
