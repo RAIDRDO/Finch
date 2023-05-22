@@ -31,8 +31,10 @@ import useToken from "@/shared/utils/crud/useToken";
 import { constructReadQueryFn, constructUrl, createQuery } from "@/shared/utils/crud";
 import { useQuery ,useQueryClient} from "react-query";
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
-
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
+import {useContext} from "react";
 export default function Category() {
+  const [user,setUser] = useContext(AuthContext)
   const token = useToken()
   const navigate = useNavigate()
   const params = useParams();
@@ -43,14 +45,14 @@ export default function Category() {
    const GetCatergories = useQuery({queryKey:["Catergories"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Cat eq '${params.CatId}'`))
   ,onSuccess(data) {
-      setCatergories(data[0])
+      setCatergories(data.value[0])
   }
   },)
 
   const GetDocuments = useQuery({queryKey:["Documents"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents))
 ,onSuccess(data) {
-  setDocuments(data)
+  setDocuments(data.value)
 }
 },) 
 

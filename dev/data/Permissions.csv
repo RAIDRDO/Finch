@@ -1,1 +1,1 @@
-﻿Id,User,Document,view,edit,merge,isOwner
+﻿Id,Permission,User,Email,Resource,Role

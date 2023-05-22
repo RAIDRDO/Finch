@@ -23,8 +23,7 @@ export function constructReadQueryFn(url: string) {
         'Accept': 'application/json'
       }
     });
-    console.log(data)
-    return data.value;
+    return data;
   };
 };
 

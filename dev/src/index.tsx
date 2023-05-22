@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 // import reportWebVitals from './reportWebVitals';
 import Console from './react_console'
 import {config} from './config'
+import { AuthContextProvider ,AuthContext} from './shared/utils/context/authContextProvider';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

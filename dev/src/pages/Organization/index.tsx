@@ -34,7 +34,10 @@ import { useQuery ,useQueryClient} from "react-query";
 import { v4 as uuidv4 } from 'uuid';
 import React from "react";
 import CategoryCard from "@/components/ui/CategoryCard";
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
+import {useContext} from "react";
 export default function Organization() {
+  const [user,setUser] = useContext(AuthContext)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const params = useParams();
@@ -42,21 +45,50 @@ export default function Organization() {
   const [OrgData, setOrgData] = useState<any>();
   const [Catergories, setCatergories] = useState<any>();
   const token = useToken()
-  const GetOrgnisations = useQuery({queryKey:["Orgnisations"]
+  
+  const getPermissions= useQuery({enabled:!!user?.Id , queryKey:["Permissions"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.OrgId}') and (User eq ${user?.Id})`))})
+
+  const GetOrgnisations = useQuery({enabled:getPermissions.isSuccess,queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,`org eq '${params.OrgId}'`))
 ,onSuccess(data) {
     console.log("orgdata",data)
-    setOrgData(data[0])
+    setOrgData(data.value[0])
     console.log("check org data")
     console.log(OrgData)
 }
 },)
- const GetCatergories = useQuery({queryKey:["Catergories"]
+ const GetCatergories = useQuery({enabled:getPermissions.isSuccess,queryKey:["Catergories"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Org eq '${params.OrgId}'`))
 ,onSuccess(data) {
-    setCatergories(data)
+    setCatergories(data.value)
 }
 },)
+  const addPermission = (OrgId:string,UserId:string,Email:string,Role:string) => {
+      const payload = {
+           __metadata:{
+        type: `SP.Data.${config.ListNames.Permissions}ListItem`,
+
+    },
+      
+      ...{
+        Permission:uuidv4(),
+        User:UserId,
+        Email:Email,
+        Resource:OrgId,
+        Role:Role
+      
+      }
+      }
+      const res = createQuery(config.ListNames.Permissions,payload,token.data.FormDigestValue)
+      try {
+        return res
+      } catch (error) {
+        console.log(error)
+      }
+  }
+
+
 
   const [CatergoryName, setCatergoryName] = useState("");
    const AddCategory = (Categorydata:Catergory)=> {
@@ -115,7 +147,7 @@ export default function Organization() {
           <Button type="submit" onClick={
             () => {
               console.log("btn click",OrgData)
-              AddCategory({Cat:uuidv4(),Org:OrgData.org,Owner:"test",Name:CatergoryName})?.then((res) => {
+              AddCategory({Cat:uuidv4(),Org:OrgData.org,Owner:user.Id,Name:CatergoryName})?.then((res) => {
                 queryClient.invalidateQueries("Catergories")
                 return res
               }).then((res) => {

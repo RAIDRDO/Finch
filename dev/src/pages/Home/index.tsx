@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
 import useToken from "@/shared/utils/crud/useToken";
 import { constructReadQueryFn, constructUrl, createQuery} from "@/shared/utils/crud";
-import {Organisation,Documents} from "@/shared/types/";
+import {Organisation,Documents, SPUser} from "@/shared/types/";
 import { config } from "@/config";
 import { v4 as uuidv4 } from 'uuid';
 import { redirect } from "react-router-dom";
@@ -29,22 +29,29 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react";
+import { useState ,useContext} from "react";
 import { useQuery } from "react-query";
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
+import useUser from "@/shared/utils/crud/useUser"
 export default function Home() {
+  const [user,setUser] = useContext(AuthContext)
   const navigate = useNavigate()
   const token = useToken()
   const [OrgName, setOrgName] = useState("");
   const [OrgDescription, setOrgDescription] = useState("");
   const [OrgData, setOrgData] = useState<any>([]);
-  const GetOrgnisations = useQuery({queryKey:["Orgnisations"]
+  const [Documents, setDocuments] = useState<any>([]);
+  const GetOrgnisations = useQuery({enabled:!!user,queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation))
 ,onSuccess(data) {
-    setOrgData(data)
+    setOrgData(data.value)
 }
 },)
 
-  const GetDocuments = useQuery({queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents))})
+  const GetDocuments = useQuery({enabled:!!user,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents)),
+onSuccess(data) {
+    setDocuments(data.value)
+},})
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
            __metadata:{
@@ -55,6 +62,30 @@ export default function Home() {
       ...Organisationdata
       }
       const res = createQuery(config.ListNames.Organisation,payload,token.data.FormDigestValue)
+      try {
+        return res
+      } catch (error) {
+        console.log(error)
+      }
+  }
+
+  const addPermission = (OrgId:string,UserId:string,Email:string,Role:string) => {
+      const payload = {
+           __metadata:{
+        type: `SP.Data.${config.ListNames.Permissions}ListItem`,
+
+    },
+      
+      ...{
+        Permission:uuidv4(),
+        User:UserId,
+        Email:Email,
+        Resource:OrgId,
+        Role:Role
+      
+      }
+      }
+      const res = createQuery(config.ListNames.Permissions,payload,token.data.FormDigestValue)
       try {
         return res
       } catch (error) {
@@ -100,15 +131,20 @@ export default function Home() {
         </div>
         <DialogFooter>
           <Button type="submit" onClick={
-                () => {AddOrgnisation({
+                () => {
+                  
+                  const data = {
                   org:uuidv4(),
-                  owner: "test",
+                  owner: user.Id,
                   desc:OrgDescription,
                   name:OrgName
 
-                })?.then((res)=>{
+                }
+                  AddOrgnisation(data)?.then((res)=>{
                     navigate(`/organization/${res.d.org}`)
                 })
+
+                addPermission(data.org,data.owner,user.Email,"Org-Owner")
 
               
               }
@@ -131,12 +167,19 @@ export default function Home() {
               </Button>
             </div>
             <div className="border"></div>
+            {GetDocuments.isSuccess?
+            
             <div className="flex flex-row justify-evenly">
-              {GetDocuments.data?.map((item:any)=>{
+              {Documents?.map((item:any)=>{
                 return <DocumentCard key={item.Document} {...item}></DocumentCard>
               })}
               
             </div>
+                 : 
+                 <div>
+                   <p>Loading</p>
+                  </div>
+                    }
         </div>
          <div className="flex flex-col space-y-4">
             <div className="flex flex-row justify-between">
@@ -163,7 +206,7 @@ export default function Home() {
 
           </div> :
           <div>
-            test
+            <p>Loading</p>
           </div>
             }
             

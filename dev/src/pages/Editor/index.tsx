@@ -47,7 +47,7 @@ const Editor = () => {
     const GetSections = useQuery({queryKey:["Sections"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${params.DocId}'`))
   ,onSuccess(data) {
-      setCells(data)
+      setCells(data.value)
   }
   },)
 
@@ -244,7 +244,7 @@ const Editor = () => {
    
         <div className="flex flex-row justify-center">
         <div className='flex flex-col w-9/12  items-center'>
-        <div className="flex flex-col w-9/12 h-full bg-slate-50">
+        <div className="flex flex-col w-9/12 h-full">
         {Cells.map((CellData:Sections) => (
 
             <EditorCell Cellprop={CellData} Delete = {DeleteCell} Edit={EditCell} key={CellData.Section}></EditorCell>

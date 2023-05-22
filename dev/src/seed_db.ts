@@ -152,11 +152,11 @@ users.map((userid)=>{
 if (isOwner){
 const permissions:Permissions = {
   User:userid,
-  document:DocumentId,
-  view:true,
-  edit:true,
-  merge:true,
-  isOwner:true
+  Email:faker.internet.email(),
+  Permission:uuidv4(),
+  Resource:DocumentId,
+  Role:"Org-Owner"
+ 
 }
 const payload = {
    __metadata:{
@@ -175,11 +175,10 @@ try {
 else{
 const permissions:Permissions = {
   User:userid,
-  document:DocumentId,
-  view:true,
-  edit:true,
-  merge:true,
-  isOwner:false
+  Email:faker.internet.email(),
+  Permission:uuidv4(),
+  Resource:DocumentId,
+  Role:"Org-Viewer"
 }
 const payload = {
    __metadata:{

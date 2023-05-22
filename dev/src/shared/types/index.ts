@@ -83,12 +83,13 @@ export interface Users{
 }
 
 export interface Permissions{
+  Id?:number,
+  Permission:string,
   User:string,
-  document:string
-  view:boolean,
-  edit:boolean
-  merge:boolean,
-  isOwner:boolean
+  Email:string,
+  Resource:string,
+  Role:string
+ 
 }
 
 
@@ -106,4 +107,28 @@ Cat:string,
 Org:string,
 Owner:string
 Name:string
+}
+
+
+export interface SPUser{
+Id:number,
+Title:string,
+Email:string
+}
+
+
+
+export interface ResourcePermissions {
+    OrgViewer:boolean,
+    OrgEditor:boolean,
+    OrgContributor :boolean,
+    CatViewer:boolean,
+    CatEditor:boolean,
+    CatContributor:boolean,
+    DocViewer:boolean,
+    DocEditor:boolean,
+    DocContributor:boolean,
+    OrgOwner:boolean,
+    CatOwner:boolean,
+    DocOwner:boolean
 }

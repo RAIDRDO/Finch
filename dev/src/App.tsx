@@ -10,8 +10,14 @@ import Organization from './pages/Organization';
 import Categories from './pages/Categories';
 import Category from './pages/Category';
 import React from 'react';
+import { createContext } from 'react';
 import { config } from './config';
 import Test from './pages/test';
+import { AuthContextProvider ,AuthContext} from './shared/utils/context/authContextProvider';
+import {useContext } from 'react';
+import useUser from "@/shared/utils/crud/useUser"
+import AppRoutes from './AppRoutes';
+
 // Create client
 const queryClient = new QueryClient();
 const ReactQueryDevtoolsProduction = React.lazy(() =>
@@ -22,7 +28,7 @@ const ReactQueryDevtoolsProduction = React.lazy(() =>
 
 function App() {
   const [showDevtools, setShowDevtools] = React.useState(config.DevMode)
-
+  
   return (
     <HashRouter>
       <QueryClientProvider client={queryClient}>
@@ -31,19 +37,9 @@ function App() {
           <ReactQueryDevtoolsProduction />
         </React.Suspense>
       ) : null}
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/organizations' element={<Organizations />} />
-          <Route path='/organization/:OrgId' element={<Organization/>} />
-
-          <Route path='/categories' element={<Categories />} />
-          <Route path='/category/:CatId' element={<Category />} />
-
-          <Route path='/documents' element={<Documents />} /> 
-          <Route path='/merges' element={<Merges />} />
-          <Route path='/editor/:DocId' element={<Editor />} />
-          <Route path='/test' element={<Test></Test>} />
-        </Routes>
+        <AuthContextProvider>
+        <AppRoutes></AppRoutes>
+        </AuthContextProvider>
       </QueryClientProvider>
     </HashRouter>
   );
