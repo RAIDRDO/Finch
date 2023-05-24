@@ -12,7 +12,7 @@ import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
 import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { v4 as uuid } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import {
   Dialog,
   DialogContent,
@@ -28,11 +28,13 @@ import { useState } from "react";
 import { Documents ,Catergory} from "@/shared/types";
 import { config } from "@/config";
 import useToken from "@/shared/utils/crud/useToken";
-import { constructReadQueryFn, constructUrl, createQuery } from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery,addPermission } from "@/shared/utils/crud";
 import { useQuery ,useQueryClient} from "react-query";
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import {useContext} from "react";
+import { ResolveRole,ResolvePermissions } from "@/shared/utils/crud/helper";
+
 export default function Category() {
   const [user,setUser] = useContext(AuthContext)
   const token = useToken()
@@ -42,15 +44,17 @@ export default function Category() {
   const [DocumentName, setDocumentName] = useState("");
   const [Catergories, setCatergories] = useState<any>();
   const [Documents, setDocuments] = useState<any>();
-   const GetCatergories = useQuery({queryKey:["Catergories"]
+  const getPermissions= useQuery({enabled:!!user?.Id , queryKey:["Permissions"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.CatId}') and (User eq ${user?.Id})`))})
+   const GetCatergories = useQuery({enabled:getPermissions.isSuccess,queryKey:["Catergories"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Cat eq '${params.CatId}'`))
   ,onSuccess(data) {
       setCatergories(data.value[0])
   }
   },)
 
-  const GetDocuments = useQuery({queryKey:["Documents"]
-  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents))
+  const GetDocuments = useQuery({enabled:getPermissions.isSuccess,queryKey:["Documents"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Catergory eq '${params.CatId}'`))
 ,onSuccess(data) {
   setDocuments(data.value)
 }
@@ -73,6 +77,34 @@ export default function Category() {
         console.log(error)
       }
   }
+//  const addPermission = (OrgId:string,OrgIdSP:number,UserId:string,Email:string,type:string,Role:string) => {
+//       const payload = {
+//            __metadata:{
+//         type: `SP.Data.${config.ListNames.Permissions}ListItem`,
+
+//     },
+      
+//       ...{
+//         Permission:uuidv4(),
+//         User:UserId,
+//         Email:Email,
+//         Resource:OrgId,
+//         ResourceSP:OrgIdSP,
+//         resourceType:type,
+//         Role:Role
+      
+//       }
+//       }
+//       const res = createQuery(config.ListNames.Permissions,payload,token.data.FormDigestValue)
+//       try {
+//         return res
+//       } catch (error) {
+//         console.log(error)
+//       }
+//   }
+
+
+
   return (
     <>
     <NavBar></NavBar>
@@ -112,8 +144,15 @@ export default function Category() {
           <DialogPrimitive.Close asChild>
           <Button type="submit" onClick={
             () => {
-              AddDocument({Document:uuid(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName})?.then(()=>
-                {queryClient.invalidateQueries("Documents")}
+              const data ={Document:uuidv4(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName}
+              AddDocument(data)?.then((res)=>
+                {
+                  addPermission(token.data.FormDigestValue,data.Document,res.d.Id,user?.Id,user?.Email,'document',ResolveRole(getPermissions.data.value[0].Role,"create"))?.then(()=>{
+                  queryClient.invalidateQueries("Documents")
+
+                  })
+                
+                }
               )
             }
           }>Create</Button>

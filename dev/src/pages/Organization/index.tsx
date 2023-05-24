@@ -12,7 +12,7 @@ import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
 import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { constructReadQueryFn, constructUrl, createQuery } from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery ,addPermission} from "@/shared/utils/crud";
 
 import {
   Dialog,
@@ -36,6 +36,7 @@ import React from "react";
 import CategoryCard from "@/components/ui/CategoryCard";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import {useContext} from "react";
+import { ResolveRole,ResolvePermissions } from "@/shared/utils/crud/helper";
 export default function Organization() {
   const [user,setUser] = useContext(AuthContext)
   const queryClient = useQueryClient()
@@ -64,29 +65,31 @@ export default function Organization() {
     setCatergories(data.value)
 }
 },)
-  const addPermission = (OrgId:string,UserId:string,Email:string,Role:string) => {
-      const payload = {
-           __metadata:{
-        type: `SP.Data.${config.ListNames.Permissions}ListItem`,
+  // const addPermission = (OrgId:string,OrgIdSP:number,UserId:string,Email:string,type:string,Role:string) => {
+  //     const payload = {
+  //          __metadata:{
+  //       type: `SP.Data.${config.ListNames.Permissions}ListItem`,
 
-    },
+  //   },
       
-      ...{
-        Permission:uuidv4(),
-        User:UserId,
-        Email:Email,
-        Resource:OrgId,
-        Role:Role
+  //     ...{
+  //       Permission:uuidv4(),
+  //       User:UserId,
+  //       Email:Email,
+  //       Resource:OrgId,
+  //       ResourceSP:OrgIdSP,
+  //       resourceType:type,
+  //       Role:Role
       
-      }
-      }
-      const res = createQuery(config.ListNames.Permissions,payload,token.data.FormDigestValue)
-      try {
-        return res
-      } catch (error) {
-        console.log(error)
-      }
-  }
+  //     }
+  //     }
+  //     const res = createQuery(config.ListNames.Permissions,payload,token.data.FormDigestValue)
+  //     try {
+  //       return res
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  // }
 
 
 
@@ -107,6 +110,7 @@ export default function Organization() {
         console.log(error)
       }
   }
+
   return (
     <>
     <NavBar></NavBar>
@@ -146,13 +150,15 @@ export default function Organization() {
           <DialogPrimitive.Close asChild>
           <Button type="submit" onClick={
             () => {
-              console.log("btn click",OrgData)
-              AddCategory({Cat:uuidv4(),Org:OrgData.org,Owner:user.Id,Name:CatergoryName})?.then((res) => {
+              const data ={Cat:uuidv4(),Org:OrgData.org,Owner:user.Id,Name:CatergoryName}
+              AddCategory(data)?.then((res) => {
+                addPermission(token.data.FormDigestValue,data.Cat,res.d.Id,user.Id,user.Email,"category",ResolveRole(getPermissions.data.value[0].Role,"create"))
                 queryClient.invalidateQueries("Catergories")
                 return res
               }).then((res) => {
                 navigate(`/category/${res.d.Cat}`)
               })
+
             }
           }>Create</Button>
           </DialogPrimitive.Close>

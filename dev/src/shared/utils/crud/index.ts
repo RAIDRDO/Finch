@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { config } from '../../../config';
-
+import { v4 as uuidv4 } from 'uuid';
 // Construct a SharePoint REST API endpoint URI
 export function constructUrl(
   listTitle: string,
@@ -163,3 +163,48 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
     console.log("Error: CascadeDelete invalid level")
   }
 }
+
+
+
+
+ export const addPermission = (token:string,Id:string,IdSP:string,UserId:string,Email:string,type:string,Role:string) => {
+  const data =  {
+        Permission:uuidv4(),
+        User:UserId,
+        Email:Email,
+        Resource:Id,
+        OrgLookUp:"",
+        CatLookUp:"",
+        DocLookUp:"",
+        resourceType:type,
+        Role:Role
+      
+      }
+  switch (type) {
+    case "organization":
+      data.OrgLookUp = IdSP
+      break;
+    case "category":
+      data.CatLookUp = IdSP
+      break;
+    case "document":
+      data.DocLookUp = IdSP
+      break;
+
+  }
+  
+  const payload = {
+           __metadata:{
+        type: `SP.Data.${config.ListNames.Permissions}ListItem`,
+
+    },
+      
+      ...data
+      }
+      const res = createQuery(config.ListNames.Permissions,payload,token)
+      try {
+        return res
+      } catch (error) {
+        console.log(error)
+      }
+  }

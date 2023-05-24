@@ -12,7 +12,7 @@ import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
 import useToken from "@/shared/utils/crud/useToken";
-import { constructReadQueryFn, constructUrl, createQuery} from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery,addPermission} from "@/shared/utils/crud";
 import {Organisation,Documents, SPUser} from "@/shared/types/";
 import { config } from "@/config";
 import { v4 as uuidv4 } from 'uuid';
@@ -33,6 +33,7 @@ import { useState ,useContext} from "react";
 import { useQuery } from "react-query";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import useUser from "@/shared/utils/crud/useUser"
+import { get } from "lodash";
 export default function Home() {
   const [user,setUser] = useContext(AuthContext)
   const navigate = useNavigate()
@@ -41,17 +42,30 @@ export default function Home() {
   const [OrgDescription, setOrgDescription] = useState("");
   const [OrgData, setOrgData] = useState<any>([]);
   const [Documents, setDocuments] = useState<any>([]);
+
+
+
   const GetOrgnisations = useQuery({enabled:!!user,queryKey:["Orgnisations"]
-  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation))
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,OrgLookUp/Id,OrgLookUp/org,OrgLookUp/desc,OrgLookUp/name"
+  ,"OrgLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'organization')`))
 ,onSuccess(data) {
-    setOrgData(data.value)
+   const formattedData = data.value.map((item:any)=>{
+      return item.OrgLookUp
+    }) 
+    setOrgData(formattedData)
 }
 },)
 
-  const GetDocuments = useQuery({enabled:!!user,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents)),
+  const GetDocuments = useQuery({enabled:!!user,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/Sections,DocLookUp/CurrentCommit,DocLookUp/Name"
+  ,"DocLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'document')`)),
 onSuccess(data) {
-    setDocuments(data.value)
+    const formattedData = data.value.map((item:any)=>{
+      return item.DocLookUp
+    }) 
+    setDocuments(formattedData)
 },})
+
+
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
            __metadata:{
@@ -69,29 +83,31 @@ onSuccess(data) {
       }
   }
 
-  const addPermission = (OrgId:string,UserId:string,Email:string,Role:string) => {
-      const payload = {
-           __metadata:{
-        type: `SP.Data.${config.ListNames.Permissions}ListItem`,
+  // const addPermission = (OrgId:string,OrgIdSP:number,UserId:string,Email:string,type:string,Role:string) => {
+  //     const payload = {
+  //          __metadata:{
+  //       type: `SP.Data.${config.ListNames.Permissions}ListItem`,
 
-    },
+  //   },
       
-      ...{
-        Permission:uuidv4(),
-        User:UserId,
-        Email:Email,
-        Resource:OrgId,
-        Role:Role
+  //     ...{
+  //       Permission:uuidv4(),
+  //       User:UserId,
+  //       Email:Email,
+  //       Resource:OrgId,
+  //       ResourceSP:OrgIdSP,
+  //       ResourceType:type,
+  //       Role:Role
       
-      }
-      }
-      const res = createQuery(config.ListNames.Permissions,payload,token.data.FormDigestValue)
-      try {
-        return res
-      } catch (error) {
-        console.log(error)
-      }
-  }
+  //     }
+  //     }
+  //     const res = createQuery(config.ListNames.Permissions,payload,token.data.FormDigestValue)
+  //     try {
+  //       return res
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  // }
 
   return (
     <>
@@ -132,7 +148,6 @@ onSuccess(data) {
         <DialogFooter>
           <Button type="submit" onClick={
                 () => {
-                  
                   const data = {
                   org:uuidv4(),
                   owner: user.Id,
@@ -141,10 +156,10 @@ onSuccess(data) {
 
                 }
                   AddOrgnisation(data)?.then((res)=>{
+                    addPermission(token.data.FormDigestValue,data.org,res.d.Id,data.owner,user.Email,"organization","Org-Owner")
                     navigate(`/organization/${res.d.org}`)
                 })
 
-                addPermission(data.org,data.owner,user.Email,"Org-Owner")
 
               
               }

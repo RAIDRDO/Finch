@@ -15,7 +15,7 @@ import { constructReadQueryFn } from './shared/utils/crud';
 import { useQuery } from 'react-query';
 import { config } from './config';
 const AppRoutes = () => {
-    const url = config.apiUrl + 'web/currentUser';
+    const url = config.apiUrl + `web/getuserbyid('2')`;
     const user = useQuery({enabled:true,queryKey:["user"],queryFn:constructReadQueryFn(url), onSuccess(data) {
         setUser(data)
     },})

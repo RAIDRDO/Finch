@@ -1,1 +1,1 @@
-﻿Id,Permission,User,Email,Resource,Role
+﻿Id,Permission,User,Email,Resource,OrgLookUp,CatLookUp,DocLookUp,ResourceType,Role

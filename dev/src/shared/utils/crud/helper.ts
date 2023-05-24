@@ -108,17 +108,22 @@ export const ResolvePermissions = (role: string):ResourcePermissions => {
 
 
 
-export const ResolveRole = (role:string,action:string):string => {
+export const ResolveRole = (role:string,action:string):any => {
     const actions= ['create','view','edit'];
-    if (role === 'Org-Owner' && action === 'create') {
+    if (role === 'Org-Owner' && actions.includes(action)) {
         return 'Org-Owner';
     }
 
-    else if (role === 'Org-Owner' && action === 'update') {
-        return 'Org-Editor';
+    else if (role === 'Cat-Owner' && actions.includes(action)) {
+        return 'Cat-Owner';
     }
+
+    else if (role === 'Doc-Owner' && actions.includes(action)) {
+        return 'Doc-Owner';
+    }
+    
     else{
-        return role;
+        return false
     }
 
 
