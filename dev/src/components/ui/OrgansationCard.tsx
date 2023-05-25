@@ -38,6 +38,7 @@ import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
+import InviteModal from "./InviteModal";
 
 const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
       const token = useToken()
@@ -82,6 +83,7 @@ const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
                         </PopoverTrigger>
                         <PopoverContent className="w-auto flex flex-col px-0 ">
 
+<InviteModal></InviteModal>
 
 <AlertDialog>
   <AlertDialogTrigger>

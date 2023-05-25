@@ -37,6 +37,7 @@ import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
+import InviteModal from "./InviteModal";
 
 const CategoryCard = ({Id,Cat,Name,Org,Owner}:Catergory) => {
     const token = useToken()
@@ -80,7 +81,7 @@ const CategoryCard = ({Id,Cat,Name,Org,Owner}:Catergory) => {
                         </PopoverTrigger>
                         <PopoverContent className="w-auto flex flex-col px-0 ">
 
-
+<InviteModal></InviteModal>
 <AlertDialog>
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">

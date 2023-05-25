@@ -38,6 +38,7 @@ import {Documents} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery ,CascadeDelete} from "@/shared/utils/crud"
+import InviteModal from "./InviteModal";
 
 const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,Name}:Documents) => {
     const token = useToken()
@@ -88,6 +89,7 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
                         <PopoverContent className="w-auto flex flex-col px-0 ">
 
 
+<InviteModal></InviteModal>
 <AlertDialog>
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
