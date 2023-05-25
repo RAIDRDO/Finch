@@ -129,10 +129,25 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
   if (level =="ORG"){
     const cats = await ReadQuery(constructUrl(config.ListNames.Catergory,undefined,undefined,`Org eq '${UUID}'`))
     const docs = await ReadQuery(constructUrl(config.ListNames.Documents,undefined,undefined,`Organisation eq '${UUID}'`))
+    const orgperm = await ReadQuery(constructUrl(config.ListNames.Permissions,undefined,undefined,`Resource eq '${UUID}'`))
+
+    orgperm.forEach(async (perm:any) => {
+      await deleteQuery(config.ListNames.Permissions,perm.Id,token)
+    })
+
     cats.forEach(async (cat:any) => {
       await deleteQuery(config.ListNames.Catergory,cat.Id,token)
+      const catperm = await ReadQuery(constructUrl(config.ListNames.Permissions,undefined,undefined,`Resource eq '${cat.Cat}'`))
+      catperm.forEach(async (perm:any) => {
+        await deleteQuery(config.ListNames.Permissions,perm.Id,token)
+      })
+
     })
     docs.forEach(async (doc:any) => {
+      const docperm = await ReadQuery(constructUrl(config.ListNames.Permissions,undefined,undefined,`Resource eq '${doc.Document}'`))
+      docperm.forEach(async (perm:any) => {
+        await deleteQuery(config.ListNames.Permissions,perm.Id,token)
+      })
       const sections = await ReadQuery(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${doc.Document}'`))
       sections.forEach(async (section:any) => {
         await deleteQuery(config.ListNames.Sections,section.Id,token)
@@ -143,8 +158,16 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
   }
 
   else if (level =="CAT"){
+    const catperm = await ReadQuery(constructUrl(config.ListNames.Permissions,undefined,undefined,`Resource eq '${UUID}'`))
+    catperm.forEach(async (perm:any) => {
+        await deleteQuery(config.ListNames.Permissions,perm.Id,token)
+      })
     const docs = await ReadQuery(constructUrl(config.ListNames.Documents,undefined,undefined,`Catergory eq '${UUID}'`))
     docs.forEach(async (doc:any) => {
+      const docperm = await ReadQuery(constructUrl(config.ListNames.Permissions,undefined,undefined,`Resource eq '${doc.Document}'`))
+      docperm.forEach(async (perm:any) => {
+        await deleteQuery(config.ListNames.Permissions,perm.Id,token)
+      })
       const sections = await ReadQuery(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${doc.Document}'`))
       sections.forEach(async (section:any) => {
         await deleteQuery(config.ListNames.Sections,section.Id,token)
@@ -152,8 +175,13 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
       await deleteQuery(config.ListNames.Documents,doc.Id,token)
     }
     )
+    
   }
   else if (level =="DOC"){
+    const docperm = await ReadQuery(constructUrl(config.ListNames.Permissions,undefined,undefined,`Resource eq '${UUID}'`))
+      docperm.forEach(async (perm:any) => {
+        await deleteQuery(config.ListNames.Permissions,perm.Id,token)
+      })
     const sections = await ReadQuery(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${UUID}'`))
     sections.forEach(async (section:any) => {
       await deleteQuery(config.ListNames.Sections,section.Id,token)
