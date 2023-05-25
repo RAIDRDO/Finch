@@ -34,6 +34,7 @@ import { useQuery } from "react-query";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import useUser from "@/shared/utils/crud/useUser"
 import { get } from "lodash";
+import { ScrollArea } from "@/components/ui/scroll-area";
 export default function Home() {
   const [user,setUser] = useContext(AuthContext)
   const navigate = useNavigate()
@@ -184,7 +185,7 @@ onSuccess(data) {
             <div className="border"></div>
             {GetDocuments.isSuccess?
             
-            <div className="flex flex-row justify-evenly">
+            <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden">
               {Documents?.map((item:any)=>{
                 return <DocumentCard key={item.Document} {...item}></DocumentCard>
               })}
@@ -209,7 +210,9 @@ onSuccess(data) {
             </div>
             <div className="border"></div>
             {GetOrgnisations.isSuccess?
-            <div className="flex flex-row justify-evenly">
+            <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden">
+
+                
             {
             OrgData?.map((item:any)=>{
                           console.log(OrgData)

@@ -121,6 +121,19 @@ export const ResolveRole = (role:string,action:string):any => {
     else if (role === 'Doc-Owner' && actions.includes(action)) {
         return 'Doc-Owner';
     }
+
+    else if (role === 'Org-Contributor' && actions.includes(action)) {
+        return 'Org-Contributor';
+    }
+
+    else if (role === 'Cat-Contributor' && actions.includes(action)) {
+        return 'Cat-Contributor';
+    }
+
+    else if (role === 'Doc-Contributor' && actions.includes(action)) {
+        return 'Doc-Contributor';
+    }
+    
     
     else{
         return false
