@@ -9,7 +9,7 @@ async function Mermaid(theme, instances) {
   const diag = instances.map((ins) => {
     const code = ins[0];
     const id = "mermaid" + Math.random().toString(36).slice(2);
-    console.log(code);
+    // console.log(code);
     mermaid.initialize({ theme: theme });
     const div = document.createElement("div");
     const diagram = mermaid.render(id, code).then((value) => {
@@ -25,7 +25,7 @@ async function Mermaid(theme, instances) {
 const remarkMermaid = function remarkMermaid({ theme = "default" } = {}) {
   return (ast) => {
     const instances = [];
-    console.log(instances);
+    // console.log(instances);
 
     // find all instances of md code blocks with mermaid language tag in abstract syntax tree
     visit(ast, { type: "code", lang: "mermaid" }, (node, index, parent) => {
@@ -42,7 +42,7 @@ const remarkMermaid = function remarkMermaid({ theme = "default" } = {}) {
       try {
         const code = ins[0];
         const id = "mermaid" + Math.random().toString(36).slice(2);
-        console.log(code);
+        // console.log(code);
         mermaid.initialize({ theme: theme });
         const diagram = mermaid.render(id, code);
         div.innerHTML = `<div>${diagram}</div>`;
@@ -55,7 +55,7 @@ const remarkMermaid = function remarkMermaid({ theme = "default" } = {}) {
     // const results = Mermaid(theme,instances)
     instances.forEach(([, index, parent], i) => {
       let value = results[i];
-      console.log(parent);
+      // console.log(parent);
       parent.children.splice(index, 1, {
         type: "html",
         value,

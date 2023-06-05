@@ -62,7 +62,7 @@ const Editor = () => {
       })
   }
   },)
-  console.log(GetDrafts)
+  // console.log(GetDrafts)
 
     const addCell = (DraftId:string) => {
         SaveCells()

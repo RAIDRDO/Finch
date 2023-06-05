@@ -52,10 +52,10 @@ export default function Organization() {
   const GetOrgnisations = useQuery({enabled:getPermissions.isSuccess,queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,`org eq '${params.OrgId}'`))
 ,onSuccess(data) {
-    console.log("orgdata",data)
+    // console.log("orgdata",data)
     setOrgData(data.value[0])
-    console.log("check org data")
-    console.log(OrgData)
+    // console.log("check org data")
+    // console.log(OrgData)
 }
 },)
  const GetCatergories = useQuery({enabled:getPermissions.isSuccess,queryKey:["Catergories"]

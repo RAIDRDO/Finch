@@ -215,7 +215,7 @@ onSuccess(data) {
                 
             {
             OrgData?.map((item:any)=>{
-                          console.log(OrgData)
+                          // console.log(OrgData)
 
                           return     <OrgansationCard key={item.org} {...item}></OrgansationCard>
 
