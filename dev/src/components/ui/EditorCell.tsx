@@ -55,6 +55,7 @@ type Checked = DropdownMenuCheckboxItemProps["checked"]
 const EditorCell = ({Cellprop,Delete,Edit}:any) => {
 
     const [IsEdit, setIsEdit] = useState<boolean>(false);
+    const [viewOnly, setviewOnly] = useState<boolean>(false);
     const [Classification, setClassification] = useState("");
     useEffect(() => {
         if (Cellprop.Content == "") {
@@ -125,7 +126,7 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
 
 
         
-        <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer" onClick={()=>Delete(Cellprop.Section)}>
+        <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer" onClick={()=>Delete(Cellprop.Change)}>
                             <p className="">
                             Delete Cell 
                             </p>
@@ -141,7 +142,7 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
               
          </div>
 
-         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Section,e)}}  />
+         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Change,e)}}  />
  
         </div> : 
         

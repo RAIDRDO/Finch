@@ -264,12 +264,13 @@ function seedChanges(token:string,DocumentId:string,UserIds:string[],Changes:any
 Changes.map((items:any)=>{
 const changes:Changes = {
 Change:uuidv4(),
+Draft:uuidv4(),
+CurrentCommit:"",
 Document:DocumentId,
 Section:items[0].SectionId,
 Content:items[0].changedContent,
-ChangedAt:Date(),
-User:UserIds[Math.floor(Math.random()*UserIds.length)],
-Diff:items[1].diff
+CreatedAt:Date(),
+EditedAt:Date(),
 }
 
 

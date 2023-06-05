@@ -14,6 +14,7 @@ import { useContext,useEffect } from 'react';
 import { constructReadQueryFn } from './shared/utils/crud';
 import { useQuery } from 'react-query';
 import { config } from './config';
+import Viewer from './pages/Viewer';
 const AppRoutes = () => {
     const url = config.apiUrl + `web/getuserbyid('2')`;
     const user = useQuery({enabled:true,queryKey:["user"],queryFn:constructReadQueryFn(url), onSuccess(data) {
@@ -32,7 +33,9 @@ const AppRoutes = () => {
 
           <Route path='/documents' element={<Documents />} /> 
           <Route path='/merges' element={<Merges />} />
-          <Route path='/editor/:DocId' element={<Editor />} />
+          <Route path='/editor/:DraftId' element={<Editor />} />
+          <Route path='/viewer/:DocId' element={<Viewer/>} />
+
           <Route path='/test' element={<Test></Test>} />
         </Routes>
 

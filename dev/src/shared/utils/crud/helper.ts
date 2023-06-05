@@ -1,5 +1,5 @@
 import { ResourcePermissions } from "@/shared/types";
-
+import {createPatch,parsePatch} from "diff"
 export const ResolvePermissions = (role: string):ResourcePermissions => {
     const permissions:ResourcePermissions = {
         OrgViewer:false,
@@ -141,3 +141,12 @@ export const ResolveRole = (role:string,action:string):any => {
 
 
 }
+
+
+
+export const CreateCommit = (name:string,original:string,changes:string)=>{
+const DiffStr = createPatch(name, original, changes);
+const Patch = parsePatch(DiffStr);
+return { DiffStr: DiffStr ,Patch:Patch};
+} 
+

@@ -104,6 +104,7 @@
     "@faker-js/faker": "^7.6.0",
     "@tailwindcss/typography": "^0.5.9",
     "@types/crypto-js": "^4.1.1",
+    "@types/diff": "^5.0.3",
     "@types/lodash": "^4.14.192",
     "@types/object-inspect": "^1.8.1",
     "@types/uuid": "^9.0.1"

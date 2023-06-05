@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useContext} from 'react';
 import EditorCell from "@/components/ui/EditorCell";
-import {CellProps,Sections} from '@/shared/types' 
+import {ChangesProps,Sections,Changes,Commit} from '@/shared/types' 
 import { PlusCircle,ArrowLeft } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { faker } from '@faker-js/faker';
@@ -28,6 +28,10 @@ import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import useToken from "@/shared/utils/crud/useToken";
 import CryptoJS from 'crypto-js';
 import MarkdownCell from '@/components/ui/MarkdownCell';
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
+import { CreateCommit } from '@/shared/utils/crud/helper';
+import { User } from 'lucide-react';
+import { set } from 'lodash';
 
 
 interface IsEdited{
@@ -37,69 +41,129 @@ interface IsEdited{
 interface IsEditeds extends Array<IsEdited>{}
 
 const Editor = () => {
+    const [user,setUser] = useContext(AuthContext)
+
     const token = useToken()
     const navigate = useNavigate()
     const params = useParams();
     const queryClient = useQueryClient()
-    const [Cells, setCells] = useState<CellProps>([]);
+    const [Cells, setCells] = useState<ChangesProps>([]);
     const [IsEdited, setIsEdited] = useState<any>({});
-    const GetDocuments = useQuery({queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${params.DocId}'`))})
-    const GetSections = useQuery({queryKey:["Sections"]
-    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${params.DocId}'`))
+    const [Staged, setStaged] = useState<any>({});
+    const GetDrafts = useQuery({queryKey:["Drafts"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`))})
+    const GetSections = useQuery({queryKey:["Changes"]
+    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Changes,undefined,undefined,`Draft eq '${params.DraftId}'`))
   ,onSuccess(data) {
       setCells(data.value)
+      data.value.map((cell:Changes) => {
+        const unstaged:any = {}
+        unstaged[cell.Change] = {original:cell.Content,new:""}
+        setStaged((prevState:any)=>({...prevState,...unstaged}))
+      })
   }
   },)
+  console.log(GetDrafts)
 
-    const addCell = (DocId:string) => {
+    const addCell = (DraftId:string) => {
         SaveCells()
-        const CellData:Sections = {
+        const CellData:Changes = {
+            Change:uuidv4(),
             Section:uuidv4(),
-            Document:DocId,
+            Document:GetDrafts.data.value[0].Document,
+            Draft:DraftId,
             Content:"",
             CreatedAt:Date(),
             EditedAt:"",
+            CurrentCommit:"",
             }
-        const payload = {
+        const NewCellpayload = {
            __metadata:{
-        type: `SP.Data.${config.ListNames.Sections}ListItem`,
+        type: `SP.Data.${config.ListNames.Changes}ListItem`,
 
     },
       
       ...CellData
       }
-      const res = createQuery(config.ListNames.Sections,payload,token.data.FormDigestValue).then((res) => {
-        queryClient.invalidateQueries("Sections")
+      const res = createQuery(config.ListNames.Changes,NewCellpayload,token.data.FormDigestValue).then((res) => {
+        queryClient.invalidateQueries("Changes")
         return res
       })
+
+      const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,"","")
+      const commit:Commit = {
+        CommitKey:uuidv4(),
+        Document:GetDrafts.data.value[0].Document,
+        Draft:params.DraftId!,
+        Section:CellData.Section,
+        Change:CellData.Change,
+        Patch:JSON.stringify(DiffPatch.Patch),
+        Diff:DiffPatch.DiffStr,
+        CommitMsg:"Initial Commit",
+        CommittedAt:Date(),
+        User:user?.Id,
+      }
+      const CommitPayload = {
+        __metadata:{
+      type: `SP.Data.${config.ListNames.Commits}ListItem`,
+  },
+  ...commit
+  }
+   createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue)
+
+
+
       try {
-        
         return res
       } catch (error) {
         console.log(error)
       }        
     }
 
-    const  DeleteCell = (SectionId: string) =>{
+    const  DeleteCell = (ChangeId: string) =>{
         SaveCells()
-        const deleteCell:Sections = Cells.filter((cell) => cell.Section == SectionId)[0];
-        deleteQuery(config.ListNames.Sections,deleteCell.Id!,token.data.FormDigestValue).then(() => {
-        queryClient.invalidateQueries("Sections")
+        const deleteCell:Changes = Cells.filter((cell:any) => cell.Change == ChangeId)[0];
+        const stage = Staged[ChangeId]
+        const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,stage.original,"")
+        const commit = {
+            CommitKey:uuidv4(),
+            Document:deleteCell.Document,
+            Draft:deleteCell.Draft,
+            Section:deleteCell.Section,
+            Change:deleteCell.Change,
+            Patch:JSON.stringify(DiffPatch.Patch),
+            Diff:DiffPatch.DiffStr,
+            CommitMsg:"Delete Cell",
+            CommittedAt:Date(),
+            User:user?.Id,
+          }
+          const CommitPayload = {
+            __metadata:{
+          type: `SP.Data.${config.ListNames.Commits}ListItem`,
+      },
+      ...commit
+      }
+        deleteQuery(config.ListNames.Changes,deleteCell.Id!,token.data.FormDigestValue).then(() => {
+        queryClient.invalidateQueries("Changes")
         })
+        createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue)
+
         
     }
 
-    const EditCell = (SectionId: string,Content:string ) =>{
-        const editedCell = Cells.filter((cell) => cell.Section == SectionId)[0];
+    const EditCell = (ChangeId: string,Content:string ) =>{
+        const editedCell = Cells.filter((cell:any) => cell.Change == ChangeId)[0];
         const index = Cells.indexOf(editedCell);
         editedCell.Content = Content
         editedCell.EditedAt = Date()
         Cells[index]=editedCell;
-        if (IsEdited[SectionId] == undefined){
+        if (IsEdited[ChangeId] == undefined){
             const edited:any = {}
-            edited[SectionId] = {Edited:true}
+            edited[ChangeId] = {Edited:true}
             setIsEdited((prevState:any)=>({...prevState,...edited}))
         }
+        const stage:any = Staged[ChangeId]
+        stage.new = Content
+        setStaged((prevState:any)=>({...prevState,...stage}))
 
 
         setCells(Cells)
@@ -108,28 +172,53 @@ const Editor = () => {
         const  {Id,Old_Id,...NewData} = data
         return NewData
     }
-    const FilterEdited = (Cells:CellProps) =>{
-        const filtered = Cells.filter((cell) =>  Object.keys(IsEdited).includes(cell.Section))
+    const FilterEdited = (Cells:ChangesProps) =>{
+        const filtered = Cells.filter((cell) =>  Object.keys(IsEdited).includes(cell.Change))
         return filtered
     }
 
     const SaveCells = () =>{
             const EditedCells = FilterEdited(Cells)
-            EditedCells.map((cell:Sections) => {
+            EditedCells.map((cell:Changes) => {
                 const data = filterDataPayload(cell)
+                const StagedChanges = Staged[cell.Change]
+                const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original,StagedChanges.new)
+                const commit:Commit = {
+                  CommitKey:uuidv4(),
+                  Document:cell.Document,
+                  Draft:cell.Draft,
+                  Section:cell.Section,
+                  Change:cell.Change,
+                  Patch:JSON.stringify(DiffPatch.Patch),
+                  Diff:DiffPatch.DiffStr,
+                  CommitMsg:"updated Cell",
+                  CommittedAt:Date(),
+                  User:user?.Id,
+                }
+                const CommitPayload = {
+                  __metadata:{
+                type: `SP.Data.${config.ListNames.Commits}ListItem`,
+            },
+            ...commit
+            }
                 const payload = {
                     __metadata:{
-                 type: `SP.Data.${config.ListNames.Sections}ListItem`,
+                 type: `SP.Data.${config.ListNames.Changes}ListItem`,
              
              },
                
                ...data
                }
-               updateQuery(config.ListNames.Sections,cell.Id,payload,token.data.FormDigestValue).then(() => {
-                queryClient.invalidateQueries("Sections")
+               updateQuery(config.ListNames.Changes,cell.Id,payload,token.data.FormDigestValue).then(() => {
+                queryClient.invalidateQueries("Changes")
               }).then(() => {
                 setIsEdited({})
               })
+              createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue).then(() => {
+                setStaged({})
+              })
+
+
               try {
                 
               } catch (error) {
@@ -254,7 +343,7 @@ const Editor = () => {
         ))}
         </div>
 
-        <PlusCircle className='mt-2 text-slate-400 hover:text-slate-500 hover:cursor-pointer' size={32} onClick={()=>{addCell(params.DocId!)}} />
+        <PlusCircle className='mt-2 text-slate-400 hover:text-slate-500 hover:cursor-pointer' size={32} onClick={()=>{addCell(params.DraftId!)}} />
         </div>
 
 

@@ -34,13 +34,13 @@ import { MoreVertical , X ,Calendar} from "lucide-react"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 
 import { cn } from "@/lib/utils"
-import {Documents} from "@/shared/types"
+import {Drafts} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery ,CascadeDelete} from "@/shared/utils/crud"
 import InviteModal from "./InviteModal";
 
-const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,Name}:Documents) => {
+const DraftCard = ({Id,Draft,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,CurrentVersion,Name}:Drafts) => {
     const token = useToken()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
@@ -65,13 +65,13 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
             </div> */}
             <Card className="w-[270px] ">
                 <CardContent>
-                    <div className="w-[200px] h-[200px] hover:cursor-pointer" onClick={()=>navigate(`/viewer/${Document}`)}>
+                    <div className="w-[200px] h-[200px] hover:cursor-pointer" onClick={()=>navigate(`/editor/${Draft}`)}>
                         
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-row justify-between px-5">
                     <div className="flex flex-col">
-                    <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/viewer/${Document}`)}>{Name}</h1>
+                    <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/editor/${Draft}`)}>{Name}</h1>
                     <div className="flex flex-row items-center text-slate-500 mt-1">
                         <Calendar className="w-3 h-3 mr-1"></Calendar>
                         <p className="text-sm">{Date.parse(EditedAt)}</p>
@@ -94,7 +94,7 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
                             <p className="">
-                            Delete Document 
+                            Delete Draft 
                             </p>
                             <X className="w-5 h-5  ml-1" />
                             </div>
@@ -109,7 +109,7 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
     </AlertDialogHeader>
     <AlertDialogFooter>
       <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={()=>Delete(Id!)}>Delete Document</AlertDialogAction>
+      <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={()=>Delete(Id!)}>Delete Draft</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>
@@ -127,4 +127,4 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
      );
 }
  
-export default DocumentCard;
+export default DraftCard;

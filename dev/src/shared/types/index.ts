@@ -31,6 +31,10 @@ export interface Documents{
   CurrentMerge:string
   Name:string
 }
+export interface Drafts extends Documents{
+  Draft:string,
+  CurrentVersion:number,
+}
 
 
 export interface Sections{
@@ -42,17 +46,17 @@ export interface Sections{
   EditedAt:string,
 }
 
+
+export interface Changes extends Sections{
+  Draft:string,
+  Change:string,
+  CurrentCommit:string,
+
+}
 export interface CellProps extends Array<Sections> {}
 
-export interface Changes{
-  Change:string,
-  Section:string,
-  Document:string,
-  Content:string,
-  ChangedAt:string,
-  User:string
-  Diff:string
-}
+export interface  ChangesProps extends Array<Changes> {}
+
 
 
 export interface Commits{
@@ -65,6 +69,19 @@ export interface Commits{
 
 }
 
+export interface Commit {
+  Id?:number,
+  CommitKey:string,
+  Document:string,
+  Draft:string,
+  Section:string,
+  Change:string,
+  Patch:any,
+  Diff:string,
+  CommittedAt:string,
+  CommitMsg:string,
+  User:number
+}
 
 
 export interface Merges{

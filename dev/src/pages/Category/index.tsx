@@ -34,6 +34,7 @@ import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import {useContext} from "react";
 import { ResolveRole,ResolvePermissions } from "@/shared/utils/crud/helper";
+import DraftCard from "@/components/ui/DraftCard";
 
 export default function Category() {
   const [user,setUser] = useContext(AuthContext)
@@ -44,6 +45,7 @@ export default function Category() {
   const [DocumentName, setDocumentName] = useState("");
   const [Catergories, setCatergories] = useState<any>();
   const [Documents, setDocuments] = useState<any>();
+  const [Drafts, setDrafts] = useState<any>();
   const getPermissions= useQuery({enabled:!!user?.Id , queryKey:["Permissions"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.CatId}') and (User eq ${user?.Id})`))})
    const GetCatergories = useQuery({enabled:getPermissions.isSuccess,queryKey:["Catergories"]
@@ -58,7 +60,13 @@ export default function Category() {
 ,onSuccess(data) {
   setDocuments(data.value)
 }
-},) 
+},)
+const GetDrafts = useQuery({enabled:getPermissions.isSuccess,queryKey:["Drafts"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Catergory eq '${params.CatId}'`))
+,onSuccess(data) {
+  setDrafts(data.value)
+}
+},)  
 
 
    const AddDocument = (Documentsdata:Documents)=> {
@@ -163,7 +171,7 @@ export default function Category() {
             </div>
             <div className="flex flex-row space-x-1">
                     <div className="text-slate-400 font-semibold hover:underline hover:text-slate-500 hover:cursor-pointer">
-                        <p>Organization name</p>
+                        <p>{Catergories?.Name}</p>
                     </div>
                     
             </div>
@@ -172,6 +180,35 @@ export default function Category() {
               {
                 Documents?.map((data:any)=>{
                   return <DocumentCard key={data.Document} {...data} ></DocumentCard>
+
+                })
+              }
+
+
+            </div>
+        </div>
+
+       
+      </div>
+    </div>
+       <div>
+      <div className="flex flex-col mt-10 mx-20 space-y-12">
+         <div className="flex flex-col space-y-4">
+            <div className="flex flex-row justify-between">
+              <p className="font-bold text-xl">Drafts</p>
+            
+            </div>
+            <div className="flex flex-row space-x-1">
+                    <div className="text-slate-400 font-semibold hover:underline hover:text-slate-500 hover:cursor-pointer">
+                        <p>{Catergories?.Name}</p>
+                    </div>
+                    
+            </div>
+            <div className="border"></div>
+            <div className="flex flex-row justify-evenly">
+              {
+                Drafts?.map((data:any)=>{
+                  return <DraftCard key={data.Draft} {...data} ></DraftCard>
 
                 })
               }
