@@ -7,6 +7,7 @@ export const config = {
               Changes:"Changes",
             Commits:"Commits",
           Merges:"Merges",
+          MergeRequests:"MergeRequests",
         Users:"Users",
       Permissions:"Permissions",
       Organisation:"Organisations",

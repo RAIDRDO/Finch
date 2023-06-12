@@ -240,12 +240,12 @@ const Editor = () => {
         Merge:uuidv4(),
         ...commit,
         CreatedAt:Date(),
-        SummitedBy:user?.Id,
-        MergeMsg:""
+        CreatedBy:user?.Id,
         
       }
       return Merge
       })
+      const MergeIds  = Merges.map((merge:any) => merge.Merge)
       
       Merges.forEach((merge:any) => {
         const payload = {
@@ -257,6 +257,27 @@ const Editor = () => {
         }
         createQuery(config.ListNames.Merges,payload,token.data.FormDigestValue)
       })
+
+      const MergeRequest = {
+        MergeRequest:uuidv4(),
+        Merges:JSON.stringify(MergeIds),
+        Document:Merges[0].Document,
+        Draft:Merges[0].Draft,
+        SubmittedBy:user?.Id,
+        SubmittedDate:Date(),
+        ApporvedBy:"",
+        ApprovalDate:"",
+        MergeMsg:"",
+      }
+
+      const payload = {
+        __metadata:{
+      type: `SP.Data.${config.ListNames.MergeRequests}ListItem`,
+
+      },
+      ...MergeRequest
+      }
+      createQuery(config.ListNames.MergeRequests,payload,token.data.FormDigestValue)
 
     }
 
