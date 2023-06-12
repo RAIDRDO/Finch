@@ -150,3 +150,51 @@ const Patch = parsePatch(DiffStr);
 return { DiffStr: DiffStr ,Patch:Patch};
 } 
 
+
+export const groupBy = (items:any, key:any) =>
+  items.reduce(
+    (result:any, item:any) => ({
+      ...result,
+      [item[key]]: [...(result[item[key]] || []), item],
+    }),
+    {}
+  );
+
+export const FormatPatches = (groupedBy:any)=>{
+    return Object.keys(groupedBy).map((key)=>{
+        const patches:any = []
+        const diffs:any = []
+        const Commits:any = []
+        let  Document = ""
+        let Draft =""
+        let Change = ""
+        let Action =""
+        groupedBy[key].map((patch:any)=>{
+            patches.push(JSON.parse(patch.Patch))
+            diffs.push(patch.Diff);
+            Commits.push(patch.CommitKey)
+            Document = patch.Document;
+            Draft = patch.Draft;
+            Change = patch.Change;
+            Action = patch.CommitType
+
+
+        })
+        const Merge = {
+          Document : Document,
+          Draft:Draft,
+          Change:Change,
+          Section: key,
+          Commits:JSON.stringify(Commits),
+          Patches : JSON.stringify(patches),
+          Diffs : JSON.stringify(diffs),
+          LastAction:Action
+
+        };
+
+        return Merge;
+
+
+
+})
+} 

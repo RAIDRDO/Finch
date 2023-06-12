@@ -20,10 +20,11 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar"
 import { config } from "@/config";
-
+import Diff from "diff"
 import { Input } from "@/components/ui/input"
 import { useQuery ,useQueryClient} from "react-query";
-import { constructReadQueryFn, constructUrl, createQuery ,deleteQuery,updateQuery} from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery ,deleteQuery,updateQuery,ReadQuery} from "@/shared/utils/crud";
+import { groupBy,FormatPatches } from '@/shared/utils/crud/helper';
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import useToken from "@/shared/utils/crud/useToken";
 import CryptoJS from 'crypto-js';
@@ -32,7 +33,10 @@ import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { CreateCommit } from '@/shared/utils/crud/helper';
 import { User } from 'lucide-react';
 import { set } from 'lodash';
-
+import { Button } from '@/components/ui/button';
+import { read } from 'fs';
+import { format } from 'path';
+import Merges from '../Merges';
 
 interface IsEdited{
     Edited?:boolean
@@ -98,7 +102,7 @@ const Editor = () => {
         Change:CellData.Change,
         Patch:JSON.stringify(DiffPatch.Patch),
         Diff:DiffPatch.DiffStr,
-        CommitMsg:"Initial Commit",
+        CommitType:"create",
         CommittedAt:Date(),
         User:user?.Id,
       }
@@ -132,7 +136,7 @@ const Editor = () => {
             Change:deleteCell.Change,
             Patch:JSON.stringify(DiffPatch.Patch),
             Diff:DiffPatch.DiffStr,
-            CommitMsg:"Delete Cell",
+            CommitType:"delete",
             CommittedAt:Date(),
             User:user?.Id,
           }
@@ -191,7 +195,7 @@ const Editor = () => {
                   Change:cell.Change,
                   Patch:JSON.stringify(DiffPatch.Patch),
                   Diff:DiffPatch.DiffStr,
-                  CommitMsg:"updated Cell",
+                  CommitType:"edit",
                   CommittedAt:Date(),
                   User:user?.Id,
                 }
@@ -228,15 +232,120 @@ const Editor = () => {
             })
 
     }
+    const  CreateMergeRequest = async () =>{
+      const commits = await ReadQuery(constructUrl(config.ListNames.Commits,undefined,undefined,`Draft eq '${params.DraftId}'`))
+      const formattedCommits = FormatPatches(groupBy(commits,"Section"))
+      const Merges = formattedCommits.map((commit:any) => {
+        const Merge = {
+        Merge:uuidv4(),
+        ...commit,
+        CreatedAt:Date(),
+        SummitedBy:user?.Id,
+        MergeMsg:""
+        
+      }
+      return Merge
+      })
+      
+      Merges.forEach((merge:any) => {
+        const payload = {
+          __metadata:{
+       type: `SP.Data.${config.ListNames.Merges}ListItem`,
+          }
+          ,
+          ...merge
+        }
+        createQuery(config.ListNames.Merges,payload,token.data.FormDigestValue)
+      })
+
+    }
+
+const Merge = async (DocId:string,DraftId:string) =>{
+      const Draft = await ReadQuery(
+  constructUrl(config.ListNames.Commits, undefined, undefined, `Draft eq "${DraftId}"`)
+).then((data) => {
+  return FormatPatches(groupBy(data, "Section"));
+});
+
+
+const Doc:any[] = await ReadQuery(
+  constructUrl(config.ListNames.Sections, undefined, undefined, `Document eq "${DocId}"`)
+).then((data) =>{ return data});
+//fill newly created changes into sections 
+
+
+const DocKeys = Doc.map((section:any) => {
+  return section.Section;
+});
+for (const Commit in Draft) {
+   if (Doc.some((Section:any) => Section.Section == Draft[Commit].Section) == false) {
+     Doc.push({
+       Section: Draft[Commit].Section,
+       Document: Draft[Commit].Document,
+       Content: "",
+       CreatedAt: Date(),
+       EditedAt: "",
+     });
+   }
+}
+
+
+// apply all patches and merge content 
+for (const section in Doc){
+  const Commit = Draft.filter((c)=>{
+    return  c.Section == Doc[section].Section })[0]
+  let new_content = Doc[section].Content
+  JSON.parse(Commit.Patches).forEach((Patch:any)=>{
+    new_content = Diff.applyPatch(new_content,Patch);
+  })
+  Doc[section].Content = new_content;
+  Doc[section].EditedAt = Date();
+
+}
+
+//bucket sections into crud type 
+const crud:any = {
+  create:[],
+  update:[],
+  delete:[]
+}
+
+for (const section in Doc ){
+  const commit = Draft.filter(
+        (commits) => commits.Section == Doc[section].Section
+      )[0]
+  if (Doc[section].Id == null) {
+    if (commit.LastAction != "delete"){
+      crud.create.push(Doc[section]);
+    }
+  else{
+    if (commit.LastAction == "delete"){
+      crud.delete.push(Doc[section]);
+
+  }
+   else if (commit.LastAction =="edit"){
+    crud.update.push(Doc[section]);
+   }
+
+
+  }
+}
+
+
+}
+
+
+    }
 
 
     return ( 
     <div>
-      <div className='flex flex-row items-center mt-4 ml-4'>
-        <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900'></ArrowLeft>
+    <div className='flex flex-row justify-between items-center'>
+
+    <div className='flex flex-row items-center mt-4 ml-4'>
+    <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900'></ArrowLeft>
     <div className=' flex flex-col'>
     <Input className='w-36 ml-3' disabled></Input>
-
     <Menubar className='border-none'>
       <MenubarMenu>
         <MenubarTrigger>File</MenubarTrigger>
@@ -328,8 +437,15 @@ const Editor = () => {
       </MenubarMenu>
     </Menubar>
     </div>
+     
 
       </div>
+          <div className='mr-8'>
+        <Button onClick={()=>CreateMergeRequest()} > Create Merge Request </Button>
+      </div>
+  </div>
+
+  
    
         <div className="flex flex-row justify-center">
         <div className='flex flex-col w-9/12  items-center'>

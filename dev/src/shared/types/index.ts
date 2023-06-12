@@ -79,7 +79,7 @@ export interface Commit {
   Patch:any,
   Diff:string,
   CommittedAt:string,
-  CommitMsg:string,
+  CommitType:string,
   User:number
 }
 

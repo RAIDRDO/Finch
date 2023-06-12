@@ -96,7 +96,7 @@ const Viewer = () => {
             Patch:JSON.stringify(PatchDiff.Patch),
             Diff:PatchDiff.DiffStr,
             CommittedAt:Date(),
-            CommitMsg:"initial commit",
+            CommitType:"create",
             User: user?.Id
 
             
@@ -137,8 +137,8 @@ const Viewer = () => {
 
     return ( 
         <div>
-            <div className='flex flex-row justify-between items-center'>
-                     <div className='flex flex-row items-center  mt-4 ml-4'>
+        <div className='flex flex-row justify-between items-center'>
+      <div className='flex flex-row items-center  mt-4 ml-4'>
         <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900'></ArrowLeft>
     <div className=' flex flex-col'>
     <Input className='w-36 ml-3'  disabled></Input>
