@@ -20,7 +20,7 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar"
 import { config } from "@/config";
-import Diff from "diff"
+import {applyPatch} from "diff"
 import { Input } from "@/components/ui/input"
 import { useQuery ,useQueryClient} from "react-query";
 import { constructReadQueryFn, constructUrl, createQuery ,deleteQuery,updateQuery,ReadQuery} from "@/shared/utils/crud";
@@ -296,7 +296,7 @@ for (const section in Doc){
     return  c.Section == Doc[section].Section })[0]
   let new_content = Doc[section].Content
   JSON.parse(Commit.Patches).forEach((Patch:any)=>{
-    new_content = Diff.applyPatch(new_content,Patch);
+    new_content = applyPatch(new_content,Patch);
   })
   Doc[section].Content = new_content;
   Doc[section].EditedAt = Date();
