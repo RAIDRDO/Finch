@@ -42,6 +42,11 @@ import { config } from "@/config";
 const MergeItem = ({Document,Draft,DocumentName,DraftName,SubmittedDate,MergeMsg}:any) => {
 const token = useToken()
 
+const filterDataPayload = (data:any) =>{
+        const  {Id,Old_Id,...NewData} = data
+        return NewData
+    }
+
 const MergeChanges = async(crud:any)=>{
 crud["create"].forEach((section:any)=>{
   const payload = {
@@ -64,7 +69,8 @@ crud["update"].forEach((section:any)=>{
       
       ...section
       }
-  updateQuery(config.ListNames.Sections,section.Id,payload,token.data.FormDigestValue)
+  const filteredPayload = filterDataPayload(payload)
+  updateQuery(config.ListNames.Sections,section.Id,filteredPayload,token.data.FormDigestValue)
 })
 
 crud["delete"].forEach((section:any)=>{
@@ -79,11 +85,13 @@ const Merge = async (DocId:string,DraftId:string) =>{
   return FormatPatches(groupBy(data, "Section"));
 });
 
+console.log(Draft)
 
 const Doc:any[] = await ReadQuery(
   constructUrl(config.ListNames.Sections, undefined, undefined, `Document eq "${DocId}"`)
 ).then((data) =>{ return data});
 //fill newly created changes into sections 
+console.log(Doc)
 
 
 const DocKeys = Doc.map((section:any) => {
@@ -107,8 +115,15 @@ for (const section in Doc){
   const Commit = Draft.filter((c)=>{
     return  c.Section == Doc[section].Section })[0]
   let new_content = Doc[section].Content
+  console.log(
+    "old content",
+    new_content,
+  )
+  console.log("patches",JSON.parse(Commit.Patches))
   JSON.parse(Commit.Patches).forEach((Patch:any)=>{
+    console.log("patch",Patch)
     new_content = applyPatch(new_content,Patch);
+    console.log("after patch",new_content)
   })
   Doc[section].Content = new_content;
   Doc[section].EditedAt = Date();
@@ -145,7 +160,9 @@ for (const section in Doc ){
 }
 
 }
-MergeChanges(crud)
+console.log("crud",crud)
+
+// MergeChanges(crud)
 }
 
     return ( 
