@@ -170,7 +170,7 @@ onSuccess(data) {
     </Dialog>
          
             <Button className="w-72 h-24 justify-between text-black text-base font-semibold bg-white hover:bg-slate-100 border shadow-sm "> Create Document <FilePlus></FilePlus></Button> 
-            <Button className="w-72 h-24 justify-between text-black  text-base font-semibold bg-white hover:bg-slate-100 border shadow-sm "> Review Merge Request <GitPullRequest></GitPullRequest></Button> 
+            <Button className="w-72 h-24 justify-between text-black  text-base font-semibold bg-white hover:bg-slate-100 border shadow-sm " onClick={()=>navigate('/merges')}> Review Merge Request <GitPullRequest></GitPullRequest></Button> 
         </div>
         <div className="flex flex-col space-y-4">
             <div className="flex flex-row justify-between">

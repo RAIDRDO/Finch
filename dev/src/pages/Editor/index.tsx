@@ -20,7 +20,6 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar"
 import { config } from "@/config";
-import {applyPatch} from "diff"
 import { Input } from "@/components/ui/input"
 import { useQuery ,useQueryClient} from "react-query";
 import { constructReadQueryFn, constructUrl, createQuery ,deleteQuery,updateQuery,ReadQuery} from "@/shared/utils/crud";
@@ -55,6 +54,7 @@ const Editor = () => {
     const [IsEdited, setIsEdited] = useState<any>({});
     const [Staged, setStaged] = useState<any>({});
     const GetDrafts = useQuery({queryKey:["Drafts"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`))})
+    const GetDocument = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${GetDrafts.data?.value[0].Document}'`))})
     const GetSections = useQuery({queryKey:["Changes"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Changes,undefined,undefined,`Draft eq '${params.DraftId}'`))
   ,onSuccess(data) {
@@ -262,7 +262,9 @@ const Editor = () => {
         MergeRequest:uuidv4(),
         Merges:JSON.stringify(MergeIds),
         Document:Merges[0].Document,
+        DocumentName:GetDocument.data.value[0].Name,
         Draft:Merges[0].Draft,
+        DraftName:GetDrafts.data.value[0].Name,
         SubmittedBy:user?.Id,
         SubmittedDate:Date(),
         ApporvedBy:"",
@@ -278,83 +280,6 @@ const Editor = () => {
       ...MergeRequest
       }
       createQuery(config.ListNames.MergeRequests,payload,token.data.FormDigestValue)
-
-    }
-
-const Merge = async (DocId:string,DraftId:string) =>{
-      const Draft = await ReadQuery(
-  constructUrl(config.ListNames.Commits, undefined, undefined, `Draft eq "${DraftId}"`)
-).then((data) => {
-  return FormatPatches(groupBy(data, "Section"));
-});
-
-
-const Doc:any[] = await ReadQuery(
-  constructUrl(config.ListNames.Sections, undefined, undefined, `Document eq "${DocId}"`)
-).then((data) =>{ return data});
-//fill newly created changes into sections 
-
-
-const DocKeys = Doc.map((section:any) => {
-  return section.Section;
-});
-for (const Commit in Draft) {
-   if (Doc.some((Section:any) => Section.Section == Draft[Commit].Section) == false) {
-     Doc.push({
-       Section: Draft[Commit].Section,
-       Document: Draft[Commit].Document,
-       Content: "",
-       CreatedAt: Date(),
-       EditedAt: "",
-     });
-   }
-}
-
-
-// apply all patches and merge content 
-for (const section in Doc){
-  const Commit = Draft.filter((c)=>{
-    return  c.Section == Doc[section].Section })[0]
-  let new_content = Doc[section].Content
-  JSON.parse(Commit.Patches).forEach((Patch:any)=>{
-    new_content = applyPatch(new_content,Patch);
-  })
-  Doc[section].Content = new_content;
-  Doc[section].EditedAt = Date();
-
-}
-
-//bucket sections into crud type 
-const crud:any = {
-  create:[],
-  update:[],
-  delete:[]
-}
-
-for (const section in Doc ){
-  const commit = Draft.filter(
-        (commits) => commits.Section == Doc[section].Section
-      )[0]
-  if (Doc[section].Id == null) {
-    if (commit.LastAction != "delete"){
-      crud.create.push(Doc[section]);
-    }
-  else{
-    if (commit.LastAction == "delete"){
-      crud.delete.push(Doc[section]);
-
-  }
-   else if (commit.LastAction =="edit"){
-    crud.update.push(Doc[section]);
-   }
-
-
-  }
-}
-
-
-}
-
 
     }
 

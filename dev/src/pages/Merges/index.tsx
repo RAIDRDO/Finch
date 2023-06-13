@@ -23,7 +23,22 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { config } from "@/config";
+import { useState ,useContext} from "react";
+import { useQuery } from "react-query";
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
+import { constructReadQueryFn, constructUrl, createQuery,addPermission} from "@/shared/utils/crud";
 export default function Merges() {
+  const [user,setUser] = useContext(AuthContext)
+  const [MergeRequests, setMergeRequests] = useState<any>();
+  const getMergeRequests = useQuery({enabled:!!user,queryKey:["MergeRequests"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.MergeRequests,undefined,undefined,undefined))
+,onSuccess(data) {
+    setMergeRequests(data.value)
+  
+}
+  }
+)
   return (
     <>
     <NavBar></NavBar>
@@ -35,9 +50,10 @@ export default function Merges() {
             </div>
             <div className="border"></div>
             <div className="flex flex-col space-y-2">
-              <MergeItem></MergeItem>
-              <MergeItem></MergeItem>
-              <MergeItem></MergeItem>
+              {MergeRequests?.map((item:any)=>{
+                return <MergeItem{...item}></MergeItem>
+              }
+              )}
             </div>
         </div>
 
