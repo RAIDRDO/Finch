@@ -50,10 +50,11 @@ export default function Merges() {
             </div>
             <div className="border"></div>
             <div className="flex flex-col space-y-2">
-              {MergeRequests?.map((item:any)=>{
-                return <MergeItem{...item}></MergeItem>
-              }
+              {MergeRequests?.map((item:any)=>(
+                <MergeItem {...item} key = {item.MergeRequest}></MergeItem>
+              )
               )}
+              
             </div>
         </div>
 
