@@ -119,12 +119,17 @@ for (const section in Doc){
     "old content",
     new_content,
   )
-  console.log("patches",JSON.parse(Commit.Patches))
-  JSON.parse(Commit.Patches).forEach((Patch:any)=>{
-    console.log("patch",Patch)
-    new_content = applyPatch(new_content,Patch);
-    console.log("after patch",new_content)
-  })
+  console.log("patches",Commit.Patches)
+  // JSON.parse(Commit.Patches).forEach((Patch:any)=>{
+  //   console.log("patch",Patch)
+  //   new_content = applyPatch(new_content,Patch);
+  //   console.log("after patch",new_content)
+  // })
+
+  for (const patch in JSON.parse(Commit.Patches)){
+    console.log("test for loop",JSON.parse(Commit.Patches)[patch])
+    new_content = applyPatch(new_content,JSON.parse(Commit.Patches)[patch])
+  }
   Doc[section].Content = new_content;
   Doc[section].EditedAt = Date();
 
@@ -162,7 +167,7 @@ for (const section in Doc ){
 }
 console.log("crud",crud)
 
-// MergeChanges(crud)
+MergeChanges(crud)
 }
 
     return ( 
