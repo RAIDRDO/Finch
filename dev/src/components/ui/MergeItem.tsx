@@ -48,37 +48,44 @@ const filterDataPayload = (data:any) =>{
     }
 
 const MergeChanges = async(crud:any)=>{
-crud["create"].forEach((section:any)=>{
-  const payload = {
-           __metadata:{
-        type: `SP.Data.${config.ListNames.Sections}ListItem`,
+try{
+  crud["create"].forEach((section:any)=>{
+    const payload = {
+             __metadata:{
+          type: `SP.Data.${config.ListNames.Sections}ListItem`,
+  
+      },
+        
+        ...section
+        }
+    createQuery(config.ListNames.Sections,payload,token.data.FormDigestValue)
+  })
+  
+  crud["update"].forEach((section:any)=>{
+    const payload = {
+             __metadata:{
+          type: `SP.Data.${config.ListNames.Sections}ListItem`,
+  
+      },
+        
+        ...section
+        }
+    const filteredPayload = filterDataPayload(payload)
+    updateQuery(config.ListNames.Sections,section.Id,filteredPayload,token.data.FormDigestValue)
+  })
+  
+  crud["delete"].forEach((section:any)=>{
+    deleteQuery(config.ListNames.Sections,section.Id,token.data.FormDigestValue)
+  })
+}
+catch(error){
+  console.log(error)
+}
 
-    },
-      
-      ...section
-      }
-  createQuery(config.ListNames.Sections,payload,token.data.FormDigestValue)
-})
-
-crud["update"].forEach((section:any)=>{
-  const payload = {
-           __metadata:{
-        type: `SP.Data.${config.ListNames.Sections}ListItem`,
-
-    },
-      
-      ...section
-      }
-  const filteredPayload = filterDataPayload(payload)
-  updateQuery(config.ListNames.Sections,section.Id,filteredPayload,token.data.FormDigestValue)
-})
-
-crud["delete"].forEach((section:any)=>{
-  deleteQuery(config.ListNames.Sections,section.Id,token.data.FormDigestValue)
-})
 }
 
 const Merge = async (DocId:string,DraftId:string) =>{
+try{
       const Draft = await ReadQuery(
   constructUrl(config.ListNames.Commits, undefined, undefined, `Draft eq "${DraftId}"`)
 ).then((data) => {
@@ -168,6 +175,10 @@ for (const section in Doc ){
 console.log("crud",crud)
 
 MergeChanges(crud)
+}
+catch(error){
+  console.log(error)
+}
 }
 
     return ( 
