@@ -93,8 +93,8 @@ const Viewer = () => {
             Draft:draft.Draft,
             Section:CellData.Section,
             Change:changes.Change,
-            Patch:JSON.stringify(PatchDiff.Patch),
-            Diff:PatchDiff.DiffStr,
+            Patch:JSON.stringify(PatchDiff?.Patch),
+            Diff:PatchDiff?.DiffStr,
             CommittedAt:Date(),
             CommitType:"create",
             User: user?.Id
