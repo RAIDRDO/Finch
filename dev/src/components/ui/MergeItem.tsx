@@ -127,8 +127,8 @@ for (const section in Doc){
   //   new_content,
   // )
   // console.log("patches",Commit.Patches)
-  JSON.parse(Commit.Patches).forEach((Patch:any)=>{
-    // console.log("patch",Patch)
+  JSON.parse(Commit?.Patches)?.forEach((Patch:any)=>{
+    console.log("patch",Patch)
     new_content = applyPatch(new_content,Patch);
     // console.log("after patch",new_content)
   })
