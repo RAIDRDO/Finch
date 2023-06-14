@@ -182,7 +182,8 @@ const Editor = () => {
     }
 
     const SaveCells = () =>{
-            const EditedCells = FilterEdited(Cells)
+      try{
+        const EditedCells = FilterEdited(Cells)
             EditedCells.map((cell:Changes) => {
                 const data = filterDataPayload(cell)
                 const StagedChanges = Staged[cell.Change]
@@ -240,6 +241,12 @@ const Editor = () => {
               }
                 
             })
+        
+      }
+      catch(error){
+        console.log(error)
+      }
+            
 
     }
     const  CreateMergeRequest = async () =>{
