@@ -156,7 +156,7 @@ const Viewer = () => {
         <div className='flex flex-col w-9/12  items-center'>
         <div className="flex flex-col w-9/12 h-full">
         {Cells.map((CellData:Sections) => (
-            console.log("before md cell",CellData.Content),
+            // console.log("before md cell",CellData.Content),
      
             <MarkdownCell  text={CellData.Content} key={CellData.Section}></MarkdownCell>
 

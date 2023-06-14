@@ -85,13 +85,13 @@ const Merge = async (DocId:string,DraftId:string) =>{
   return FormatPatches(groupBy(data, "Section"));
 });
 
-console.log(Draft)
+// console.log(Draft)
 
 const Doc:any[] = await ReadQuery(
   constructUrl(config.ListNames.Sections, undefined, undefined, `Document eq "${DocId}"`)
 ).then((data) =>{ return data});
 //fill newly created changes into sections 
-console.log(Doc)
+// console.log(Doc)
 
 
 const DocKeys = Doc.map((section:any) => {
@@ -115,11 +115,11 @@ for (const section in Doc){
   const Commit = Draft.filter((c)=>{
     return  c.Section == Doc[section].Section })[0]
   let new_content = Doc[section].Content
-  console.log(
-    "old content",
-    new_content,
-  )
-  console.log("patches",Commit.Patches)
+  // console.log(
+  //   "old content",
+  //   new_content,
+  // )
+  // console.log("patches",Commit.Patches)
   // JSON.parse(Commit.Patches).forEach((Patch:any)=>{
   //   console.log("patch",Patch)
   //   new_content = applyPatch(new_content,Patch);
@@ -127,7 +127,7 @@ for (const section in Doc){
   // })
 
   for (const patch in JSON.parse(Commit.Patches)){
-    console.log("test for loop",JSON.parse(Commit.Patches)[patch])
+    // console.log("test for loop",JSON.parse(Commit.Patches)[patch])
     new_content = applyPatch(new_content,JSON.parse(Commit.Patches)[patch])
   }
   Doc[section].Content = new_content;
@@ -147,7 +147,7 @@ for (const section in Doc ){
         (commits) => commits.Section == Doc[section].Section
       )[0]
   if (Doc[section].Id == undefined) {
-    console.log((Doc[section].Id))
+    // console.log((Doc[section].Id))
   if (commit.LastAction != "delete"){
       crud.create.push(Doc[section]);
     }
@@ -165,7 +165,7 @@ for (const section in Doc ){
 }
 
 }
-console.log("crud",crud)
+// console.log("crud",crud)
 
 MergeChanges(crud)
 }
