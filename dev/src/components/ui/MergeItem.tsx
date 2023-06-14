@@ -87,7 +87,7 @@ catch(error){
 const Merge = async (DocId:string,DraftId:string) =>{
 try{
       const Draft = await ReadQuery(
-  constructUrl(config.ListNames.Commits, undefined, undefined, `Draft eq "${DraftId}"`)
+  constructUrl(config.ListNames.Commits, undefined, undefined, `Draft eq '${DraftId}'`)
 ).then((data) => {
   return FormatPatches(groupBy(data, "Section"));
 });
@@ -95,7 +95,7 @@ try{
 // console.log(Draft)
 
 const Doc:any[] = await ReadQuery(
-  constructUrl(config.ListNames.Sections, undefined, undefined, `Document eq "${DocId}"`)
+  constructUrl(config.ListNames.Sections, undefined, undefined, `Document eq '${DocId}'`)
 ).then((data) =>{ return data});
 //fill newly created changes into sections 
 // console.log(Doc)
