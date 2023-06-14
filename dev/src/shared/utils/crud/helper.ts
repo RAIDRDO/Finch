@@ -145,9 +145,15 @@ export const ResolveRole = (role:string,action:string):any => {
 
 
 export const CreateCommit = (name:string,original:string,changes:string)=>{
-const DiffStr = createPatch(name, original, changes);
-const Patch = parsePatch(DiffStr);
-return { DiffStr: DiffStr ,Patch:Patch};
+try{
+    const DiffStr = createPatch(name, original, changes);
+    const Patch = parsePatch(DiffStr);
+    return { DiffStr: DiffStr ,Patch:Patch};
+}
+catch(error){
+console.log("CreateCommit",error)
+}
+
 } 
 
 

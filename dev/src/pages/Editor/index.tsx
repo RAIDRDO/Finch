@@ -100,8 +100,8 @@ const Editor = () => {
         Draft:params.DraftId!,
         Section:CellData.Section,
         Change:CellData.Change,
-        Patch:JSON.stringify(DiffPatch.Patch),
-        Diff:DiffPatch.DiffStr,
+        Patch:JSON.stringify(DiffPatch?.Patch),
+        Diff:DiffPatch?.DiffStr,
         CommitType:"create",
         CommittedAt:Date(),
         User:user?.Id,
@@ -134,8 +134,8 @@ const Editor = () => {
             Draft:deleteCell.Draft,
             Section:deleteCell.Section,
             Change:deleteCell.Change,
-            Patch:JSON.stringify(DiffPatch.Patch),
-            Diff:DiffPatch.DiffStr,
+            Patch:JSON.stringify(DiffPatch?.Patch),
+            Diff:DiffPatch?.DiffStr,
             CommitType:"delete",
             CommittedAt:Date(),
             User:user?.Id,
@@ -173,18 +173,33 @@ const Editor = () => {
         setCells(Cells)
     }
     const filterDataPayload = (data:any) =>{
+      try{
         const  {Id,Old_Id,...NewData} = data
         return NewData
+      }
+      catch(error){
+        console.log("filterDataPayload",error)
+      }
+        
     }
     const FilterEdited = (Cells:ChangesProps) =>{
+      try{
         const filtered = Cells.filter((cell) =>  Object.keys(IsEdited).includes(cell.Change))
         return filtered
+
+      }
+      catch(error){
+        console.log("FilterEdited",error)
+      }
+        
     }
 
     const SaveCells = () =>{
       try{
-        const EditedCells = FilterEdited(Cells)
-            EditedCells.map((cell:Changes) => {
+          const EditedCells = FilterEdited(Cells)
+
+         
+          EditedCells?.map((cell:Changes) => {
                 const data = filterDataPayload(cell)
                 const StagedChanges = Staged[cell.Change]
                 const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original,StagedChanges.new)
@@ -194,8 +209,8 @@ const Editor = () => {
                   Draft:cell.Draft,
                   Section:cell.Section,
                   Change:cell.Change,
-                  Patch:JSON.stringify(DiffPatch.Patch),
-                  Diff:DiffPatch.DiffStr,
+                  Patch:JSON.stringify(DiffPatch?.Patch),
+                  Diff:DiffPatch?.DiffStr,
                   CommitType:"edit",
                   CommittedAt:Date(),
                   User:user?.Id,
@@ -223,7 +238,7 @@ const Editor = () => {
 
                }
                catch(error){
-                console.log(error)
+                console.log("all error",error)
                }
 
            

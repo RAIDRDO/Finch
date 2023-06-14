@@ -77,7 +77,7 @@ export interface Commit {
   Section:string,
   Change:string,
   Patch:any,
-  Diff:string,
+  Diff:any,
   CommittedAt:string,
   CommitType:string,
   User:number
