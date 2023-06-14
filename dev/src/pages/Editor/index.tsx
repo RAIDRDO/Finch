@@ -213,17 +213,27 @@ const Editor = () => {
                
                ...data
                }
-               updateQuery(config.ListNames.Changes,cell.Id,payload,token.data.FormDigestValue).then(() => {
-                queryClient.invalidateQueries("Changes")
-              }).then(() => {
-                setIsEdited({})
-              })
-              createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue).then(() => {
-                setStaged({})
-              })
+               try{
+                updateQuery(config.ListNames.Changes,cell.Id,payload,token.data.FormDigestValue).then(() => {
+                  queryClient.invalidateQueries("Changes")
+                }).then(() => {
+                  setIsEdited({})
+                })
+
+               }
+               catch(error){
+                console.log(error)
+               }
+
+           
+             
+             
 
 
               try {
+                createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue).then(() => {
+                  setStaged({})
+                })
                 
               } catch (error) {
                 console.log(error)
