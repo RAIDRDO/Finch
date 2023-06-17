@@ -1,6 +1,6 @@
 import React, { useState,useContext} from 'react';
 import EditorCell from "@/components/ui/EditorCell";
-import {ChangesProps,Sections,Changes,Commit} from '@/shared/types' 
+import {ChangesProps,Sections,Changes,Commit, CellProps} from '@/shared/types' 
 import { PlusCircle,ArrowLeft } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { faker } from '@faker-js/faker';
@@ -34,7 +34,7 @@ import { User } from 'lucide-react';
 import { set } from 'lodash';
 import { Button } from '@/components/ui/button';
 import { read } from 'fs';
-import { format } from 'path';
+import { format, parse } from 'path';
 import Merges from '../Merges';
 
 interface IsEdited{
@@ -44,6 +44,7 @@ interface IsEdited{
 interface IsEditeds extends Array<IsEdited>{}
 
 const Editor = () => {
+  
     const [user,setUser] = useContext(AuthContext)
 
     const token = useToken()
@@ -58,7 +59,8 @@ const Editor = () => {
     const GetSections = useQuery({queryKey:["Changes"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Changes,undefined,undefined,`Draft eq '${params.DraftId}'`))
   ,onSuccess(data) {
-      setCells(data.value)
+      
+      setCells(parsenNulltoStr(data.value)!)
       data.value.map((cell:Changes) => {
         const unstaged:any = {}
         unstaged[cell.Change] = {original:cell.Content,new:""}
@@ -68,6 +70,22 @@ const Editor = () => {
   },)
   // console.log(GetDrafts)
 
+    const parsenNulltoStr = (Cells:ChangesProps) =>{
+      try{
+        const ParsedCells:ChangesProps = Cells.map((cell)=>{
+          if (cell.Content == null){
+            cell.Content = ""
+          }
+          return cell
+        })
+  
+        return ParsedCells
+      }
+      catch(error) {
+        console.error("error parsing null to empty str:",error)
+      }
+     
+    }
     const addCell = (DraftId:string) => {
         SaveCells()
         const CellData:Changes = {
