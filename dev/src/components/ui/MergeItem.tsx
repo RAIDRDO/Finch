@@ -89,14 +89,24 @@ try{
       const Draft = await ReadQuery(
   constructUrl(config.ListNames.Commits, undefined, undefined, `Draft eq '${DraftId}'`)
 ).then((data) => {
+  console.log(data)
   return FormatPatches(groupBy(data, "Section"));
 });
 
-// console.log(Draft)
+// console.log("draft",Draft)
 
 const Doc:any[] = await ReadQuery(
   constructUrl(config.ListNames.Sections, undefined, undefined, `Document eq '${DocId}'`)
 ).then((data) =>{ return data});
+
+const Merges:any[] = await ReadQuery(
+  constructUrl(config.ListNames.Merges, undefined, undefined, `Draft eq '${DraftId}'`)
+).then((data) =>{ return data});
+
+const prevMerge = Merges[Merges.length-1]
+
+console.log("merges",JSON.parse(prevMerge.Commits))
+
 //fill newly created changes into sections 
 // console.log(Doc)
 
@@ -121,7 +131,7 @@ for (const Commit in Draft) {
 for (const section in Doc){
   const Commit = Draft.filter((c)=>{
     return  c.Section == Doc[section].Section })[0]
-  let new_content = Doc[section].Content
+  let new_content = ""
   // console.log(
   //   "old content",
   //   new_content,

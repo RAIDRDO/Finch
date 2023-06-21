@@ -285,20 +285,22 @@ const Editor = () => {
     const  CreateMergeRequest = async () =>{
       const commits = await ReadQuery(constructUrl(config.ListNames.Commits,undefined,undefined,`Draft eq '${params.DraftId}'`))
       const formattedCommits = FormatPatches(groupBy(commits,"Section"))
+      const MergeRequestId = uuidv4()
+
       const Merges = formattedCommits.map((commit:any) => {
         const Merge = {
         Merge:uuidv4(),
+        MergeRequest:MergeRequestId,
         ...commit,
         CreatedAt:Date(),
         CreatedBy:user?.Id,
-        
       }
       return Merge
       })
       const MergeIds  = Merges.map((merge:any) => merge.Merge)
       
       const MergeRequest = {
-        MergeRequest:uuidv4(),
+        MergeRequest:MergeRequestId,
         Merges:JSON.stringify(MergeIds),
         Document:Merges[0].Document,
         DocumentName:GetDocument.data.value[0].Name,
