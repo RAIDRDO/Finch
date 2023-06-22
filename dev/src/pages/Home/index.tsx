@@ -96,7 +96,9 @@ onSuccess(data) {
   //       User:UserId,
   //       Email:Email,
   //       Resource:OrgId,
-  //       ResourceSP:OrgIdSP,
+  //       OrgLookUp:OrgIdSP,
+  //       CatLookUp:null,
+  //       DocLookUp:null,
   //       ResourceType:type,
   //       Role:Role
       

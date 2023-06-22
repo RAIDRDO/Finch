@@ -76,7 +76,7 @@ const Viewer = () => {
         token.data.FormDigestValue)
     
     Cells.map((CellData:Sections) => {
-        const PatchDiff =  CreateCommit(GetDocuments.data?.value[0].Name,"",CellData.Content)
+        const PatchDiff =  CreateCommit(GetDocuments.data?.value[0].Name,CellData.Content,CellData.Content)
         const changes:Changes ={
             Change:uuidv4(),
             Document:CellData.Document,
