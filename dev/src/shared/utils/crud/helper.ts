@@ -49,6 +49,7 @@ export const ResolvePermissions = (role: string):ResourcePermissions => {
             permissions.CatViewer = true;
             permissions.CatEditor = true;
             permissions.CatContributor = true;
+            permissions.CatOwner = true;
             permissions.DocViewer = true;
             permissions.DocEditor = true;
             permissions.DocContributor = true;

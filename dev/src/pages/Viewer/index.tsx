@@ -1,6 +1,6 @@
 import React, { useState,useContext } from 'react';
 import EditorCell from "@/components/ui/EditorCell";
-import {CellProps,Sections,Drafts,Changes,Commit} from '@/shared/types' 
+import {CellProps,Sections,Drafts,Changes,Commit,ResourcePermissions} from '@/shared/types' 
 import { PlusCircle,ArrowLeft,FileEdit } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { faker } from '@faker-js/faker';
@@ -30,7 +30,7 @@ import CryptoJS from 'crypto-js';
 import MarkdownCell from '@/components/ui/MarkdownCell';
 import { gt } from 'lodash';
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
-import { CreateCommit } from '@/shared/utils/crud/helper';
+import { CreateCommit,ResolvePermissions} from '@/shared/utils/crud/helper';
 const Viewer = () => {
     const token = useToken()
     const [user,setUser] = useContext(AuthContext)
@@ -46,7 +46,8 @@ const Viewer = () => {
       setCells(data.value)
   }
   },)
-
+  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.DocId}') and (User eq '${user?.Id}')`))})
+  const permissions = ResolvePermissions(getPermissions.data?.value[0].Role)
   
   const CreateDraft = ()=>{
     const draft:Drafts = {
@@ -134,6 +135,14 @@ const Viewer = () => {
  
 
   }
+    const CanEdit = (permissions:ResourcePermissions)=>{
+        if(permissions.DocOwner || permissions.DocEditor || permissions.DocContributor){
+            return true
+        }
+        else{
+            return false
+        }
+    }
 
     return ( 
         <div>
@@ -146,7 +155,13 @@ const Viewer = () => {
     </div>
       </div>
       <div className='mr-8'>
-        <Button onClick={()=>CreateDraft()}> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
+        {CanEdit(permissions)? 
+        <Button  onClick={()=>CreateDraft()}> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
+        :
+        <Button disabled> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
+        
+        }
+        
       </div>
 
         </div>
