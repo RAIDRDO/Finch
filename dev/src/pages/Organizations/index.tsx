@@ -29,11 +29,14 @@ import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom";
 import { constructReadQueryFn, constructUrl, createQuery } from "@/shared/utils/crud";
 import { useQuery } from "react-query";
-import { useState } from "react";
+import { useState,useContext} from "react";
 import useToken from "@/shared/utils/crud/useToken";
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
 
 export default function Organizations() {
   const token = useToken()
+  const [user,setUser] = useContext(AuthContext)
+
   const navigate = useNavigate()
 
   const [OrgData, setOrgData] = useState();
@@ -46,6 +49,7 @@ export default function Organizations() {
       setOrgData(data)
   }
   },)
+  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
 
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
@@ -129,8 +133,13 @@ export default function Organizations() {
             <div className="flex flex-row justify-evenly">
               {
                 GetOrgnisations.data?.map((item:Organisation)=>{
-                  return <OrgansationCard {...item}></OrgansationCard>
-                })
+                  const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)[0].Role
+                  console.log(permisson)
+                  const orgCardData = {
+                    ...item,
+                    Role:permisson
+                  }
+                  return     <OrgansationCard key={item.org} {...orgCardData}></OrgansationCard>                })
               }
               
               {/* <OrgansationCard></OrgansationCard> */}

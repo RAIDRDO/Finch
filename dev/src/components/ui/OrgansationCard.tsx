@@ -40,10 +40,22 @@ import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import InviteModal from "./InviteModal";
 
-const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
+import {ResolvePermissions} from "@/shared/utils/crud/helper"
+
+interface OrganisationProps extends Organisation {
+  Role: string;
+}
+
+const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
       const token = useToken()
+    const permissions = ResolvePermissions(Role)
     const queryClient = useQueryClient()
       const navigate = useNavigate()
+    
+
+
+    const CanDelete = (permissions.OrgOwner || permissions.OrgContributor)
+    const CanEditPerm = (permissions.OrgOwner || permissions.OrgContributor)
 
     const  Delete = (Id: number) =>{
         deleteQuery(config.ListNames.Organisation,Id,token.data.FormDigestValue).then(() => {
@@ -74,6 +86,7 @@ const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
                     </div>
                     <div>
                     </div>
+                    
                     <Popover>
                         <PopoverTrigger asChild>
                             <div className="p-2 rounded-full hover:bg-slate-200 hover:cursor-pointer">
@@ -81,11 +94,17 @@ const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
                             </div>
     
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto flex flex-col px-0 ">
+<PopoverContent className="w-auto  px-0 ">
+<div className="flex flex-col">
 
-<InviteModal></InviteModal>
+{CanEditPerm ? <InviteModal></InviteModal>
+:<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
+<p className="">
+Request permission 
+</p>
+</div>}
 
-<AlertDialog>
+{CanDelete ? <AlertDialog>
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
                             <p className="">
@@ -107,12 +126,15 @@ const OrgansationCard = ({Id,org,name,desc,owner}:Organisation) => {
       <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={()=>Delete(Id!)}>Delete Organization</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
-</AlertDialog>
+</AlertDialog> : null}
+
+</div>
+
 
                       
-                        </PopoverContent>
+</PopoverContent>
                     </Popover>
-                   
+
           
                 </CardFooter>
             </Card>

@@ -38,12 +38,20 @@ import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import InviteModal from "./InviteModal";
+import {ResolvePermissions} from "@/shared/utils/crud/helper"
 
-const CategoryCard = ({Id,Cat,Name,Org,Owner}:Catergory) => {
+interface CatergoryProps extends Catergory {
+  Role: string;
+}
+
+
+const CategoryCard = ({Id,Cat,Name,Org,Owner,Role}:CatergoryProps) => {
     const token = useToken()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
-
+    const permissions = ResolvePermissions(Role)
+    const CanDelete = (permissions.CatOwner || permissions.CatContributor)
+    const CanEditPerm = (permissions.CatOwner || permissions.CatContributor)
     const  Delete = (Id: number) =>{
         deleteQuery(config.ListNames.Catergory,Id,token.data.FormDigestValue).then(() => {
         queryClient.invalidateQueries("Catergories")
@@ -79,9 +87,17 @@ const CategoryCard = ({Id,Cat,Name,Org,Owner}:Catergory) => {
                             </div>
     
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto flex flex-col px-0 ">
+                        <PopoverContent className="w-auto  px-0 ">
 
-<InviteModal></InviteModal>
+<div className="flex flex-col">
+{CanEditPerm ? <InviteModal></InviteModal>
+:<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
+<p className="">
+Request permission 
+</p>
+</div>}
+
+{CanDelete ? 
 <AlertDialog>
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
@@ -104,7 +120,11 @@ const CategoryCard = ({Id,Cat,Name,Org,Owner}:Catergory) => {
       <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={()=>Delete(Id!)}>Delete Category</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
-</AlertDialog>
+</AlertDialog> : null}
+
+
+</div>
+
 
                       
                         </PopoverContent>

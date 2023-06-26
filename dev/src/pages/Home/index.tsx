@@ -67,6 +67,8 @@ onSuccess(data) {
 },})
 
 
+  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
+
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
            __metadata:{
@@ -189,7 +191,12 @@ onSuccess(data) {
             
             <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden">
               {Documents?.map((item:any)=>{
-                return <DocumentCard key={item.Document} {...item}></DocumentCard>
+                    const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Document)[0].Role
+                    const DocCardData = {
+                      ...item,
+                      Role:permisson
+                    }
+                return <DocumentCard key={item.Document} {...DocCardData}></DocumentCard>
               })}
               
             </div>
@@ -218,8 +225,12 @@ onSuccess(data) {
             {
             OrgData?.map((item:any)=>{
                           // console.log(OrgData)
-
-                          return     <OrgansationCard key={item.org} {...item}></OrgansationCard>
+                          const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)[0].Role
+                          const OrgCardData = {
+                            ...item,
+                            Role:permisson
+                          }
+                          return     <OrgansationCard key={item.org} {...OrgCardData}></OrgansationCard>
 
             })}
 

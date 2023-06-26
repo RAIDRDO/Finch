@@ -46,10 +46,11 @@ export default function Organization() {
   const [OrgData, setOrgData] = useState<any>();
   const [Catergories, setCatergories] = useState<any>();
   const token = useToken()
-  
-  const getPermissions= useQuery({enabled:!!user?.Id , queryKey:["Permissions"]
+  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
+
+  const getOrgPermissions= useQuery({enabled:!!user?.Id , queryKey:["Permissions"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.OrgId}') and (User eq ${user?.Id})`))})
-  const GetOrgnisations = useQuery({enabled:getPermissions.isSuccess,queryKey:["Orgnisations"]
+  const GetOrgnisations = useQuery({enabled:getOrgPermissions.isSuccess,queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,`org eq '${params.OrgId}'`))
 ,onSuccess(data) {
     // console.log("orgdata",data)
@@ -58,7 +59,7 @@ export default function Organization() {
     // console.log(OrgData)
 }
 },)
- const GetCatergories = useQuery({enabled:getPermissions.isSuccess,queryKey:["Catergories"]
+ const GetCatergories = useQuery({enabled:getOrgPermissions.isSuccess,queryKey:["Catergories"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Org eq '${params.OrgId}'`))
 ,onSuccess(data) {
     setCatergories(data.value)
@@ -151,7 +152,7 @@ export default function Organization() {
             () => {
               const data ={Cat:uuidv4(),Org:OrgData.org,Owner:user.Id,Name:CatergoryName}
               AddCategory(data)?.then((res) => {
-                addPermission(token.data.FormDigestValue,data.Cat,res.d.Id,user.Id,user.Email,"category",ResolveRole(getPermissions.data.value[0].Role,"create"))
+                addPermission(token.data.FormDigestValue,data.Cat,res.d.Id,user.Id,user.Email,"category",ResolveRole(getOrgPermissions.data.value[0].Role,"create"))
                 queryClient.invalidateQueries("Catergories")
                 return res
               }).then((res) => {
@@ -175,7 +176,12 @@ export default function Organization() {
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
               {Catergories?.map((item:Catergory) => {
-                return <CategoryCard key={item.Cat} {...item}></CategoryCard>
+                 const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Cat)[0].Role
+                 const CatCardData = {
+                   ...item,
+                   Role:permisson
+                 }
+                return <CategoryCard key={CatCardData.Cat} {...CatCardData}></CategoryCard>
 
               })} 
 

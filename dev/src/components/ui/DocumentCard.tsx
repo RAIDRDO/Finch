@@ -38,10 +38,16 @@ import {Documents} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery ,CascadeDelete} from "@/shared/utils/crud"
-import InviteModal from "./InviteModal";
+import {ResolvePermissions} from "@/shared/utils/crud/helper"
 
-const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,Name}:Documents) => {
+import InviteModal from "./InviteModal";
+interface DocumentProps extends Documents {
+  Role: string;
+}
+
+const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,Name,Role}:DocumentProps) => {
     const token = useToken()
+    console.log(Role)
     const queryClient = useQueryClient()
     const navigate = useNavigate()
     const  Delete = (Id: number) =>{
@@ -56,6 +62,10 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
         })
         
     }  
+    const permissions = ResolvePermissions(Role)
+    const CanDelete = (permissions.DocOwner || permissions.DocContributor)
+    const CanEditPerm = (permissions.DocOwner || permissions.DocContributor)
+
   return ( 
         <div>
             {/* <div className="h-80 w-80 border-slate-300 bg-slate-100 rounded-sm shadow">
@@ -86,10 +96,18 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
                             </div>
     
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto flex flex-col px-0 ">
+                        <PopoverContent className="w-auto px-0 ">
 
 
-<InviteModal></InviteModal>
+<div className="flex flex-col">
+
+{CanEditPerm ? <InviteModal></InviteModal>
+:<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
+<p className="">
+Request permission 
+</p>
+</div>}
+{CanDelete ? 
 <AlertDialog>
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
@@ -112,7 +130,10 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
       <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={()=>Delete(Id!)}>Delete Document</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
-</AlertDialog>
+</AlertDialog> 
+: null}
+</div>
+
 
                       
                         </PopoverContent>
