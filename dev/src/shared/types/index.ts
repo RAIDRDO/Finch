@@ -34,6 +34,7 @@ export interface Documents{
 export interface Drafts extends Documents{
   Draft:string,
   CurrentVersion:number,
+  Createdby:number
 }
 
 

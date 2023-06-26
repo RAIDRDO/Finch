@@ -45,16 +45,9 @@ const DraftCard = ({Id,Draft,Document,Catergory,Organisation,CreatedAt,EditedAt,
     const queryClient = useQueryClient()
     const navigate = useNavigate()
     const  Delete = (Id: number) =>{
-        deleteQuery(config.ListNames.Documents,Id,token.data.FormDigestValue).then(() => {
-        queryClient.invalidateQueries("Documents")
-        }).then(() => {
-          CascadeDelete(token.data.FormDigestValue,Document,"DOC").then(() => {
-            queryClient.invalidateQueries({queryKey: ["Documents"]})
-
-          })
-
+        deleteQuery(config.ListNames.Drafts,Id,token.data.FormDigestValue).then(() => {
+        queryClient.invalidateQueries("Drafts")
         })
-        
     }  
   return ( 
         <div>

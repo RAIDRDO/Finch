@@ -46,23 +46,24 @@ export default function Category() {
   const [Catergories, setCatergories] = useState<any>();
   const [Documents, setDocuments] = useState<any>();
   const [Drafts, setDrafts] = useState<any>();
-  const getPermissions= useQuery({enabled:!!user?.Id , queryKey:["Permissions"]
+  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
+  const getCatPermissions= useQuery({enabled:!!user?.Id , queryKey:["Permissions"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.CatId}') and (User eq ${user?.Id})`))})
-   const GetCatergories = useQuery({enabled:getPermissions.isSuccess,queryKey:["Catergories"]
+   const GetCatergories = useQuery({enabled:getCatPermissions.isSuccess,queryKey:["Catergories"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,`Cat eq '${params.CatId}'`))
   ,onSuccess(data) {
       setCatergories(data.value[0])
   }
   },)
 
-  const GetDocuments = useQuery({enabled:getPermissions.isSuccess,queryKey:["Documents"]
+  const GetDocuments = useQuery({enabled:getCatPermissions.isSuccess,queryKey:["Documents"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Catergory eq '${params.CatId}'`))
 ,onSuccess(data) {
   setDocuments(data.value)
 }
 },)
-const GetDrafts = useQuery({enabled:getPermissions.isSuccess,queryKey:["Drafts"]
-  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Catergory eq '${params.CatId}'`))
+const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess,queryKey:["Drafts"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`(Catergory eq '${params.CatId}') and (CreatedBy eq '${user?.Id}')`))
 ,onSuccess(data) {
   setDrafts(data.value)
 }
@@ -155,9 +156,8 @@ const GetDrafts = useQuery({enabled:getPermissions.isSuccess,queryKey:["Drafts"]
               const data ={Document:uuidv4(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName}
               AddDocument(data)?.then((res)=>
                 {
-                  addPermission(token.data.FormDigestValue,data.Document,res.d.Id,user?.Id,user?.Email,'document',ResolveRole(getPermissions.data.value[0].Role,"create"))?.then(()=>{
-                  queryClient.invalidateQueries("Documents")
-
+                  addPermission(token.data.FormDigestValue,data.Document,res.d.Id,user?.Id,user?.Email,'document',ResolveRole(getCatPermissions.data.value[0].Role,"create"))?.then(()=>{
+                    queryClient.invalidateQueries(["Documents","Permissions"])
                   })
                 
                 }
@@ -178,8 +178,13 @@ const GetDrafts = useQuery({enabled:getPermissions.isSuccess,queryKey:["Drafts"]
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
               {
-                Documents?.map((data:any)=>{
-                  return <DocumentCard key={data.Document} {...data} ></DocumentCard>
+                Documents?.map((item:any)=>{
+                  const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Document)[0].Role
+                  const DocCardData = {
+                    ...item,
+                    Role:permisson
+                  }
+                  return <DocumentCard key={DocCardData.Document} {...DocCardData} ></DocumentCard>
 
                 })
               }

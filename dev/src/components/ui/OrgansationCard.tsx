@@ -62,8 +62,7 @@ const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
         queryClient.invalidateQueries("Orgnisations")
         }).then(() => {
           CascadeDelete(token.data.FormDigestValue,org,"ORG").then(() => {
-            queryClient.invalidateQueries({queryKey: ["Documents"]})
-            queryClient.invalidateQueries({queryKey: ["Catergories"]})
+            queryClient.invalidateQueries(["Documents","Catergories","Organisations","permissions"])
 
           })
 

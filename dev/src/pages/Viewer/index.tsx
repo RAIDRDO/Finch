@@ -61,6 +61,7 @@ const Viewer = () => {
         CurrentCommit:"",
         CurrentMerge:"",
         CurrentVersion:0,
+        Createdby:user?.Id,
         Name:GetDocuments.data?.value[0].Name,
     }
               const payload = {
