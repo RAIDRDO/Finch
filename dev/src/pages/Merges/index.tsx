@@ -28,6 +28,7 @@ import { useState ,useContext} from "react";
 import { useQuery } from "react-query";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { constructReadQueryFn, constructUrl, createQuery,addPermission} from "@/shared/utils/crud";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 export default function Merges() {
   const [user,setUser] = useContext(AuthContext)
   const [MergeRequests, setMergeRequests] = useState<any>();
@@ -39,6 +40,9 @@ export default function Merges() {
 }
   }
 )
+
+  const Pending = MergeRequests?.filter((item:any)=>item.ApporvedBy == "")
+  const Merged = MergeRequests?.filter((item:any)=>item.ApporvedBy != "")
   return (
     <>
     <NavBar></NavBar>
@@ -49,13 +53,29 @@ export default function Merges() {
               <p className="font-bold text-xl">Merges</p>
             </div>
             <div className="border"></div>
-            <div className="flex flex-col space-y-2">
-              {MergeRequests?.map((item:any)=>(
+  <Tabs defaultValue="pending" className="">
+  <TabsList>
+    <TabsTrigger value="pending">Pending</TabsTrigger>
+    <TabsTrigger value="merged">Merged</TabsTrigger>
+  </TabsList>
+  <TabsContent className="flex flex-col space-y-2" value="pending">
+
+
+              {Pending?.map((item:any)=>(
                 <MergeItem {...item} key = {item.MergeRequest}></MergeItem>
               )
               )}
               
-            </div>
+  </TabsContent>
+  <TabsContent className="flex flex-col space-y-2" value="merged">
+
+  {Merged?.map((item:any)=>(
+                <MergeItem {...item} key = {item.MergeRequest}></MergeItem>
+              )
+              )}
+  </TabsContent>
+</Tabs>
+
         </div>
 
        

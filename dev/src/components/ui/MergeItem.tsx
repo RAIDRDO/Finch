@@ -1,30 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 
 import { Button } from "@/components/ui/button"
 import { constructReadQueryFn, constructUrl, createQuery ,deleteQuery,updateQuery,ReadQuery} from "@/shared/utils/crud";
@@ -38,9 +11,13 @@ import useToken from "@/shared/utils/crud/useToken";
 
 import {applyPatch} from "diff"
 import { config } from "@/config";
-
-const MergeItem = ({Document,Draft,DocumentName,DraftName,SubmittedDate,MergeMsg}:any) => {
+import { useState ,useContext} from "react";
+import App from "@/App";
+import { useQuery, useQueryClient } from "react-query";
+const MergeItem = ({Id,Document,Draft,DocumentName,DraftName,SubmittedDate,MergeMsg,ApporvedBy}:any) => {
 const token = useToken()
+const [user,setUser] = useContext(AuthContext)
+const queryClient = useQueryClient()
 
 const filterDataPayload = (data:any) =>{
         const  {Id,Old_Id,...NewData} = data
@@ -191,7 +168,8 @@ catch(error){
 }
 }
 
-    return ( 
+
+return ( 
         <div className="flex flex-row justify-between items-center rounded h-[75px] w-auto bg-slate-100 shadow">
             <div className="ml-4">
               {DocumentName}
@@ -205,12 +183,26 @@ catch(error){
             <div>
                 {MergeMsg}
             </div>
+            {ApporvedBy == "" ? 
             <div className="mr-4">
-                    <Button className="bg-blue-500 hover:bg-blue-600" onClick={()=>Merge(Document,Draft)}>
+                    <Button className="bg-blue-500 hover:bg-blue-600" onClick={()=>Merge(Document,Draft).then(()=>{
+                      const payload = {
+                        __metadata:{
+                          type: `SP.Data.${config.ListNames.MergeRequests}ListItem`,
+                      },
+                        ApporvedBy:user.Id,
+                        ApprovalDate:Date()
+                      }
+                      
+                      updateQuery(config.ListNames.MergeRequests,Id,payload,token.data.FormDigestValue)
+}).then(()=>{
+  queryClient.invalidateQueries(["MergeRequests"])
+})}>
                         Review Changes <Pencil className="w-4 h-4 ml-2"></Pencil>
 
                     </Button>
             </div>
+: <div></div>}
         </div>
      );
 }
