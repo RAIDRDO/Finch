@@ -14,7 +14,9 @@ import { config } from "@/config";
 import { useState ,useContext} from "react";
 import App from "@/App";
 import { useQuery, useQueryClient } from "react-query";
-const MergeItem = ({Id,Document,Draft,DocumentName,DraftName,SubmittedDate,MergeMsg,ApporvedBy}:any) => {
+import {DateTime} from "luxon"  
+
+const MergeItem = ({Id,Document,Draft,DocumentName,DraftName,SubmittedDate,MergeMsg,ApporvedBy,ApprovalDate}:any) => {
 const token = useToken()
 const [user,setUser] = useContext(AuthContext)
 const queryClient = useQueryClient()
@@ -177,9 +179,13 @@ return (
             <div>
                 {DraftName}
             </div>
+            {ApprovalDate != "" ? <div>
+              {DateTime.fromMillis(Date.parse(ApprovalDate)).toFormat("FF")}
+            </div> :
             <div>
                 {SubmittedDate}
             </div>
+}
             <div>
                 {MergeMsg}
             </div>
@@ -194,9 +200,9 @@ return (
                         ApprovalDate:Date()
                       }
                       
-                      updateQuery(config.ListNames.MergeRequests,Id,payload,token.data.FormDigestValue)
-}).then(()=>{
-  queryClient.invalidateQueries(["MergeRequests"])
+                      updateQuery(config.ListNames.MergeRequests,Id,payload,token.data.FormDigestValue).then(()=>{
+                        queryClient.invalidateQueries("MergeRequests")
+                      })
 })}>
                         Review Changes <Pencil className="w-4 h-4 ml-2"></Pencil>
 
