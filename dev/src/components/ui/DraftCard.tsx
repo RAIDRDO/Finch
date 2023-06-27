@@ -39,6 +39,7 @@ import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery ,CascadeDelete} from "@/shared/utils/crud"
 import InviteModal from "./InviteModal";
+import {DateTime} from "luxon"  
 
 const DraftCard = ({Id,Draft,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,CurrentVersion,Name}:Drafts) => {
     const token = useToken()
@@ -67,7 +68,7 @@ const DraftCard = ({Id,Draft,Document,Catergory,Organisation,CreatedAt,EditedAt,
                     <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/editor/${Draft}`)}>{Name}</h1>
                     <div className="flex flex-row items-center text-slate-500 mt-1">
                         <Calendar className="w-3 h-3 mr-1"></Calendar>
-                        <p className="text-sm">{Date.parse(EditedAt)}</p>
+                        <p className="text-sm">{DateTime.fromMillis(Date.parse(EditedAt)).toFormat("MM-dd-yyyy")}</p>
                     </div>
                     </div>
                     <div>

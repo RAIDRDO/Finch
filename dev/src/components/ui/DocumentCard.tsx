@@ -40,6 +40,9 @@ import useToken from "@/shared/utils/crud/useToken";
 import { deleteQuery ,CascadeDelete} from "@/shared/utils/crud"
 import {ResolvePermissions} from "@/shared/utils/crud/helper"
 
+import {DateTime} from "luxon"  
+
+
 import InviteModal from "./InviteModal";
 interface DocumentProps extends Documents {
   Role: string;
@@ -65,7 +68,6 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
     const permissions = ResolvePermissions(Role)
     const CanDelete = (permissions.DocOwner || permissions.DocContributor)
     const CanEditPerm = (permissions.DocOwner || permissions.DocContributor)
-
   return ( 
         <div>
             {/* <div className="h-80 w-80 border-slate-300 bg-slate-100 rounded-sm shadow">
@@ -84,7 +86,7 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
                     <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/viewer/${Document}`)}>{Name}</h1>
                     <div className="flex flex-row items-center text-slate-500 mt-1">
                         <Calendar className="w-3 h-3 mr-1"></Calendar>
-                        <p className="text-sm">{Date.parse(EditedAt)}</p>
+                        <p className="text-sm">{DateTime.fromMillis(Date.parse(EditedAt)).toFormat("MM-dd-yyyy")}</p>
                     </div>
                     </div>
                     <div>
