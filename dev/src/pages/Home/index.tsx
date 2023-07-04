@@ -187,24 +187,23 @@ onSuccess(data) {
               </Button>
             </div>
             <div className="border"></div>
-            {GetDocuments.isSuccess?
-            
-            <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden">
-              {Documents?.map((item:any)=>{
-                    const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Document)[0].Role
-                    const DocCardData = {
+                          {Documents?.map((item:any)=>{
+
+                    const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Document)
+                    if (permissons.length != 0) {
+                       const permisson = permissons[0].Role
+                       const DocCardData = {
                       ...item,
                       Role:permisson
                     }
                 return <DocumentCard key={item.Document} {...DocCardData}></DocumentCard>
-              })}
-              
-            </div>
-                 : 
-                 <div>
-                   <p>Loading</p>
-                  </div>
+
                     }
+                    else{
+                      return null
+                    }
+                   
+              })}
         </div>
          <div className="flex flex-col space-y-4">
             <div className="flex flex-row justify-between">
@@ -218,20 +217,26 @@ onSuccess(data) {
               </Button>
             </div>
             <div className="border"></div>
-            {GetOrgnisations.isSuccess?
+            {GetOrgnisations.isSuccess && getPermissions.isSuccess?
             <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden">
 
                 
             {
             OrgData?.map((item:any)=>{
                           // console.log(OrgData)
-                          const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)[0].Role
+                          const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)
+                          if (permissons.length != 0) {
+
+                          const permisson = permissons[0].Role
                           const OrgCardData = {
                             ...item,
                             Role:permisson
                           }
                           return     <OrgansationCard key={item.org} {...OrgCardData}></OrgansationCard>
-
+                        }
+                        else{
+                          return null
+                        }
             })}
 
 

@@ -156,12 +156,14 @@ const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess,queryKey:["Draft
               const data ={Document:uuidv4(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName}
               AddDocument(data)?.then((res)=>
                 {
-                  addPermission(token.data.FormDigestValue,data.Document,res.d.Id,user?.Id,user?.Email,'document',ResolveRole(getCatPermissions.data.value[0].Role,"create"))?.then(()=>{
-                    queryClient.invalidateQueries(["Documents","Permissions"])
-                  })
+                  addPermission(token.data.FormDigestValue,data.Document,res.d.Id,user?.Id,user?.Email,'document',ResolveRole(getCatPermissions.data.value[0].Role,"create"))
+
                 
                 }
+
               )
+              queryClient.invalidateQueries(["Documents","Permissions"])
+
             }
           }>Create</Button>
           </DialogPrimitive.Close>
@@ -179,13 +181,20 @@ const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess,queryKey:["Draft
             <div className="flex flex-row justify-evenly">
               {
                 Documents?.map((item:any)=>{
-                  const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Document)[0].Role
+                  const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Document)
+                  if (permissons.length != 0) {
+                  const permisson = permissons[0].Role
+
                   const DocCardData = {
                     ...item,
                     Role:permisson
                   }
                   return <DocumentCard key={DocCardData.Document} {...DocCardData} ></DocumentCard>
+                }
+                else{
+                  return null
 
+                }
                 })
               }
 

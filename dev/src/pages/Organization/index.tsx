@@ -176,13 +176,18 @@ export default function Organization() {
             <div className="border"></div>
             <div className="flex flex-row justify-evenly">
               {Catergories?.map((item:Catergory) => {
-                 const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Cat)[0].Role
+                const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Cat)
+                if (permissons.length != 0) {
+                 const permisson = permissons[0].Role
                  const CatCardData = {
                    ...item,
                    Role:permisson
                  }
                 return <CategoryCard key={CatCardData.Cat} {...CatCardData}></CategoryCard>
-
+                }
+                else {
+                  return null
+                }
               })} 
 
             </div>
