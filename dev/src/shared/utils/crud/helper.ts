@@ -147,11 +147,11 @@ export const ResolveRole = (role:string,action:string):any => {
 
 export const CreateCommit = (name:string,original:string,changes:string)=>{
 try{
-    console.log(name,original,changes)
+    // console.log(name,original,changes)
     const DiffStr = createPatch(name, original, changes);
-    console.log("DiffStr",DiffStr)
+    // console.log("DiffStr",DiffStr)
     const Patch = parsePatch(DiffStr);
-    console.log("Patch",Patch)
+    // console.log("Patch",Patch)
     return { DiffStr: DiffStr ,Patch:Patch};
 }
 catch(error){

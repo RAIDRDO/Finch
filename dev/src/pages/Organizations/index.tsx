@@ -134,7 +134,7 @@ export default function Organizations() {
               {
                 GetOrgnisations.data?.map((item:Organisation)=>{
                   const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)[0].Role
-                  console.log(permisson)
+                  // console.log(permisson)
                   const orgCardData = {
                     ...item,
                     Role:permisson
