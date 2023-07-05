@@ -204,7 +204,7 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
         OrgLookUpId:null,
         CatLookUpId:null,
         DocLookUpId:null,
-        resourceType:type,
+        ResourceType:type,
         Role:Role
       
       }
