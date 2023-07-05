@@ -47,21 +47,21 @@ export default function Home() {
 
 
   const GetOrgnisations = useQuery({enabled:!!user,queryKey:["Orgnisations"]
-  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,OrgLookUp/Id,OrgLookUp/org,OrgLookUp/desc,OrgLookUp/name"
-  ,"OrgLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'organization')`))
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,OrgLookUpId/Id,OrgLookUpId/org,OrgLookUpId/desc,OrgLookUpId/name"
+  ,"OrgLookUpId",`(User eq ${user?.Id}) and (ResourceType eq 'organization')`))
 ,onSuccess(data) {
    const formattedData = data.value.map((item:any)=>{
-      return item.OrgLookUp
+      return item.OrgLookUpId
     }) 
     setOrgData(formattedData)
 }
 },)
 
-  const GetDocuments = useQuery({enabled:!!user,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/Sections,DocLookUp/CurrentCommit,DocLookUp/Name"
-  ,"DocLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'document')`)),
+  const GetDocuments = useQuery({enabled:!!user,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUpId/Id,DocLookUpId/Document,DocLookUpId/Catergory,DocLookUpId/Organisation,DocLookUpId/CreatedAt,DocLookUpId/EditedAt,DocLookUpId/Sections,DocLookUpId/CurrentCommit,DocLookUpId/Name"
+  ,"DocLookUpId",`(User eq ${user?.Id}) and (ResourceType eq 'document')`)),
 onSuccess(data) {
     const formattedData = data.value.map((item:any)=>{
-      return item.DocLookUp
+      return item.DocLookUpId
     }) 
     setDocuments(formattedData)
 },})
@@ -98,9 +98,9 @@ onSuccess(data) {
   //       User:UserId,
   //       Email:Email,
   //       Resource:OrgId,
-  //       OrgLookUp:OrgIdSP,
-  //       CatLookUp:null,
-  //       DocLookUp:null,
+  //       OrgLookUpId:OrgIdSP,
+  //       CatLookUpId:null,
+  //       DocLookUpId:null,
   //       ResourceType:type,
   //       Role:Role
       
