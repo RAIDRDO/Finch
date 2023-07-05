@@ -210,13 +210,13 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
       }
   switch (type) {
     case "organization":
-      data.OrgLookUp = IdSP
+      data.OrgLookUp = IdSP.toString()
       break;
     case "category":
-      data.CatLookUp = IdSP
+      data.CatLookUp = IdSP.toString()
       break;
     case "document":
-      data.DocLookUp = IdSP
+      data.DocLookUp = IdSP.toString()
       break;
 
   }
