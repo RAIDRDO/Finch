@@ -308,7 +308,7 @@ const Editor = () => {
         DraftName:GetDrafts.data.value[0].Name,
         SubmittedBy:user?.Id,
         SubmittedDate:Date(),
-        ApporvedBy:"",
+        ApporvedBy:null,
         ApprovalDate:"",
         MergeMsg:"",
       }
