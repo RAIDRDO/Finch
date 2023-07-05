@@ -41,8 +41,8 @@ export default function Merges() {
   }
 )
 
-  const Pending = MergeRequests?.filter((item:any)=>item.ApporvedBy == "")
-  const Merged = MergeRequests?.filter((item:any)=>item.ApporvedBy != "")
+  const Pending = MergeRequests?.filter((item:any)=>item.ApporvedBy == null)
+  const Merged = MergeRequests?.filter((item:any)=>item.ApporvedBy != null)
   return (
     <>
     <NavBar></NavBar>
