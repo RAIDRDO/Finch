@@ -195,28 +195,28 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
 
 
 
- export const addPermission = (token:string,Id:string,IdSP:string,UserId:string,Email:string,type:string,Role:string) => {
+ export const addPermission = (token:string,Id:string,IdSP:any,UserId:string,Email:string,type:string,Role:string) => {
   const data =  {
         Permission:uuidv4(),
         User:UserId,
         Email:Email,
         Resource:Id,
-        OrgLookUpId:"",
-        CatLookUpId:"",
-        DocLookUpId:"",
+        OrgLookUpId:null,
+        CatLookUpId:null,
+        DocLookUpId:null,
         resourceType:type,
         Role:Role
       
       }
   switch (type) {
     case "organization":
-      data.OrgLookUpId = IdSP.toString()
+      data.OrgLookUpId = IdSP
       break;
     case "category":
-      data.CatLookUpId = IdSP.toString()
+      data.CatLookUpId = IdSP
       break;
     case "document":
-      data.DocLookUpId = IdSP.toString()
+      data.DocLookUpId = IdSP
       break;
 
   }
