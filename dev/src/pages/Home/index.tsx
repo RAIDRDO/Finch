@@ -45,8 +45,9 @@ export default function Home() {
   const [Documents, setDocuments] = useState<any>([]);
 
 
+  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
 
-  const GetOrgnisations = useQuery({enabled:!!user,queryKey:["Orgnisations"]
+  const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,OrgLookUp/Id,OrgLookUp/org,OrgLookUp/desc,OrgLookUp/name"
   ,"OrgLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'organization')`))
 ,onSuccess(data) {
@@ -57,7 +58,7 @@ export default function Home() {
 }
 },)
 
-  const GetDocuments = useQuery({enabled:!!user,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/Sections,DocLookUp/CurrentCommit,DocLookUp/Name"
+  const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/Sections,DocLookUp/CurrentCommit,DocLookUp/Name"
   ,"DocLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'document')`)),
 onSuccess(data) {
     const formattedData = data.value.map((item:any)=>{
@@ -67,7 +68,6 @@ onSuccess(data) {
 },})
 
 
-  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
 
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {

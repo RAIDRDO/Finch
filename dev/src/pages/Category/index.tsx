@@ -56,13 +56,13 @@ export default function Category() {
   }
   },)
 
-  const GetDocuments = useQuery({enabled:getCatPermissions.isSuccess,queryKey:["Documents"]
+  const GetDocuments = useQuery({enabled:getCatPermissions.isSuccess && getPermissions.isSuccess,queryKey:["Documents"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Catergory eq '${params.CatId}'`))
 ,onSuccess(data) {
   setDocuments(data.value)
 }
 },)
-const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess,queryKey:["Drafts"]
+const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess && getPermissions.isSuccess,queryKey:["Drafts"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`(Catergory eq '${params.CatId}') and (CreatedBy eq '${user?.Id}')`))
 ,onSuccess(data) {
   setDrafts(data.value)

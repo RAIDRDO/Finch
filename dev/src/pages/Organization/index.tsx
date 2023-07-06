@@ -50,7 +50,7 @@ export default function Organization() {
 
   const getOrgPermissions= useQuery({enabled:!!user?.Id , queryKey:["Permissions"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.OrgId}') and (User eq ${user?.Id})`))})
-  const GetOrgnisations = useQuery({enabled:getOrgPermissions.isSuccess,queryKey:["Orgnisations"]
+  const GetOrgnisations = useQuery({enabled:getOrgPermissions.isSuccess && getPermissions.isSuccess,queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,`org eq '${params.OrgId}'`))
 ,onSuccess(data) {
     // console.log("orgdata",data)

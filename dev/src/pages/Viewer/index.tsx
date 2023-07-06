@@ -39,14 +39,14 @@ const Viewer = () => {
 
     const params = useParams();
     const queryClient = useQueryClient()
-    const GetDocuments = useQuery({queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${params.DocId}'`))})
-    const GetSections = useQuery({queryKey:["Sections"]
+    const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.DocId}') and (User eq '${user?.Id}')`))})
+    const GetDocuments = useQuery({enabled:getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${params.DocId}'`))})
+    const GetSections = useQuery({enabled:getPermissions.isSuccess,queryKey:["Sections"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${params.DocId}'`))
   ,onSuccess(data) {
       setCells(data.value)
   }
   },)
-  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.DocId}') and (User eq '${user?.Id}')`))})
   const permissions = ResolvePermissions(getPermissions.data?.value[0].Role)
   
   const CreateDraft = ()=>{
