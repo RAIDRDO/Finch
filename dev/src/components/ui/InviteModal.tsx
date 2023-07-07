@@ -26,9 +26,87 @@ import { Button } from "./button";
 import { Pencil } from "lucide-react";
 
 import { useState } from "react";
-const InviteModal = () => {
+import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { constructReadQueryFn, constructUrl, createQuery,addPermission,ReadQuery} from "@/shared/utils/crud";
+
+import {config} from "@/config";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+import { useForm, SubmitHandler } from "react-hook-form"
+import useToken from "@/shared/utils/crud/useToken";
+
+async function emailExist(email:string) {
+  const url = `${config.apiUrl}web/SiteUsers?` +  `&$filter=` +  `Email eq `+ `'${email.trim()}'`
+  const res = await ReadQuery(url)
+  if (res.length > 0) {
+    return true
+  }
+  else{
+  return false
+  }
+}
+
+
+async function onSubmit (email:string,permission:string,type:string,token:string,resourceId:number,resourceUUID:string) {
+  const url = `${config.apiUrl}web/SiteUsers?` +  `&$filter=` +  `Email eq `+ `'${email.trim()}'`
+  const res = await ReadQuery(url)
+  let resource = ""
+  switch (type) {
+    case "Org":
+      resource = "organization"
+      break;
+    case "Cat":
+      resource = "category"
+      break;
+    case "Doc":
+      resource = "document"
+      break;
+  }
+  const role = type +"-"+permission
+  console.log(role)
+  addPermission(token,resourceUUID,resourceId,res[0].Id,email,resource,role)
+
+
+
+  
+  
+}
+
+const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:number,resourceUUID:string}) => {
+  const token = useToken()
+  const formSchema = z.object({
+  email: z.string({
+      required_error: "Please select an email to display.",
+    }).email("This is not a valid email.").refine(async (email) => {
+    return (await emailExist(email))
+  },"This email is not in our database"),
+  permission: z.string().nonempty(),
+})
     const [Permission, setPermission] = useState("Viewer");
 
+   const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
+  })
     return ( 
 <Dialog>
   <DialogTrigger>
@@ -40,19 +118,76 @@ const InviteModal = () => {
                             <Pencil className="w-5 h-5  ml-1"></Pencil>
                             </div>
   </DialogTrigger>
-  <DialogContent className="p-8 ">
+  <DialogContent className="p-8">
     <DialogHeader>
-      <DialogTitle>Share ... </DialogTitle>
+      <DialogTitle>Share  
+         {{
+            "Org": " Organization",
+            "Cat": " Category",
+            "Doc": " Document",
+            
+
+         }[type]}
+        
+        </DialogTitle>
       <DialogDescription>
-       invite users to this ... and manage their permissions
+       Invite users to this {{
+            "Org": " Organization",
+            "Cat": " Category",
+            "Doc": " Document",
+            
+
+         }[type]} and manage their permissions
       </DialogDescription>
     </DialogHeader>
-    <div className="flex flex-row space-x-2">
-        <Input placeholder="Add people" />
-        <Button>Add</Button>
+      <Form {...form}>
+      <form className="flex flex-row space-x-2" onSubmit={form.handleSubmit(
+        e => {
+        console.log(form.getValues())
+        onSubmit(form.getValues().email,form.getValues().permission,type,token.data.FormDigestValue,resourceId,resourceUUID)
+       }
+      )}>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Add people" {...field} />
+              </FormControl>         
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+         <FormField
+          control={form.control}
+          name="permission"
+          render={({ field }) => (
+            <FormItem>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                 <FormControl>
+                   <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Permission" />
+                </SelectTrigger>
+              </FormControl>      
+             
+              <SelectContent>
+                <SelectItem value="Viewer">Viewer</SelectItem>
+                <SelectItem value="Editor">Editor</SelectItem>
+                <SelectItem value="Contributor">Contributor</SelectItem>
+              </SelectContent>
+            </Select>
+                
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
 
 
-    </div>
     <div>
         <p className="font-semibold">
             People with access
@@ -88,8 +223,6 @@ const InviteModal = () => {
           <DropdownMenuRadioItem value="Viewer">Viewer</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="Editor">Editor</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="Contributor">Contributor</DropdownMenuRadioItem>
-           
-
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
 
@@ -106,4 +239,4 @@ const InviteModal = () => {
      );
 }
  
-export default InviteModal;
+export default InviteModal

@@ -96,7 +96,7 @@ const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
 <PopoverContent className="w-auto  px-0 ">
 <div className="flex flex-col">
 
-{CanEditPerm ? <InviteModal></InviteModal>
+{CanEditPerm ? <InviteModal type={"Org"} resourceId={Id!} resourceUUID={org!}></InviteModal>
 :<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
 <p className="">
 Request permission 

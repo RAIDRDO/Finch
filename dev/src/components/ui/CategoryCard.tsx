@@ -90,7 +90,7 @@ const CategoryCard = ({Id,Cat,Name,Org,Owner,Role}:CatergoryProps) => {
                         <PopoverContent className="w-auto  px-0 ">
 
 <div className="flex flex-col">
-{CanEditPerm ? <InviteModal></InviteModal>
+{CanEditPerm ? <InviteModal type={"Cat"} resourceId={Id!} resourceUUID={Cat!}></InviteModal>
 :<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
 <p className="">
 Request permission 

@@ -83,7 +83,6 @@ const DraftCard = ({Id,Draft,Document,Catergory,Organisation,CreatedAt,EditedAt,
                         <PopoverContent className="w-auto flex flex-col px-0 ">
 
 
-<InviteModal></InviteModal>
 <AlertDialog>
   <AlertDialogTrigger>
         <div className="flex flex-row items-center p-4 hover:bg-rose-200 hover:text-red-500 hover:cursor-pointer">
