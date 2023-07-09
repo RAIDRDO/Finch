@@ -37,7 +37,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { constructReadQueryFn, constructUrl, createQuery,addPermission,ReadQuery} from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery,addPermission,ReadQuery, updateQuery} from "@/shared/utils/crud";
 
 import {config} from "@/config";
 
@@ -51,8 +51,10 @@ import {
 
 import { useForm, SubmitHandler } from "react-hook-form"
 import useToken from "@/shared/utils/crud/useToken";
+import { useQuery,useQueryClient } from "react-query";
 
 async function emailExist(email:string) {
+
   const url = `${config.apiUrl}web/SiteUsers?` +  `&$filter=` +  `Email eq `+ `'${email.trim()}'`
   const res = await ReadQuery(url)
   if (res.length > 0) {
@@ -89,8 +91,14 @@ async function onSubmit (email:string,permission:string,type:string,token:string
   
 }
 
+
+
 const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:number,resourceUUID:string}) => {
   const token = useToken()
+  const queryClient = useQueryClient()
+
+  const getPermissions = useQuery({queryKey:["Resource_Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`Resource eq '${resourceUUID}'`))})
+  console.log(getPermissions.data)
   const formSchema = z.object({
   email: z.string({
       required_error: "Please select an email to display.",
@@ -100,6 +108,7 @@ const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:numb
   permission: z.string().nonempty(),
 })
     const [Permission, setPermission] = useState("Viewer");
+    const [EditedPermissions, setEditedPermissions] = useState<any>({});
 
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -107,6 +116,32 @@ const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:numb
       email: "",
     },
   })
+
+
+
+async function savePermissions (new_permissions:any,token:string) {
+  if (Object.keys(new_permissions).length > 0) {
+  Object.keys(new_permissions).forEach(async (new_permission:any) => {
+         const payload = {
+                    __metadata:{
+                 type: `SP.Data.${config.ListNames.Permissions}ListItem`,
+             
+             },
+               
+               Role: new_permissions[new_permission].Role
+      }
+
+      updateQuery(config.ListNames.Permissions,new_permissions[new_permission].Id,payload,token).then(
+        ()=>{
+          setEditedPermissions({})
+          queryClient.invalidateQueries("Resource_Permissions")}
+      )
+
+  }
+    )
+  }
+}
+
     return ( 
 <Dialog>
   <DialogTrigger>
@@ -192,8 +227,12 @@ const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:numb
         <p className="font-semibold">
             People with access
         </p>
-        <div className="flex flex-col mt-4">
-        <div className="flex flex-row justify-between">
+        
+        <div className="flex flex-col mt-4 space-y-4">
+        {
+          getPermissions.data?.value.map((permission:any) => (
+            console.log(permission.Role.split("-")[1]),
+          <div className="flex flex-row justify-between" key={permission.Permission}>
         <div className="flex flex-row space-x-4 items-center">
         <div>
         <Avatar className="hover:cursor-pointer hover:ring-offset-2 ring-2 ">
@@ -204,34 +243,75 @@ const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:numb
             </div>
             <div className="flex flex-col">
                 <p className="font-semibold"> username</p>
-                <p className="text-sm">email@email.com</p>
+                <p className="text-sm">{permission.Email}</p>
             </div>
     
         </div>
                  <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger asChild disabled={permission.Role.split("-")[1] =="Owner"?true:false} >
 
                 <div className="flex flex-row rounded-sm p-2 justify-between items-center hover:bg-slate-200 hover:cursor-pointer">
-                        <p className="font-semibold text-sm">{Permission}</p>
+                        <p className="font-semibold text-sm">{EditedPermissions[permission.Permission] == undefined?permission.Role.split("-")[1] :EditedPermissions[permission.Permission].Role.split("-")[1]}</p>
                 </div>
 
                       </DropdownMenuTrigger>
                       <DropdownMenuContent className="w-[150px]">
         <DropdownMenuLabel>Permissions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={Permission} onValueChange={setPermission}>
+        <DropdownMenuRadioGroup value={EditedPermissions[permission.Permission] == undefined?permission.Role.split("-")[1] :EditedPermissions[permission.Permission].Role.split("-")[1]} onValueChange={(e)=>
+          {
+            const new_role = type+"-"+e
+            console.log("new role",new_role)
+            console.log("old role",permission.Role)
+            const new_permission = Object.assign({},permission)
+            new_permission.Role = new_role
+            if (permission.Role == new_permission.Role){
+              delete EditedPermissions[permission.Permission]
+              setEditedPermissions(
+              {
+                ...EditedPermissions
+              }
+            )
+            }
+            else{
+              setEditedPermissions(
+              {
+                ...EditedPermissions,
+                [new_permission.Permission]:new_permission
+              }
+            )
+            }
+           
+            
+            console.log("EDITED PERM",EditedPermissions)
+          }}>
           <DropdownMenuRadioItem value="Viewer">Viewer</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="Editor">Editor</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="Contributor">Contributor</DropdownMenuRadioItem>
+
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
 
             </DropdownMenu>
 
         </div>
+          ))
+
+        }
+
+        
 
         </div>
+        
        
+    </div>
+    <div className="flex flex-row justify-end items-end space-x-8">
+      {Object.keys(EditedPermissions).length > 0?
+            <p className="text-sm">pending changes...</p>
+
+      :
+      null}
+      <Button className="" disabled={Object.keys(EditedPermissions).length > 0?false:true} onClick={()=>savePermissions(EditedPermissions,token.data.FormDigestValue)}>Save</Button>
     </div>
   </DialogContent>
 </Dialog>
