@@ -37,7 +37,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { constructReadQueryFn, constructUrl, createQuery,addPermission,ReadQuery, updateQuery} from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery,addPermission,ReadQuery, updateQuery, deleteQuery} from "@/shared/utils/crud";
 
 import {config} from "@/config";
 
@@ -48,6 +48,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
+import { X ,Undo} from "lucide-react";
 
 import { useForm, SubmitHandler } from "react-hook-form"
 import useToken from "@/shared/utils/crud/useToken";
@@ -109,6 +111,7 @@ const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:numb
 })
     const [Permission, setPermission] = useState("Viewer");
     const [EditedPermissions, setEditedPermissions] = useState<any>({});
+    const [DeletedPermissions, setDeletedPermissions] = useState<any>({});
 
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -119,7 +122,7 @@ const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:numb
 
 
 
-async function savePermissions (new_permissions:any,token:string) {
+async function savePermissions (new_permissions:any,deleted_permissions:any,token:string) {
   if (Object.keys(new_permissions).length > 0) {
   Object.keys(new_permissions).forEach(async (new_permission:any) => {
          const payload = {
@@ -131,14 +134,22 @@ async function savePermissions (new_permissions:any,token:string) {
                Role: new_permissions[new_permission].Role
       }
 
-      updateQuery(config.ListNames.Permissions,new_permissions[new_permission].Id,payload,token).then(
-        ()=>{
-          setEditedPermissions({})
-          queryClient.invalidateQueries("Resource_Permissions")}
-      )
+      updateQuery(config.ListNames.Permissions,new_permissions[new_permission].Id,payload,token)
+
 
   }
+  )
+   setEditedPermissions({})
+    queryClient.invalidateQueries("Resource_Permissions")  
+  }
+
+  else if (Object.keys(deleted_permissions).length > 0){
+    Object.keys(deleted_permissions).forEach(async (deleted_permission:any) => {
+      deleteQuery(config.ListNames.Permissions,deleted_permissions[deleted_permission].Id,token)
+    }
     )
+    setDeletedPermissions({})
+          queryClient.invalidateQueries("Resource_Permissions")
   }
 }
 
@@ -233,7 +244,7 @@ async function savePermissions (new_permissions:any,token:string) {
           getPermissions.data?.value.map((permission:any) => (
             console.log(permission.Role.split("-")[1]),
           <div className="flex flex-row justify-between" key={permission.Permission}>
-        <div className="flex flex-row space-x-4 items-center">
+        <div className="flex flex-row space-x-2 items-center">
         <div>
         <Avatar className="hover:cursor-pointer hover:ring-offset-2 ring-2 ">
         <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
@@ -241,17 +252,35 @@ async function savePermissions (new_permissions:any,token:string) {
         </Avatar>
 
             </div>
-            <div className="flex flex-col">
+            { DeletedPermissions[permission.Permission] == undefined ?
+            
+                   <div className="flex flex-col">
                 <p className="font-semibold"> username</p>
                 <p className="text-sm">{permission.Email}</p>
             </div>
+            :
+                <div className="flex flex-col">
+                <p className="font-semibold line-through"> username</p>
+                <p className="text-sm line-through">{permission.Email}</p>
+            </div>
     
+          }
+
+       
+        
         </div>
-                 <DropdownMenu>
-                <DropdownMenuTrigger asChild disabled={permission.Role.split("-")[1] =="Owner"?true:false} >
+        <div className="flex flex-row items-center space-x-4">
+          <DropdownMenu>
+                <DropdownMenuTrigger asChild disabled={permission.Role.split("-")[1] =="Owner" || DeletedPermissions[permission.Permission] != undefined ?true:false} >
 
                 <div className="flex flex-row rounded-sm p-2 justify-between items-center hover:bg-slate-200 hover:cursor-pointer">
-                        <p className="font-semibold text-sm">{EditedPermissions[permission.Permission] == undefined?permission.Role.split("-")[1] :EditedPermissions[permission.Permission].Role.split("-")[1]}</p>
+                         {DeletedPermissions[permission.Permission] == undefined?
+                                                 <p className="font-semibold text-sm">{EditedPermissions[permission.Permission] == undefined?permission.Role.split("-")[1] :EditedPermissions[permission.Permission].Role.split("-")[1]}</p>
+
+                         :
+                        <p className="font-semibold text-sm text-red-500">removed</p>
+
+                         }
                 </div>
 
                       </DropdownMenuTrigger>
@@ -293,7 +322,71 @@ async function savePermissions (new_permissions:any,token:string) {
       </DropdownMenuContent>
 
             </DropdownMenu>
+             <Button className="bg-transparent hover:bg-transparent" disabled={permission.Role.split("-")[1] =="Owner"?true:false}>
+          {
+            DeletedPermissions[permission.Permission] == undefined?
+              <X className="h-6 w-6 text-slate-300 hover:text-red-500 hover:cursor-pointer" onClick={()=>{
+            if (EditedPermissions[permission.Permission] != undefined){
+            const edited = EditedPermissions[permission.Permission]
+            setDeletedPermissions(
+              {
+                ...DeletedPermissions,
+                [edited.Permission]:edited
+              }
+            )
+          }
+          else{
+            setDeletedPermissions(
+              {
+                ...DeletedPermissions,
+                [permission.Permission]:permission
+              }
+            )
+          }
 
+            delete EditedPermissions[permission.Permission]
+            setEditedPermissions(
+              {
+                ...EditedPermissions
+              }
+            )
+            
+          }}></X>
+          :
+          <Undo className="h-6 w-6 text-slate-300 hover:text-green-500 hover:cursor-pointer" 
+          onClick={()=>{
+            const previous = DeletedPermissions[permission.Permission]
+            if (permission.Role != previous.Role){
+            setEditedPermissions(
+              {
+                ...EditedPermissions,
+                [previous.Permission]:previous
+
+              }
+            )
+            }
+            
+            delete DeletedPermissions[permission.Permission]
+            setDeletedPermissions(
+              {
+                ...DeletedPermissions,
+              }
+            )
+
+            
+            
+          }}
+          ></Undo>
+          }
+        
+
+          </Button>
+        </div>
+            
+      
+
+        
+         
         </div>
           ))
 
@@ -306,12 +399,12 @@ async function savePermissions (new_permissions:any,token:string) {
        
     </div>
     <div className="flex flex-row justify-end items-end space-x-8">
-      {Object.keys(EditedPermissions).length > 0?
+      {Object.keys(EditedPermissions).length > 0 || Object.keys(DeletedPermissions).length > 0?
             <p className="text-sm">pending changes...</p>
 
       :
       null}
-      <Button className="" disabled={Object.keys(EditedPermissions).length > 0?false:true} onClick={()=>savePermissions(EditedPermissions,token.data.FormDigestValue)}>Save</Button>
+      <Button className="" disabled={Object.keys(EditedPermissions).length > 0 || Object.keys(DeletedPermissions).length > 0 ?false:true} onClick={()=>savePermissions(EditedPermissions,DeletedPermissions,token.data.FormDigestValue)}>Save</Button>
     </div>
   </DialogContent>
 </Dialog>
