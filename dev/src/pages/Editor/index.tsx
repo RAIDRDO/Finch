@@ -36,6 +36,8 @@ import { Button } from '@/components/ui/button';
 import { read } from 'fs';
 import { format, parse } from 'path';
 import Merges from '../Merges';
+import { Reorder,useDragControls } from "framer-motion"
+import { Console } from 'console';
 
 interface IsEdited{
     Edited?:boolean
@@ -55,6 +57,8 @@ const Editor = () => {
     const [IsEdited, setIsEdited] = useState<any>({});
     const [Staged, setStaged] = useState<any>({});
     const [Order, setOrder] = useState<any>([]);
+    const DragControls = useDragControls()
+
     const GetDrafts = useQuery({queryKey:["Drafts"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`)),onSuccess:(data)=>{
           console.log(data.value)
           if (data.value[0].SectionOrder == ""){
@@ -124,8 +128,7 @@ const Editor = () => {
     updateQuery(config.ListNames.Drafts,GetDrafts.data?.value[0].Id,payload,token.data.FormDigestValue)
   }
     const addCell = (DraftId:string) => {
-        SaveCells()
-        const CellData:Changes = {
+       const CellData:Changes = {
             Change:uuidv4(),
             Section:uuidv4(),
             Document:GetDrafts.data.value[0].Document,
@@ -135,8 +138,9 @@ const Editor = () => {
             EditedAt:"",
             CurrentCommit:"",
             }
+       
        const new_order = [...Order,CellData.Section]
-       changeOrder(new_order)
+       SaveCells(new_order)
        setOrder(new_order)
         const NewCellpayload = {
            __metadata:{
@@ -187,10 +191,9 @@ const Editor = () => {
     }
 
     const  DeleteCell = (ChangeId: string) =>{
-        SaveCells()
         const deleteCell:Changes = Cells.filter((cell:any) => cell.Change == ChangeId)[0];
         const new_order = Order.filter((Section:any) => Section != deleteCell.Section)
-        changeOrder(new_order)
+        SaveCells(new_order)
         setOrder(new_order)
         const stage = Staged[ChangeId]
         const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,stage.original,"")
@@ -260,7 +263,7 @@ const Editor = () => {
         
     }
 
-    const SaveCells = () =>{
+    const SaveCells = (order:any) =>{
       try{
           const EditedCells = FilterEdited(Cells)
 
@@ -322,6 +325,8 @@ const Editor = () => {
               }
                 
             })
+          changeOrder(order)
+
         
       }
       catch(error){
@@ -418,7 +423,7 @@ const Editor = () => {
           </MenubarSub>
           <MenubarSeparator />
           <MenubarItem onClick={()=>{
-            SaveCells()
+            SaveCells(Order)
           }}>
             Save <MenubarShortcut>⌘S</MenubarShortcut>
           </MenubarItem>
@@ -499,13 +504,22 @@ const Editor = () => {
         <div className="flex flex-row justify-center">
         <div className='flex flex-col w-9/12  items-center'>
         <div className="flex flex-col w-9/12 h-full">
+          <Reorder.Group values={Cells} onReorder={(value)=>{
+            const reordered = value.map((cell:Sections)=>cell.Section)
+            console.log("reordered keys ",reordered)
+            setCells(value)
+            setOrder(reordered)
+            }}>
         {Cells.map((CellData:Sections) => (
+          <Reorder.Item key={CellData.Section} value={CellData} dragListener={false} dragControls={DragControls}>
 
-            <EditorCell Cellprop={CellData} Delete = {DeleteCell} Edit={EditCell} key={CellData.Section}></EditorCell>
-     
+            <EditorCell Cellprop={CellData} Delete = {DeleteCell} Edit={EditCell} Controls={DragControls} key={CellData.Section}></EditorCell>
+     </Reorder.Item>
             // <MarkdownCell  text={CellData.Content}></MarkdownCell>
 
         ))}
+          </Reorder.Group>
+
         </div>
 
         <PlusCircle className='mt-2 text-slate-400 hover:text-slate-500 hover:cursor-pointer' size={32} onClick={()=>{addCell(params.DraftId!)}} />

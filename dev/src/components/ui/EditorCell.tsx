@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useState,useEffect,useMemo } from "react"
-import { ChevronsUpDown , Eye, MoreHorizontal ,X} from "lucide-react";
+import { ChevronsUpDown , Eye, MoreHorizontal ,X,GripVertical} from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -50,9 +50,10 @@ import ReactMarkdown from 'react-markdown'
 import remarkMermaid from "@/lib/remark-mermaid-v2";
 import MarkdownRendrer from "./MarkdownRenderer";
 import { Toggle } from "./toggle";
+
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
-const EditorCell = ({Cellprop,Delete,Edit}:any) => {
+const EditorCell = ({Cellprop,Delete,Edit,Controls}:any) => {
 
     const [IsEdit, setIsEdit] = useState<boolean>(false);
     const [viewOnly, setviewOnly] = useState<boolean>(false);
@@ -81,10 +82,11 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
   }, []);
     return ( 
       <>
-       {IsEdit? <div className="flex flex-col border shadow-sm rounded-sm">
+       {IsEdit? 
+       <div className="flex flex-col border shadow-sm rounded-sm">
             <div className=" p-4 flex flex-row justify-between">
 
-                <DropdownMenu>
+            <DropdownMenu>
                 <DropdownMenuTrigger asChild>
 
                 <div className="flex flex-row rounded-sm  w-[150px] p-2 justify-between items-center hover:bg-slate-200 hover:cursor-pointer">
@@ -137,14 +139,18 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
                         </PopoverContent>
                     </Popover>
                    
+                  <GripVertical className=" text-slate-300 hover:text-slate-600 hover:cursor-pointer"  onPointerDown={(e) => Controls.start(e)}
+></GripVertical>
+            
             </div>
-           
+          
               
          </div>
 
          <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Change,e)}}  />
  
-        </div> : 
+        </div>
+         : 
         
         <div className="flex flex-col hover:rounded-sm bg-white hover:border hover:border-blue-300" onClick={(e:any)=>{
           if (e.detail===2){
