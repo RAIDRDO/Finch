@@ -54,18 +54,29 @@ const Editor = () => {
     const [Cells, setCells] = useState<ChangesProps>([]);
     const [IsEdited, setIsEdited] = useState<any>({});
     const [Staged, setStaged] = useState<any>({});
-    const GetDrafts = useQuery({queryKey:["Drafts"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`))})
+    const [Order, setOrder] = useState<any>([]);
+    const GetDrafts = useQuery({queryKey:["Drafts"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`)),onSuccess:(data)=>{
+          console.log(data.value)
+          if (data.value[0].SectionOrder == ""){
+            setOrder([])
+          }
+          else{
+            setOrder(JSON.parse(data.value[0].SectionOrder))
+          }
+    }})
     const GetDocument = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${GetDrafts.data?.value[0].Document}'`))})
-    const GetSections = useQuery({queryKey:["Changes"]
+    const GetSections = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Changes"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Changes,undefined,undefined,`Draft eq '${params.DraftId}'`))
   ,onSuccess(data) {
-      
-      setCells(parsenNulltoStr(data.value)!)
+
+      setCells(sortCells(parsenNulltoStr(data.value)!))
+
       data.value.map((cell:Changes) => {
         const unstaged:any = {}
         unstaged[cell.Change] = {original:cell.Content,new:""}
         setStaged((prevState:any)=>({...prevState,...unstaged}))
       })
+
   }
   },)
   // console.log(GetDrafts)
@@ -86,6 +97,32 @@ const Editor = () => {
       }
      
     }
+
+    const sortCells = (Cells:ChangesProps) => {
+      console.log("order" ,Order)
+      if (Cells.length > 0){
+      const sorted = Cells.sort((a,b) => {
+        
+        return Order.indexOf(a.Section) - Order.indexOf(b.Section)
+      })
+      console.log("sorted",sorted)
+      return sorted
+    }
+  else{
+    return Cells
+  }
+  }
+
+    const changeOrder = (newOrder:any) => {
+      const payload = {
+        __metadata:{
+          type: `SP.Data.${config.ListNames.Drafts}ListItem`,
+      },
+      SectionOrder:JSON.stringify(newOrder)
+
+    }
+    updateQuery(config.ListNames.Drafts,GetDrafts.data?.value[0].Id,payload,token.data.FormDigestValue)
+  }
     const addCell = (DraftId:string) => {
         SaveCells()
         const CellData:Changes = {
@@ -98,6 +135,9 @@ const Editor = () => {
             EditedAt:"",
             CurrentCommit:"",
             }
+       const new_order = [...Order,CellData.Section]
+       changeOrder(new_order)
+       setOrder(new_order)
         const NewCellpayload = {
            __metadata:{
         type: `SP.Data.${config.ListNames.Changes}ListItem`,
@@ -138,12 +178,20 @@ const Editor = () => {
         return res
       } catch (error) {
         console.log(error)
-      }        
+      }    
+      
+
+
+
+
     }
 
     const  DeleteCell = (ChangeId: string) =>{
         SaveCells()
         const deleteCell:Changes = Cells.filter((cell:any) => cell.Change == ChangeId)[0];
+        const new_order = Order.filter((Section:any) => Section != deleteCell.Section)
+        changeOrder(new_order)
+        setOrder(new_order)
         const stage = Staged[ChangeId]
         const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,stage.original,"")
         const commit = {
@@ -308,7 +356,7 @@ const Editor = () => {
         DraftName:GetDrafts.data.value[0].Name,
         SubmittedBy:user?.Id,
         SubmittedDate:Date(),
-        ApporvedBy:null,
+        ApporvedBy:"",
         ApprovalDate:"",
         MergeMsg:"",
       }

@@ -48,7 +48,7 @@ interface DocumentProps extends Documents {
   Role: string;
 }
 
-const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,Name,Role}:DocumentProps) => {
+const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,SectionOrder,Name,Role}:DocumentProps) => {
     const token = useToken()
     console.log(Role)
     const queryClient = useQueryClient()

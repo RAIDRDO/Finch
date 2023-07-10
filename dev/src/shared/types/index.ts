@@ -26,7 +26,7 @@ export interface Documents{
   Organisation:string,
   CreatedAt:string,
   EditedAt:string,
-  Sections:string,
+  SectionOrder:string,
   CurrentCommit:string,
   CurrentMerge:string
   Name:string

@@ -30,6 +30,22 @@ import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { constructReadQueryFn, constructUrl, createQuery,addPermission} from "@/shared/utils/crud";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 export default function Merges() {
+     const parsenNulltoStr = (MergeRequests:any) =>{
+      try{
+        const ParsedMergeRequest:any = MergeRequests.map((MergeRequest:any)=>{
+          if (MergeRequest.ApporvedBy == null){
+            MergeRequest.ApporvedBy = ""
+          }
+          return MergeRequest
+        })
+  
+        return ParsedMergeRequest
+      }
+      catch(error) {
+        console.error("error parsing null to empty str:",error)
+      }
+     
+    }
   const [user,setUser] = useContext(AuthContext)
   const [MergeRequests, setMergeRequests] = useState<any>();
   const getMergeRequests = useQuery({enabled:!!user,queryKey:["MergeRequests"]
@@ -41,8 +57,8 @@ export default function Merges() {
   }
 )
 
-  const Pending = MergeRequests?.filter((item:any)=>item.ApporvedBy == null)
-  const Merged = MergeRequests?.filter((item:any)=>item.ApporvedBy != null)
+  const Pending = MergeRequests?.filter((item:any)=>item.ApporvedBy == "")
+  const Merged = MergeRequests?.filter((item:any)=>item.ApporvedBy != "")
   return (
     <>
     <NavBar></NavBar>

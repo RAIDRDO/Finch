@@ -16,7 +16,7 @@ import App from "@/App";
 import { useQuery, useQueryClient } from "react-query";
 import {DateTime} from "luxon"  
 
-const MergeItem = ({Id,Document,Draft,DocumentName,DraftName,SubmittedDate,MergeMsg,ApporvedBy,ApprovalDate}:any) => {
+const MergeItem = ({Id,MergeRequest,Document,Draft,DocumentName,DraftName,SubmittedDate,MergeMsg,ApporvedBy,ApprovalDate}:any) => {
 const token = useToken()
 const [user,setUser] = useContext(AuthContext)
 const queryClient = useQueryClient()
@@ -63,9 +63,28 @@ catch(error){
 
 }
 
+
+const updateMetadata = async (DocId:string,DraftId:string,MergeRequestId:string) =>{
+  const Document = await ReadQuery(
+  constructUrl(config.ListNames.Documents, undefined, undefined, `Document eq '${DocId}'`)
+  )
+  const Draft = await ReadQuery(
+  constructUrl(config.ListNames.Drafts, undefined, undefined, `Draft eq '${DraftId}'`)
+  )
+  const payload = {
+    __metadata:{
+      type: `SP.Data.${config.ListNames.Documents}ListItem`,
+    },
+    SectionOrder:Draft[0].SectionOrder,
+    CurrentMerge:MergeRequestId
+  }
+  updateQuery(config.ListNames.Documents,Document[0].Id,payload,token.data.FormDigestValue)
+
+}
+
 const Merge = async (DocId:string,DraftId:string) =>{
 try{
-      const Draft = await ReadQuery(
+      const Commits = await ReadQuery(
   constructUrl(config.ListNames.Commits, undefined, undefined, `Draft eq '${DraftId}'`)
 ).then((data) => {
   console.log(data)
@@ -74,7 +93,7 @@ try{
 
 // console.log("draft",Draft)
 
-const Doc:any[] = await ReadQuery(
+const Sections:any[] = await ReadQuery(
   constructUrl(config.ListNames.Sections, undefined, undefined, `Document eq '${DocId}'`)
 ).then((data) =>{ return data});
 
@@ -90,14 +109,14 @@ console.log("merges",JSON.parse(prevMerge.Commits))
 // console.log(Doc)
 
 
-const DocKeys = Doc.map((section:any) => {
+const DocKeys = Sections.map((section:any) => {
   return section.Section;
 });
-for (const Commit in Draft) {
-   if (Doc.some((Section:any) => Section.Section == Draft[Commit].Section) == false) {
-     Doc.push({
-       Section: Draft[Commit].Section,
-       Document: Draft[Commit].Document,
+for (const Commit in Commits) {
+   if (Sections.some((Section:any) => Section.Section == Commits[Commit].Section) == false) {
+     Sections.push({
+       Section: Commits[Commit].Section,
+       Document: Commits[Commit].Document,
        Content: "",
        CreatedAt: Date(),
        EditedAt: "",
@@ -107,9 +126,9 @@ for (const Commit in Draft) {
 
 
 // apply all patches and merge content 
-for (const section in Doc){
-  const Commit = Draft.filter((c)=>{
-    return  c.Section == Doc[section].Section })[0]
+for (const section in Sections){
+  const Commit = Commits.filter((c)=>{
+    return  c.Section == Sections[section].Section })[0]
   let new_content = ""
   // console.log(
   //   "old content",
@@ -126,8 +145,8 @@ for (const section in Doc){
   //   // console.log("test for loop",JSON.parse(Commit.Patches)[patch])
   //   new_content = applyPatch(new_content,JSON.parse(Commit.Patches)[patch])
   // }
-  Doc[section].Content = new_content;
-  Doc[section].EditedAt = Date();
+  Sections[section].Content = new_content;
+  Sections[section].EditedAt = Date();
 
 }
 
@@ -138,25 +157,25 @@ const crud:any = {
   delete:[]
 }
 
-for (const section in Doc ){
-  const commit = Draft.filter(
-        (commits) => commits.Section == Doc[section].Section
+for (const section in Sections ){
+  const commit = Commits.filter(
+        (commits) => commits.Section == Sections[section].Section
       )[0]
-  if (Doc[section].Id == undefined) {
+  if (Sections[section].Id == undefined) {
     // console.log((Doc[section].Id))
   if (commit.LastAction != "delete"){
-      crud.create.push(Doc[section]);
+      crud.create.push(Sections[section]);
     }
   }
 
   else{
   
    if (commit.LastAction == "delete"){
-      crud.delete.push(Doc[section]);
+      crud.delete.push(Sections[section]);
 
   }
    else if (commit.LastAction =="edit"){
-    crud.update.push(Doc[section]);
+    crud.update.push(Sections[section]);
    }
 }
 
@@ -164,6 +183,7 @@ for (const section in Doc ){
 console.log("crud",crud)
 
 MergeChanges(crud)
+updateMetadata(DocId,DraftId,MergeRequest)
 }
 catch(error){
   console.log(error)
@@ -189,7 +209,7 @@ return (
             <div>
                 {MergeMsg}
             </div>
-            {ApporvedBy == null ? 
+            {ApporvedBy == "" ? 
             <div className="mr-4">
                     <Button className="bg-blue-500 hover:bg-blue-600" onClick={()=>Merge(Document,Draft).then(()=>{
                       const payload = {

@@ -208,7 +208,7 @@ const document:Documents = {
 Document:DocumentId,
 Catergory:CatergoryId,
 Organisation:Organisation_Id,
-Sections:JSON.stringify(SectionIds),
+SectionOrder:JSON.stringify(SectionIds),
 CreatedAt:Date(),
 EditedAt:Date(),
 CurrentCommit:"",

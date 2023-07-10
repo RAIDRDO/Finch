@@ -58,7 +58,7 @@ export default function Home() {
 }
 },)
 
-  const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/Sections,DocLookUp/CurrentCommit,DocLookUp/Name"
+  const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/SectionOrder,DocLookUp/CurrentCommit,DocLookUp/Name"
   ,"DocLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'document')`)),
 onSuccess(data) {
     const formattedData = data.value.map((item:any)=>{

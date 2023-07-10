@@ -41,7 +41,7 @@ import { deleteQuery ,CascadeDelete} from "@/shared/utils/crud"
 import InviteModal from "./InviteModal";
 import {DateTime} from "luxon"  
 
-const DraftCard = ({Id,Draft,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,Sections,CurrentVersion,Name}:Drafts) => {
+const DraftCard = ({Id,Draft,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,SectionOrder,CurrentVersion,Name}:Drafts) => {
     const token = useToken()
     const queryClient = useQueryClient()
     const navigate = useNavigate()

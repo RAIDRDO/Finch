@@ -36,19 +36,42 @@ const Viewer = () => {
     const [user,setUser] = useContext(AuthContext)
 
     const [Cells, setCells] = useState<CellProps>([]);
+    const [Order, setOrder] = useState<any>([]);
 
     const params = useParams();
     const queryClient = useQueryClient()
     const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.DocId}') and (User eq '${user?.Id}')`))})
-    const GetDocuments = useQuery({enabled:getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${params.DocId}'`))})
-    const GetSections = useQuery({enabled:getPermissions.isSuccess,queryKey:["Sections"]
+    const GetDocuments = useQuery({enabled:getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${params.DocId}'`)),onSuccess:(data)=>{
+          console.log(data.value)
+          if (data.value[0].SectionOrder == ""){
+            setOrder([])
+          }
+          else{
+            setOrder(JSON.parse(data.value[0].SectionOrder))
+          }
+    }})
+    const GetSections = useQuery({enabled:getPermissions.isSuccess && GetDocuments.isSuccess,queryKey:["Sections"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${params.DocId}'`))
   ,onSuccess(data) {
-      setCells(data.value)
+      setCells(sortCells(data.value))
   }
   },)
   const permissions = ResolvePermissions(getPermissions.data?.value[0].Role)
   
+      const sortCells = (Cells:CellProps) => {
+      console.log("order" ,Order)
+      if (Cells.length > 0){
+      const sorted = Cells.sort((a,b) => {
+        
+        return Order.indexOf(a.Section) - Order.indexOf(b.Section)
+      })
+      console.log("sorted",sorted)
+      return sorted
+    }
+  else{
+    return Cells
+  }
+  }
   const CreateDraft = ()=>{
     const draft:Drafts = {
         Draft:uuidv4(),
@@ -57,7 +80,7 @@ const Viewer = () => {
         Organisation:GetDocuments.data?.value[0].Organisation,
         CreatedAt:Date(),
         EditedAt:Date(),
-        Sections:"",
+        SectionOrder:"",
         CurrentCommit:"",
         CurrentMerge:"",
         CurrentVersion:0,

@@ -153,7 +153,7 @@ const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess && getPermission
           <DialogPrimitive.Close asChild>
           <Button type="submit" onClick={
             () => {
-              const data ={Document:uuidv4(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),Sections:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName}
+              const data ={Document:uuidv4(),Organisation:Catergories.Org,Catergory:Catergories.Cat,CreatedAt:Date(),EditedAt:Date(),SectionOrder:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName}
               AddDocument(data)?.then((res)=>
                 {
                   addPermission(token.data.FormDigestValue,data.Document,res.d.Id,user?.Id,user?.Email,'document',ResolveRole(getCatPermissions.data.value[0].Role,"create"))
