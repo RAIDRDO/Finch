@@ -17,6 +17,7 @@ import { AuthContextProvider ,AuthContext} from './shared/utils/context/authCont
 import {useContext } from 'react';
 import useUser from "@/shared/utils/crud/useUser"
 import AppRoutes from './AppRoutes';
+import { Toaster } from "@/components/ui/toaster"
 
 // Create client
 const queryClient = new QueryClient();
@@ -39,6 +40,8 @@ function App() {
       ) : null}
         <AuthContextProvider>
         <AppRoutes></AppRoutes>
+        <Toaster />
+
         </AuthContextProvider>
       </QueryClientProvider>
     </HashRouter>

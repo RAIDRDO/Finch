@@ -35,10 +35,14 @@ import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import useUser from "@/shared/utils/crud/useUser"
 import { get } from "lodash";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast"
+
 export default function Home() {
   const [user,setUser] = useContext(AuthContext)
   const navigate = useNavigate()
   const token = useToken()
+  const { toast } = useToast()
+
   const [OrgName, setOrgName] = useState("");
   const [OrgDescription, setOrgDescription] = useState("");
   const [OrgData, setOrgData] = useState<any>([]);
@@ -120,6 +124,7 @@ onSuccess(data) {
     <div>
       <div className="flex flex-col mt-10 mx-20 space-y-12">
         <div className="flex flex-row justify-evenly ">
+      
             <Dialog>
       <DialogTrigger asChild>
                <Button className="w-72 h-24 justify-between text-black text-base font-semibold bg-white hover:bg-slate-100 border shadow-sm "> Create Organsation <Plus></Plus></Button>   
@@ -163,7 +168,14 @@ onSuccess(data) {
                   AddOrgnisation(data)?.then((res)=>{
                     addPermission(token.data.FormDigestValue,data.org,res.d.Id,data.owner,user.Email,"organization","Org-Owner")
                     navigate(`/organization/${res.d.org}`)
-                })
+                }).then(()=>  toast({
+          title: "Organisation Created",
+
+          description: `Your organisation ${data.name} has been created successfully.`,
+          
+        })
+                  
+                )
 
 
               
