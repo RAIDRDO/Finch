@@ -37,12 +37,14 @@ import CategoryCard from "@/components/ui/CategoryCard";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import {useContext} from "react";
 import { ResolveRole,ResolvePermissions } from "@/shared/utils/crud/helper";
+import { useToast } from "@/components/ui/use-toast"
+
 export default function Organization() {
   const [user,setUser] = useContext(AuthContext)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const params = useParams();
-
+  const {toast} = useToast()
   const [OrgData, setOrgData] = useState<any>();
   const [Catergories, setCatergories] = useState<any>();
   const token = useToken()
@@ -157,7 +159,12 @@ export default function Organization() {
                 return res
               }).then((res) => {
                 navigate(`/category/${res.d.Cat}`)
-              })
+              }).then(() => toast({
+          title: "Category Created",
+
+          description: `Your category ${data.Name} has been created successfully.`,
+          
+        }))
 
             }
           }>Create</Button>

@@ -35,12 +35,15 @@ import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import {useContext} from "react";
 import { ResolveRole,ResolvePermissions } from "@/shared/utils/crud/helper";
 import DraftCard from "@/components/ui/DraftCard";
+import { useToast } from "@/components/ui/use-toast"
 
 export default function Category() {
   const [user,setUser] = useContext(AuthContext)
   const token = useToken()
   const navigate = useNavigate()
   const params = useParams();
+  const {toast} = useToast()
+
   const queryClient = useQueryClient()
   const [DocumentName, setDocumentName] = useState("");
   const [Catergories, setCatergories] = useState<any>();
@@ -161,8 +164,14 @@ const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess && getPermission
                 
                 }
 
-              )
-              queryClient.invalidateQueries(["Documents","Permissions"])
+              ).then(()=>              queryClient.invalidateQueries(["Documents","Permissions"])
+).then(()=>toast({
+          title: "Document Created",
+
+          description: `Your Document ${data.Name} has been created successfully.`,
+          
+        }))
+
 
             }
           }>Create</Button>
