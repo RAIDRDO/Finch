@@ -17,7 +17,6 @@ export default defineConfig({
 
     rollupOptions:{
       output:{
-        sourcemap: true,
         manualChunks:undefined,
         inlineDynamicImports: true,
         entryFileNames:"static/js/main.js",

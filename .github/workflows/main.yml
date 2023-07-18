@@ -1,12 +1,12 @@
-name: Build-depoly-Crago-react
+name: Build-depoly-Vite-react
 
 on: 
   push:
       branches:
-        - main
+        - finch_vite
   workflow_dispatch:
 jobs:
-  Build-Crago: 
+  Build-Vite: 
     name: complile production build 
     runs-on: ubuntu-latest
     env:
@@ -31,44 +31,50 @@ jobs:
       - name: rename main.js to main.txt
         run:  mv ./build/static/js/main.js ./build/static/js/main.txt
 
-      - name: clean up build file
-        run:  rm -rf ./build/static/css/main.css.map ./build/static/js/main.js.map ./build/static/js/main.js.LICENSE.txt ./build/asset-manifest.json ./build/favicon.ico ./build/manifest.json
       - name: edit index.html
         run: > 
           rm -rf ./build/index.html ; 
-          echo '<!doctype html><html lang="en"><head><meta charset="utf-8"/>
-          <link rel="icon" href="/favicon.ico"/>
-          <meta name="viewport" content="width=device-width,initial-scale=1"/>
-          <meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/>
-          <link rel="manifest" href="/manifest.json"/>
-          <title>React App</title>
-          <script defer="defer" src="/static/js/main.js"></script>
-          <link href="./static/css/main.css" rel="stylesheet">
+          echo '
+          <!doctype html>
+          <html lang="en">
 
-          <script type="text/javascript">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <meta name="theme-color" content="#000000" />
+            <title>Finch</title>
+            <link href="./static/css/main.css" rel="stylesheet">
+
+            <script type="text/javascript">
               const fullUrl = window.location.origin + window.location.pathname;
               const fileUrl = fullUrl.slice(0, fullUrl.lastIndexOf("/"))
-              const txtUrl = fileUrl+"/static/js/";
+              const txtUrl = fileUrl + "/static/js/";
 
               function loadWords(filename, asynch) {
-                  var xhr = new XMLHttpRequest();
-                  xhr.onreadystatechange = function () {
-                      if (this.readyState == 4 && this.status == 200) {
-                          var sTag = document.createElement("script");
-                          sTag.type = "text/javascript";
-                          sTag.innerHTML = this.responseText;
-                          var head = document.getElementsByTagName("head")[0];
-                          head.appendChild(sTag);
-                      }
-                  };
-                  var url = txtUrl + filename + ".txt";
-                  xhr.open("GET", url, asynch);
-                  xhr.send();
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                  if (this.readyState == 4 && this.status == 200) {
+                    var sTag = document.createElement("script");
+                    sTag.type = "module";
+                    sTag.innerHTML = this.responseText;
+                    var head = document.getElementsByTagName("head")[0];
+                    head.appendChild(sTag);
+                  }
+                };
+                var url = txtUrl + filename + ".txt";
+                xhr.open("GET", url, asynch);
+                xhr.send();
               }
 
               loadWords("main", true)
-          </script>
-          </head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>' >> ./build/index.html
+            </script>
+          </head>
+
+          <body><noscript>You need to enable JavaScript to run this app.</noscript>
+            <div id="root"></div>
+          </body>
+
+          </html>' >> ./build/index.html
       - name: upload build to artifacts for production 
         uses: actions/upload-artifact@v3
         with:
@@ -95,7 +101,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install zip
-          zip -r finch-build.zip *
+          zip -r finch-build-vite.zip *
           
       - name: check dir
         run:  ls -a
@@ -103,7 +109,7 @@ jobs:
         uses: adityak74/google-drive-upload-git-action@main
         with:
           credentials: ${{ secrets.credentials }}
-          filename: "finch-build.zip"
+          filename: "finch-build-vite.zip"
           overwrite: "true"
           folderId: ${{ secrets.folderId }}
 
