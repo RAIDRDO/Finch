@@ -86,7 +86,7 @@ jobs:
       #   uses: csexton/debugger-action@master
   Upload-prod-build:
     name: upload production build to google drive
-    needs: Build-Crago
+    needs: Build-Vite
     runs-on: ubuntu-latest
     steps:
       - name: download production build artifacts
