@@ -511,9 +511,9 @@ const Editor = () => {
             setOrder(reordered)
             }}>
         {Cells.map((CellData:Sections) => (
-          <Reorder.Item key={CellData.Section} value={CellData} dragListener={false} dragControls={DragControls}>
+          <Reorder.Item key={CellData.Section} value={CellData}>
 
-            <EditorCell Cellprop={CellData} Delete = {DeleteCell} Edit={EditCell} Controls={DragControls} key={CellData.Section}></EditorCell>
+            <EditorCell Cellprop={CellData} Delete = {DeleteCell} Edit={EditCell} key={CellData.Section}></EditorCell>
      </Reorder.Item>
             // <MarkdownCell  text={CellData.Content}></MarkdownCell>
 

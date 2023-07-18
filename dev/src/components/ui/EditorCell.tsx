@@ -53,7 +53,7 @@ import { Toggle } from "./toggle";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
-const EditorCell = ({Cellprop,Delete,Edit,Controls}:any) => {
+const EditorCell = ({Cellprop,Delete,Edit}:any) => {
 
     const [IsEdit, setIsEdit] = useState<boolean>(false);
     const [viewOnly, setviewOnly] = useState<boolean>(false);
@@ -138,9 +138,7 @@ const EditorCell = ({Cellprop,Delete,Edit,Controls}:any) => {
                       
                         </PopoverContent>
                     </Popover>
-                   
-                  <GripVertical className=" text-slate-300 hover:text-slate-600 hover:cursor-pointer"  onPointerDown={(e) => Controls.start(e)}
-></GripVertical>
+
             
             </div>
           
