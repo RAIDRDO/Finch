@@ -18,6 +18,7 @@ import {useContext } from 'react';
 import useUser from "@/shared/utils/crud/useUser"
 import AppRoutes from './AppRoutes';
 import { Toaster } from "@/components/ui/toaster"
+import Console from './react_console'
 
 // Create client
 const queryClient = new QueryClient();
@@ -36,8 +37,11 @@ function App() {
          {showDevtools ? (
         <React.Suspense fallback={null}>
           <ReactQueryDevtoolsProduction />
+          <Console></Console> 
+
         </React.Suspense>
       ) : null}
+
         <AuthContextProvider>
         <AppRoutes></AppRoutes>
         <Toaster />
