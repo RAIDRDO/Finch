@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: production-build
-          path: ./dev/build/
+          path: ./dev_vite/build/
           retention-days: 1
 
       # - name: Setup Debug Session
