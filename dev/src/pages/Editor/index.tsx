@@ -103,13 +103,13 @@ const Editor = () => {
     }
 
     const sortCells = (Cells:ChangesProps) => {
-      console.log("order" ,Order)
+      // console.log("order" ,Order)
       if (Cells.length > 0){
       const sorted = Cells.sort((a,b) => {
         
         return Order.indexOf(a.Section) - Order.indexOf(b.Section)
       })
-      console.log("sorted",sorted)
+      // console.log("sorted",sorted)
       return sorted
     }
   else{

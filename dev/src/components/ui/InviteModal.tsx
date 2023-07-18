@@ -84,7 +84,7 @@ async function onSubmit (email:string,permission:string,type:string,token:string
       break;
   }
   const role = type +"-"+permission
-  console.log(role)
+  // console.log(role)
   addPermission(token,resourceUUID,resourceId,res[0].Id,email,resource,role)
 
 
@@ -100,7 +100,7 @@ const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:numb
   const queryClient = useQueryClient()
 
   const getPermissions = useQuery({queryKey:["Resource_Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`Resource eq '${resourceUUID}'`))})
-  console.log(getPermissions.data)
+  // console.log(getPermissions.data)
   const formSchema = z.object({
   email: z.string({
       required_error: "Please select an email to display.",
@@ -189,7 +189,7 @@ async function savePermissions (new_permissions:any,deleted_permissions:any,toke
       <Form {...form}>
       <form className="flex flex-row space-x-2" onSubmit={form.handleSubmit(
         e => {
-        console.log(form.getValues())
+        // console.log(form.getValues())
         onSubmit(form.getValues().email,form.getValues().permission,type,token.data.FormDigestValue,resourceId,resourceUUID)
        }
       )}>
@@ -242,7 +242,7 @@ async function savePermissions (new_permissions:any,deleted_permissions:any,toke
         <div className="flex flex-col mt-4 space-y-4">
         {
           getPermissions.data?.value.map((permission:any) => (
-            console.log(permission.Role.split("-")[1]),
+            // console.log(permission.Role.split("-")[1]),
           <div className="flex flex-row justify-between" key={permission.Permission}>
         <div className="flex flex-row space-x-2 items-center">
         <div>
@@ -290,8 +290,8 @@ async function savePermissions (new_permissions:any,deleted_permissions:any,toke
         <DropdownMenuRadioGroup value={EditedPermissions[permission.Permission] == undefined?permission.Role.split("-")[1] :EditedPermissions[permission.Permission].Role.split("-")[1]} onValueChange={(e)=>
           {
             const new_role = type+"-"+e
-            console.log("new role",new_role)
-            console.log("old role",permission.Role)
+            // console.log("new role",new_role)
+            // console.log("old role",permission.Role)
             const new_permission = Object.assign({},permission)
             new_permission.Role = new_role
             if (permission.Role == new_permission.Role){
@@ -312,7 +312,7 @@ async function savePermissions (new_permissions:any,deleted_permissions:any,toke
             }
            
             
-            console.log("EDITED PERM",EditedPermissions)
+            // console.log("EDITED PERM",EditedPermissions)
           }}>
           <DropdownMenuRadioItem value="Viewer">Viewer</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="Editor">Editor</DropdownMenuRadioItem>

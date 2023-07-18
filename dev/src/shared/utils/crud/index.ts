@@ -201,22 +201,22 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
         User:UserId,
         Email:Email,
         Resource:Id,
-        OrgLookUp:null,
-        CatLookUp:null,
-        DocLookUp:null,
+        OrgLookUpId:null,
+        CatLookUpId:null,
+        DocLookUpId:null,
         ResourceType:type,
         Role:Role
       
       }
   switch (type) {
     case "organization":
-      data.OrgLookUp = IdSP
+      data.OrgLookUpId = IdSP
       break;
     case "category":
-      data.CatLookUp = IdSP
+      data.CatLookUpId = IdSP
       break;
     case "document":
-      data.DocLookUp = IdSP
+      data.DocLookUpId = IdSP
       break;
 
   }
