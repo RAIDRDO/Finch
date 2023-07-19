@@ -3,7 +3,7 @@ name: Build-depoly-Vite-react
 on: 
   push:
       branches:
-        - finch_vite
+        - main
   workflow_dispatch:
 jobs:
   Build-Vite: 
