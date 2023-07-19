@@ -209,7 +209,7 @@ return (
             <div>
                 {MergeMsg}
             </div>
-            {ApporvedBy == "" ? 
+            {ApporvedBy == "" || ApporvedBy == null? 
             <div className="mr-4">
                     <Button className="bg-blue-500 hover:bg-blue-600" onClick={()=>Merge(Document,Draft).then(()=>{
                       const payload = {
