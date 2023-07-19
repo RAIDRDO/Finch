@@ -199,11 +199,11 @@ return (
             <div>
                 {DraftName}
             </div>
-            {ApprovalDate != "" ? <div>
+            {ApprovalDate != "" || ApporvedBy == null ? <div>
               {DateTime.fromMillis(Date.parse(ApprovalDate)).toFormat("FF")}
             </div> :
             <div>
-                {SubmittedDate}
+                {DateTime.fromMillis(Date.parse(SubmittedDate)).toFormat("FF")}
             </div>
 }
             <div>

@@ -13,11 +13,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-      {/* {config.DevMode ? 
-    <Console></Console> 
-:null
-  } */}
+
     <App/>
+
 
 
   </React.StrictMode>

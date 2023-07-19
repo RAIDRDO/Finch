@@ -43,7 +43,7 @@ const Viewer = () => {
     const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`(Resource eq '${params.DocId}') and (User eq '${user?.Id}')`))})
     const GetDocuments = useQuery({enabled:getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${params.DocId}'`)),onSuccess:(data)=>{
           // console.log(data.value)
-          if (data.value[0].SectionOrder == ""){
+          if (data.value[0].SectionOrder == "" || data.value[0].SectionOrder == null ){
             setOrder([])
           }
           else{
