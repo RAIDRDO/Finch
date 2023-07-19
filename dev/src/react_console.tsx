@@ -11,7 +11,7 @@ const Console_log_item = ({index,log_type,log_msg}:Logs) => {
            
 
            {log_type ==="log" ?
-             <div key={index} className='border-solid border-l-8  border-l-green-500  border-y border-slate-700 hover:bg-slate-700 '>
+             <div key={index} className='border-solid  border-l-8  border-l-green-500  border-y border-slate-700 hover:bg-slate-700 '>
                     <p className="ml-2 font-mono text-white">{log_msg}</p> 
             </div>
             :  log_type==="error"? 
