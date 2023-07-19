@@ -1,9 +1,9 @@
 export const config = {
-  // apiUrl: 'https://portal.mis.defence.gov.sg/rsaf/RDO/finch/_api/',
-  apiUrl: 'http://localhost:5000/ravenpoint/_api/',
+  apiUrl: 'https://portal.mis.defence.gov.sg/rsaf/RDO/finch/_api/',
+  //apiUrl: 'http://localhost:5000/ravenpoint/_api/',
 
   // Insert list IDs, e.g.
-  ListNames: {Documents:"Documents",
+  ListNames: {Documents:"Docs",
               Drafts:"Drafts",
               Sections:"Sections",
               Changes:"Changes",
