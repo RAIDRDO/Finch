@@ -128,6 +128,7 @@ const Editor = () => {
     updateQuery(config.ListNames.Drafts,GetDrafts.data?.value[0].Id,payload,token.data.FormDigestValue)
   }
     const addCell = (DraftId:string) => {
+      try {
        const CellData:Changes = {
             Change:uuidv4(),
             Section:uuidv4(),
@@ -177,9 +178,8 @@ const Editor = () => {
    createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue)
 
 
-
-      try {
-        return res
+      return res
+   
       } catch (error) {
         console.log(error)
       }    
@@ -191,6 +191,7 @@ const Editor = () => {
     }
 
     const  DeleteCell = (ChangeId: string) =>{
+      try{
         const deleteCell:Changes = Cells.filter((cell:any) => cell.Change == ChangeId)[0];
         const new_order = Order.filter((Section:any) => Section != deleteCell.Section)
         SaveCells(new_order)
@@ -219,11 +220,17 @@ const Editor = () => {
         queryClient.invalidateQueries("Changes")
         })
         createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue)
-
+      }
+      catch(error){
+          console.log(error)
+      }
         
     }
 
     const EditCell = (ChangeId: string,Content:string ) =>{
+      try{
+
+      
         const editedCell = Cells.filter((cell:any) => cell.Change == ChangeId)[0];
         const index = Cells.indexOf(editedCell);
         editedCell.Content = Content
@@ -240,7 +247,15 @@ const Editor = () => {
 
 
         setCells(Cells)
+
+      }
+      catch(error){
+        console.log(error)
+      }
     }
+
+
+
     const filterDataPayload = (data:any) =>{
       try{
         const  {Id,Old_Id,...NewData} = data
