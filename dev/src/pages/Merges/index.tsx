@@ -33,12 +33,16 @@ export default function Merges() {
      const parsenNulltoStr = (MergeRequests:any) =>{
       try{
         const ParsedMergeRequest:any = MergeRequests.map((MergeRequest:any)=>{
-          if (MergeRequest.ApporvedBy == null){
+          if (MergeRequest.ApporvedBy == null || MergeRequest.ApporvedBy == "None"){
             MergeRequest.ApporvedBy = ""
+            return MergeRequest
+
           }
-          return MergeRequest
+          else{
+            return MergeRequest
+          }
         })
-  
+        console.log(ParsedMergeRequest)
         return ParsedMergeRequest
       }
       catch(error) {
@@ -51,7 +55,7 @@ export default function Merges() {
   const getMergeRequests = useQuery({enabled:!!user,queryKey:["MergeRequests"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.MergeRequests,undefined,undefined,undefined))
 ,onSuccess(data) {
-    setMergeRequests(data.value)
+    setMergeRequests(parsenNulltoStr(data.value))
   
 }
   }
