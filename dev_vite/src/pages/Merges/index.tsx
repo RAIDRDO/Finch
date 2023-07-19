@@ -29,28 +29,32 @@ import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { constructReadQueryFn, constructUrl, createQuery,addPermission} from "@/shared/utils/crud";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 export default function Merges() {
-     const parsenNulltoStr = (MergeRequests:any) =>{
-      try{
-        const ParsedMergeRequest:any = MergeRequests.map((MergeRequest:any)=>{
-          if (MergeRequest.ApporvedBy == null){
-            MergeRequest.ApporvedBy = ""
-          }
+  const parsenNulltoStr = (MergeRequests:any) =>{
+    try{
+      const ParsedMergeRequest:any = MergeRequests.map((MergeRequest:any)=>{
+        if (MergeRequest.ApporvedBy == null || MergeRequest.ApporvedBy == "None"){
+          MergeRequest.ApporvedBy = ""
           return MergeRequest
-        })
-  
-        return ParsedMergeRequest
-      }
-      catch(error) {
-        console.error("error parsing null to empty str:",error)
-      }
-     
+
+        }
+        else{
+          return MergeRequest
+        }
+      })
+      console.log(ParsedMergeRequest)
+      return ParsedMergeRequest
     }
+    catch(error) {
+      console.error("error parsing null to empty str:",error)
+    }
+   
+  }
   const [user,setUser] = useContext(AuthContext)
   const [MergeRequests, setMergeRequests] = useState<any>();
   const getMergeRequests = useQuery({enabled:!!user,queryKey:["MergeRequests"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.MergeRequests,undefined,undefined,undefined))
 ,onSuccess(data) {
-    setMergeRequests(data.value)
+    setMergeRequests(parsenNulltoStr(data.value))
   
 }
   }
