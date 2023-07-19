@@ -14,7 +14,7 @@ jobs:
     defaults:
     
       run: 
-        working-directory: ./dev_vite
+        working-directory: ./dev
     steps:
       - name: clone repo
         uses: actions/checkout@v3
@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: production-build
-          path: ./dev_vite/build/
+          path: ./dev/build/
           retention-days: 1
 
       # - name: Setup Debug Session
@@ -101,7 +101,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install zip
-          zip -r finch-build-vite.zip *
+          zip -r finch-build.zip *
           
       - name: check dir
         run:  ls -a
@@ -109,7 +109,7 @@ jobs:
         uses: adityak74/google-drive-upload-git-action@main
         with:
           credentials: ${{ secrets.credentials }}
-          filename: "finch-build-vite.zip"
+          filename: "finch-build.zip"
           overwrite: "true"
           folderId: ${{ secrets.folderId }}
 
