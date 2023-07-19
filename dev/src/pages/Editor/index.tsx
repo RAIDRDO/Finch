@@ -61,7 +61,7 @@ const Editor = () => {
 
     const GetDrafts = useQuery({queryKey:["Drafts"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`)),onSuccess:(data)=>{
           console.log(data.value)
-          if (data.value[0].SectionOrder == ""){
+          if (data.value[0].SectionOrder == "" || data.value[0].SectionOrder == null ){
             setOrder([])
           }
           else{
