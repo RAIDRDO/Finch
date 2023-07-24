@@ -34,6 +34,7 @@ import { CreateCommit,ResolvePermissions} from '@/shared/utils/crud/helper';
 const Viewer = () => {
     const token = useToken()
     const [user,setUser] = useContext(AuthContext)
+    const navigate = useNavigate()
 
     const [Cells, setCells] = useState<CellProps>([]);
     const [Order, setOrder] = useState<any>([]);
@@ -72,7 +73,7 @@ const Viewer = () => {
     return Cells
   }
   }
-  const CreateDraft = ()=>{
+  const CreateDraft = async ()=>{
     const draft:Drafts = {
         Draft:uuidv4(),
         Document:GetDocuments.data?.value[0].Document,
@@ -159,7 +160,7 @@ const Viewer = () => {
 
 
 
- 
+    return draft
 
   }
     const CanEdit = (permissions:ResourcePermissions)=>{
@@ -183,7 +184,7 @@ const Viewer = () => {
       </div>
       <div className='mr-8'>
         {CanEdit(permissions)? 
-        <Button  onClick={()=>CreateDraft()}> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
+        <Button  onClick={()=>CreateDraft().then((data)=>navigate(`/editor/${data.Draft}`))}> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
         :
         <Button disabled> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
         
