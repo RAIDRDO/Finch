@@ -419,7 +419,7 @@ const Editor = () => {
     <div className='flex flex-row justify-between items-center'>
 
     <div className='flex flex-row items-center mt-4 ml-4'>
-    <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900'></ArrowLeft>
+    <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900' onClick={()=>navigate(`/category/${GetDrafts.data.value[0].Catergory}`)}></ArrowLeft>
     <div className=' flex flex-col'>
     <Input className='w-36 ml-3' disabled></Input>
     <Menubar className='border-none'>
