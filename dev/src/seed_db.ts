@@ -240,6 +240,7 @@ Section:key,
 Content:contents[key],
 CreatedAt:Date(),
 EditedAt:Date(),
+Classification:""
 }
 const payload = {
    __metadata:{
@@ -271,6 +272,7 @@ Section:items[0].SectionId,
 Content:items[0].changedContent,
 CreatedAt:Date(),
 EditedAt:Date(),
+Classification:"Confidential"
 }
 
 

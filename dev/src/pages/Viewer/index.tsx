@@ -111,6 +111,7 @@ const Viewer = () => {
             EditedAt:Date(),
             Draft:draft.Draft,
             CurrentCommit:"",
+            Classification:CellData.Classification
         }
          const commit:Commit = {
             CommitKey:uuidv4(),
@@ -122,7 +123,9 @@ const Viewer = () => {
             Diff:PatchDiff?.DiffStr,
             CommittedAt:Date(),
             CommitType:"create",
-            User: user?.Id
+            User: user?.Id,
+            Classification:CellData.Classification
+
 
             
         }
