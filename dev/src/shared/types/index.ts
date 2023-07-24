@@ -45,6 +45,7 @@ export interface Sections{
   Content:string,
   CreatedAt:string,
   EditedAt:string,
+  Classification:string
 }
 
 
@@ -82,6 +83,7 @@ export interface Commit {
   CommittedAt:string,
   CommitType:string,
   User:number
+  Classification:string
 }
 
 

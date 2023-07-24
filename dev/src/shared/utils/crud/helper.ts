@@ -179,6 +179,7 @@ export const FormatPatches = (groupedBy:any)=>{
         let Draft =""
         let Change = ""
         let Action =""
+        let Classification = ""
         groupedBy[key].map((patch:any)=>{
             patches.push(JSON.parse(patch.Patch))
             diffs.push(patch.Diff);
@@ -187,6 +188,7 @@ export const FormatPatches = (groupedBy:any)=>{
             Draft = patch.Draft;
             Change = patch.Change;
             Action = patch.CommitType
+            Classification = patch.Classification
 
 
         })
@@ -198,7 +200,8 @@ export const FormatPatches = (groupedBy:any)=>{
           Commits:JSON.stringify(Commits),
           Patches : JSON.stringify(patches),
           Diffs : JSON.stringify(diffs),
-          LastAction:Action
+          LastAction:Action,
+          Classification:Classification
 
         };
 

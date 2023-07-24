@@ -120,6 +120,7 @@ for (const Commit in Commits) {
        Content: "",
        CreatedAt: Date(),
        EditedAt: "",
+       Classification:""
      });
    }
 }
@@ -130,6 +131,7 @@ for (const section in Sections){
   const Commit = Commits.filter((c)=>{
     return  c.Section == Sections[section].Section })[0]
   let new_content = ""
+  let classification = ""
   // console.log(
   //   "old content",
   //   new_content,
@@ -147,7 +149,7 @@ for (const section in Sections){
   // }
   Sections[section].Content = new_content;
   Sections[section].EditedAt = Date();
-
+  Sections[section].Classification = Commit.Classification
 }
 
 //bucket sections into crud type 

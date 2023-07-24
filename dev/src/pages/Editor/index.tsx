@@ -138,6 +138,7 @@ const Editor = () => {
             CreatedAt:Date(),
             EditedAt:"",
             CurrentCommit:"",
+            Classification:"Confidential"
             }
        
        const new_order = [...Order,CellData.Section]
@@ -168,6 +169,7 @@ const Editor = () => {
         CommitType:"create",
         CommittedAt:Date(),
         User:user?.Id,
+        Classification:CellData.Classification
       }
       const CommitPayload = {
         __metadata:{
@@ -227,14 +229,17 @@ const Editor = () => {
         
     }
 
-    const EditCell = (ChangeId: string,Content:string ) =>{
+    const EditCell = (ChangeId: string,Content:string,type:string ) =>{
       try{
 
       
         const editedCell = Cells.filter((cell:any) => cell.Change == ChangeId)[0];
         const index = Cells.indexOf(editedCell);
-        editedCell.Content = Content
+        type =="text"? editedCell.Content = Content : editedCell.Classification = Content
+
+        
         editedCell.EditedAt = Date()
+        console.log(editedCell)
         Cells[index]=editedCell;
         if (IsEdited[ChangeId] == undefined){
             const edited:any = {}
@@ -298,6 +303,7 @@ const Editor = () => {
                   CommitType:"edit",
                   CommittedAt:Date(),
                   User:user?.Id,
+                  Classification:cell.Classification
                 }
                 const CommitPayload = {
                   __metadata:{
@@ -314,6 +320,7 @@ const Editor = () => {
                ...data
                }
                try{
+                console.log(payload)
                 updateQuery(config.ListNames.Changes,cell.Id,payload,token.data.FormDigestValue).then(() => {
                   queryClient.invalidateQueries("Changes")
                 }).then(() => {

@@ -50,6 +50,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkMermaid from "@/lib/remark-mermaid-v2";
 import MarkdownRendrer from "./MarkdownRenderer";
 import { Toggle } from "./toggle";
+import { el } from "date-fns/locale";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
@@ -57,7 +58,7 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
 
     const [IsEdit, setIsEdit] = useState<boolean>(false);
     const [viewOnly, setviewOnly] = useState<boolean>(false);
-    const [Classification, setClassification] = useState("");
+    const [Classification, setClassification] = useState("Confidential");
     useEffect(() => {
         if (Cellprop.Content == "") {
             setIsEdit(true);
@@ -65,7 +66,19 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
         else{
             setIsEdit(false);
 
+
         }
+
+        if (Cellprop.Classification == ""){
+          setClassification("Confidential")
+
+
+        }
+
+        else{
+          setClassification(Cellprop.Classification)
+        }
+
     }, [])
 
     const customRendererOptions = useMemo(() => {
@@ -90,7 +103,7 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
                 <DropdownMenuTrigger asChild>
 
                 <div className="flex flex-row rounded-sm  w-[150px] p-2 justify-between items-center hover:bg-slate-200 hover:cursor-pointer">
-                        <p className="font-semibold">Classification</p>
+                        <p className="font-semibold">{Classification}</p>
                         <ChevronsUpDown className="ml-1 h-5 w-5"></ChevronsUpDown>
                 </div>
 
@@ -98,12 +111,14 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
                       <DropdownMenuContent className="w-[150px]">
         <DropdownMenuLabel>Classification type</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={Classification} onValueChange={setClassification}>
+        <DropdownMenuRadioGroup value={Classification} onValueChange={(e)=>{setClassification(e),
+        Edit(Cellprop.Change,e,"classification")
+        }}>
           <DropdownMenuRadioItem value="Open">Open</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="Restricted">Restricted</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="Confidential">Confidential</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="Secret">Secret</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="Top Secret">Top Secret</DropdownMenuRadioItem>
+        <DropdownMenuRadioItem value="Top Secret">Top Secret</DropdownMenuRadioItem>
 
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
@@ -145,7 +160,7 @@ const EditorCell = ({Cellprop,Delete,Edit}:any) => {
               
          </div>
 
-         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Change,e)}}  />
+         <SimpleMdeReact options={customRendererOptions} value={Cellprop.Content}  onChange={(e:any)=>{Edit(Cellprop.Change,e,"text")}}  />
  
         </div>
          : 
