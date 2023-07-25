@@ -81,7 +81,7 @@ const Viewer = () => {
         Organisation:GetDocuments.data?.value[0].Organisation,
         CreatedAt:Date(),
         EditedAt:Date(),
-        SectionOrder:"",
+        SectionOrder:GetDocuments.data?.value[0].SectionOrder,
         CurrentCommit:"",
         CurrentMerge:"",
         CurrentVersion:0,
