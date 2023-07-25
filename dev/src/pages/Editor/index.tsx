@@ -77,7 +77,7 @@ const Editor = () => {
 
       data.value.map((cell:Changes) => {
         const unstaged:any = {}
-        unstaged[cell.Change] = {original:cell.Content,new:""}
+        unstaged[cell.Change] = {original_text:cell.Content,new_text:"",original_class:cell.Classification,new_class:""}
         setStaged((prevState:any)=>({...prevState,...unstaged}))
       })
 
@@ -235,7 +235,13 @@ const Editor = () => {
       
         const editedCell = Cells.filter((cell:any) => cell.Change == ChangeId)[0];
         const index = Cells.indexOf(editedCell);
-        type =="text"? editedCell.Content = Content : editedCell.Classification = Content
+        if (type =="text"){
+          editedCell.Content = Content
+
+        }
+       else{ 
+        editedCell.Classification = Content
+      }
 
         
         editedCell.EditedAt = Date()
@@ -247,7 +253,16 @@ const Editor = () => {
             setIsEdited((prevState:any)=>({...prevState,...edited}))
         }
         const stage:any = Staged[ChangeId]
-        stage.new = Content
+        if (type =="text"){
+                  stage.new_text = Content
+
+        }
+        else{
+              stage.new_class = Content
+              stage.new_text = editedCell.Content
+
+        }
+
         setStaged((prevState:any)=>({...prevState,...stage}))
 
 
@@ -291,7 +306,11 @@ const Editor = () => {
           EditedCells?.map((cell:Changes) => {
                 const data = filterDataPayload(cell)
                 const StagedChanges = Staged[cell.Change]
-                const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original,StagedChanges.new)
+                const DiffPatch = StagedChanges.original_text != StagedChanges.new_text ? CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.new_text) :CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.original_text)
+                console.log("original",StagedChanges.original_text,StagedChanges.original_text)
+                console.log("new",StagedChanges.new_text)
+
+                console.log("DiffPatch",DiffPatch)
                 const commit:Commit = {
                   CommitKey:uuidv4(),
                   Document:cell.Document,
@@ -303,7 +322,7 @@ const Editor = () => {
                   CommitType:"edit",
                   CommittedAt:Date(),
                   User:user?.Id,
-                  Classification:cell.Classification
+                  Classification: StagedChanges.new_class != StagedChanges.old_class? StagedChanges.new_class:StagedChanges.old_class
                 }
                 const CommitPayload = {
                   __metadata:{

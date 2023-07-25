@@ -147,7 +147,7 @@ export const ResolveRole = (role:string,action:string):any => {
 
 export const CreateCommit = (name:string,original:string,changes:string)=>{
 try{
-    // console.log(name,original,changes)
+    console.log(changes)
     const DiffStr = createPatch(name, original, changes);
     // console.log("DiffStr",DiffStr)
     const Patch = parsePatch(DiffStr);
