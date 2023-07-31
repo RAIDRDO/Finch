@@ -26,30 +26,32 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom";
-import { constructReadQueryFn, constructUrl, createQuery } from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery,addPermission } from "@/shared/utils/crud";
 import { useQuery } from "react-query";
 import { useState,useContext} from "react";
 import useToken from "@/shared/utils/crud/useToken";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
+import { useToast } from "@/components/ui/use-toast"
 
 export default function Organizations() {
   const token = useToken()
+    const { toast } = useToast()
   const [user,setUser] = useContext(AuthContext)
 
   const navigate = useNavigate()
 
-  const [OrgData, setOrgData] = useState();
+  const [OrgData, setOrgData] = useState<any>([]);
 
   const [OrgName, setOrgName] = useState("");
   const [OrgDescription, setOrgDescription] = useState("");
-    const GetOrgnisations = useQuery({queryKey:["Orgnisations"]
-    ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation))
-  ,onSuccess(data) {
-      setOrgData(data)
-  }
-  },)
-  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
 
+  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
+  const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,undefined))
+,onSuccess(data) {
+    setOrgData(data.value)
+}
+},)
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
            __metadata:{
@@ -110,15 +112,26 @@ export default function Organizations() {
         </div>
         <DialogFooter>
           <Button type="submit" onClick={
-                () => {AddOrgnisation({
+                () => {
+                  const data = {
                   org:uuidv4(),
-                  owner: "test",
+                  owner: user.Id,
                   desc:OrgDescription,
                   name:OrgName
 
-                })?.then((res)=>{
+                }
+                  AddOrgnisation(data)?.then((res)=>{
+                    addPermission(token.data.FormDigestValue,data.org,res.d.Id,data.owner,user.Email,"organization","Org-Owner")
                     navigate(`/organization/${res.d.org}`)
-                })
+                }).then(()=>  toast({
+          title: "Organisation Created",
+
+          description: `Your organisation ${data.name} has been created successfully.`,
+          
+        })
+                  
+                )
+
 
               
               }
@@ -129,18 +142,24 @@ export default function Organizations() {
          
             </div>
             <div className="border"></div>
-            <div className="flex flex-row justify-evenly">
-              {
-                GetOrgnisations.data?.map((item:Organisation)=>{
-                  const permisson = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)[0].Role
-                  // console.log(permisson)
-                  const orgCardData = {
-                    ...item,
-                    Role:permisson
-                  }
-                  return     <OrgansationCard key={item.org} {...orgCardData}></OrgansationCard>                })
-              }
-              
+            <div className="flex flex-row justify-evenly flex-wrap">
+               {
+            OrgData?.map((item:any)=>{
+                          // console.log(OrgData)
+                          const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)
+                          if (permissons.length != 0) {
+
+                          const permisson = permissons[0].Role
+                          const OrgCardData = {
+                            ...item,
+                            Role:permisson
+                          }
+                          return     <OrgansationCard key={item.org} {...OrgCardData}></OrgansationCard>
+                        }
+                        else{
+                          return null
+                        }
+            })}
               {/* <OrgansationCard></OrgansationCard> */}
 
             </div>

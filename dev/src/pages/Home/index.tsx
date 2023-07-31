@@ -50,24 +50,39 @@ export default function Home() {
 
   const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
 
+//   const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
+//   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,OrgLookUp/Id,OrgLookUp/org,OrgLookUp/desc,OrgLookUp/name"
+//   ,"OrgLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'organization')`))
+// ,onSuccess(data) {
+//    const formattedData = data.value.map((item:any)=>{
+//       return item.OrgLookUp
+//     }) 
+//     setOrgData(formattedData)
+// }
+// },)
+
+
   const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
-  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,OrgLookUp/Id,OrgLookUp/org,OrgLookUp/desc,OrgLookUp/name"
-  ,"OrgLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'organization')`))
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,undefined))
 ,onSuccess(data) {
-   const formattedData = data.value.map((item:any)=>{
-      return item.OrgLookUp
-    }) 
-    setOrgData(formattedData)
+    setOrgData(data.value)
 }
 },)
 
-  const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/SectionOrder,DocLookUp/CurrentCommit,DocLookUp/Name"
-  ,"DocLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'document')`)),
+//   const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/SectionOrder,DocLookUp/CurrentCommit,DocLookUp/Name"
+//   ,"DocLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'document')`)),
+// onSuccess(data) {
+//     const formattedData = data.value.map((item:any)=>{
+//       return item.DocLookUp
+//     }) 
+//     setDocuments(formattedData)
+// },})
+
+
+const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,undefined)),
 onSuccess(data) {
-    const formattedData = data.value.map((item:any)=>{
-      return item.DocLookUp
-    }) 
-    setDocuments(formattedData)
+  
+    setDocuments(data.value)
 },})
 
 
@@ -198,7 +213,9 @@ onSuccess(data) {
               </Button>
             </div>
             <div className="border"></div>
-                          {Documents?.map((item:any)=>{
+            {GetDocuments.isSuccess && getPermissions.isSuccess?
+                    <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden">
+                {Documents?.map((item:any)=>{
 
                     const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Document)
                     if (permissons.length != 0) {
@@ -215,6 +232,15 @@ onSuccess(data) {
                     }
                    
               })}
+
+            </div> :
+            <div>
+              <p>Loading</p>
+            </div>
+            
+            }
+    
+                   
         </div>
          <div className="flex flex-col space-y-4">
             <div className="flex flex-row justify-between">
