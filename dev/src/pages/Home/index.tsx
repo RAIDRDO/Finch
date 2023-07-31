@@ -229,7 +229,7 @@ onSuccess(data) {
             <div className="flex flex-row justify-between">
               <p className="font-bold text-xl">Recent Documents</p>
               <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400" onClick={()=>{
-                                navigate("/documents")
+                                navigate("/workspace")
               }}>
                 View All 
                 <ArrowRight className="ml-2"></ArrowRight>
@@ -275,7 +275,7 @@ onSuccess(data) {
             <div className="flex flex-row justify-between">
               <p className="font-bold text-xl">Your Drafts</p>
               <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400" onClick={()=>{
-                                navigate("/documents")
+                                navigate("/workspace")
               }}>
                 View All 
                 <ArrowRight className="ml-2"></ArrowRight>
@@ -303,7 +303,7 @@ onSuccess(data) {
             
     
                    
-        </div>
+      </div>
 
 
          <div className="flex flex-col space-y-4">
@@ -364,7 +364,7 @@ onSuccess(data) {
             <div className="flex flex-row justify-between">
               <p className="font-bold text-xl">Categories</p>
               <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400" onClick={()=>{
-                                                navigate(`/organizations`)
+                                                navigate(`/categories`)
 
               }}>
                 View All 

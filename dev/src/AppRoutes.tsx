@@ -1,7 +1,7 @@
 import {Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Organizations from './pages/Organizations';
-import Documents from './pages/Documents';
+import Workspace from './pages/Documents'; 
 import Merges from './pages/Merges';
 import Editor from './pages/Editor';
 import Organization from './pages/Organization';
@@ -33,7 +33,7 @@ const AppRoutes = () => {
           <Route path='/categories' element={<Categories />} />
           <Route path='/category/:CatId' element={<Category />} />
 
-          <Route path='/documents' element={<Documents />} /> 
+          <Route path='/workspace' element={<Workspace />} /> 
           <Route path='/merges' element={<Merges />} />
           <Route path='/editor/:DraftId' element={<Editor />} />
           <Route path='/viewer/:DocId' element={<Viewer/>} />

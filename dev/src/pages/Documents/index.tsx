@@ -32,8 +32,9 @@ import { useState,useContext} from "react";
 import useToken from "@/shared/utils/crud/useToken";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { useToast } from "@/components/ui/use-toast"
+import DraftCard from "@/components/ui/DraftCard";
 
-export default function Organizations() {
+export default function Workspace() {
   const token = useToken()
     const { toast } = useToast()
   const [user,setUser] = useContext(AuthContext)
@@ -41,6 +42,7 @@ export default function Organizations() {
   const navigate = useNavigate()
 
   const [Documents, setDocuments] = useState<any>([]);
+  const [Drafts, setDrafts] = useState<any>([]);
   const [DocumentName, setDocumentName] = useState("");
 
   const [OrgName, setOrgName] = useState("");
@@ -53,6 +55,16 @@ export default function Organizations() {
     setDocuments(data.value)
 }
 },)
+
+const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Drafts"]
+,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`CreatedBy eq '${user?.Id}'`))
+,onSuccess(data) {
+    console.log(data)
+    setDrafts(data.value)
+
+}
+})
+
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
            __metadata:{
@@ -74,8 +86,8 @@ export default function Organizations() {
     <NavBar></NavBar>
     <div>
       <div className="flex flex-col mt-10 mx-20 space-y-12">
-         <div className="flex flex-col space-y-4">
-            <div className="flex flex-row justify-between">
+        <div className="flex flex-col space-y-4">
+            <div className="flex flex-row justify-between flex-wrap">
               <p className="font-bold text-xl">Documents</p>
 
           <Dialog>
@@ -158,6 +170,41 @@ export default function Organizations() {
 
             </div>
         </div>
+
+
+           <div className="flex flex-col space-y-4">
+            <div className="flex flex-row justify-between flex-wrap">
+              <p className="font-bold text-xl">Your Drafts</p>
+              <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400" onClick={()=>{
+                                navigate("/documents")
+              }}>
+                View All 
+                <ArrowRight className="ml-2"></ArrowRight>
+              </Button>
+            </div>
+            <div className="border"></div>
+            {GetDrafts.isSuccess && getPermissions.isSuccess?
+                    <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden"> 
+                {Drafts?.map((item:any)=>{
+                  return <DraftCard key={item.Draft} {...item}></DraftCard>
+                })}
+                    
+                    </div> 
+
+               
+                   
+            : 
+            <div>
+              <p>Loading</p>
+            </div>
+            }
+          
+            
+            
+            
+    
+                   
+      </div>
 
        
       </div>

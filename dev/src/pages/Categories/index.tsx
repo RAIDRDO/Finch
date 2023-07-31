@@ -2,15 +2,16 @@
 
 // Custom imports - hooks, utilities, components, configs, then styles
 
-import DocumentCard from "../../components/ui/DocumentCard";
-import OrgansationCard from "../../components/ui/OrgansationCard";
+import { config } from "@/config";
+
 import MergeItem from "@/components/ui/MergeItem";
 import NavBar from "@/components/ui/NavBar";
 import Footer from "@/components/ui/Footer";
 import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
-import * as DialogPrimitive from "@radix-ui/react-dialog"
+import {Catergory} from "@/shared/types/";
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   Dialog,
@@ -23,16 +24,33 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react";
-import { Catergory } from "@/shared/types";
-import { config } from "@/config";
+import { useNavigate } from "react-router-dom";
+import { constructReadQueryFn, constructUrl, createQuery,addPermission } from "@/shared/utils/crud";
+import { useQuery } from "react-query";
+import { useState,useContext} from "react";
 import useToken from "@/shared/utils/crud/useToken";
-import { createQuery } from "@/shared/utils/crud";
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
+import { useToast } from "@/components/ui/use-toast"
+import CategoryCard from "@/components/ui/CategoryCard";
+
 
 export default function Categories() {
   const token = useToken()
+  const [user,setUser] = useContext(AuthContext)
+  const { toast } = useToast()
+
   const [CatergoryName, setCatergoryName] = useState("");
   const [CatergoryDescription, setCatergoryDescription] = useState("");
+  const [CatData, setCatData] = useState<any>([]);
+  const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
+
+  const GetCatergories = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Catergories"]
+,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,undefined))
+,onSuccess(data) {
+    setCatData(data.value)
+
+}
+},)
 
    const AddCategory = (Categorydata:Catergory)=> {
       const payload = {
@@ -105,10 +123,27 @@ export default function Categories() {
                     
             </div>
             <div className="border"></div>
-            <div className="flex flex-row justify-evenly">
-              {/* <OrgansationCard></OrgansationCard>
-              <OrgansationCard></OrgansationCard>
-              <OrgansationCard></OrgansationCard> */}
+            <div className="flex flex-row justify-evenly flex-wrap">
+
+              {CatData?.map((item:Catergory) => {
+                const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Cat)
+                if (permissons.length != 0) {
+                 const permisson = permissons[0].Role
+                 const CatCardData = {
+                   ...item,
+                   Role:permisson
+                 }
+                return <CategoryCard key={CatCardData.Cat} {...CatCardData}></CategoryCard>
+                }
+                else {
+
+                    const CatCardData = {
+                    ...item,
+                    Role:"None"
+                  }
+                  return <CategoryCard key={CatCardData.Cat} {...CatCardData}></CategoryCard>
+                }
+              })}
 
             </div>
         </div>
