@@ -200,7 +200,11 @@ const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess && getPermission
                   return <DocumentCard key={DocCardData.Document} {...DocCardData} ></DocumentCard>
                 }
                 else{
-                  return null
+                   const DocCardData = {
+                    ...item,
+                    Role:"None"
+                  }
+                  return <DocumentCard key={DocCardData.Document} {...DocCardData} ></DocumentCard>
 
                 }
                 })

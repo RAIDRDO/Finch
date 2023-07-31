@@ -192,7 +192,11 @@ export default function Organization() {
                 return <CategoryCard key={CatCardData.Cat} {...CatCardData}></CategoryCard>
                 }
                 else {
-                  return null
+                   const CatCardData = {
+                   ...item,
+                   Role:"None"
+                 }
+                  return <CategoryCard key={CatCardData.Cat} {...CatCardData}></CategoryCard>
                 }
               })} 
 

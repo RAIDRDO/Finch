@@ -157,7 +157,11 @@ export default function Organizations() {
                           return     <OrgansationCard key={item.org} {...OrgCardData}></OrgansationCard>
                         }
                         else{
-                          return null
+                           const OrgCardData = {
+                            ...item,
+                            Role:"None"
+                          }
+                          return <OrgansationCard key={item.org} {...OrgCardData}></OrgansationCard>
                         }
             })}
               {/* <OrgansationCard></OrgansationCard> */}

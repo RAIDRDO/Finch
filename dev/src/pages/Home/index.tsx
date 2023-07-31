@@ -35,6 +35,8 @@ import useUser from "@/shared/utils/crud/useUser"
 import { get } from "lodash";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast"
+import CategoryCard from "@/components/ui/CategoryCard";
+import DraftCard from "@/components/ui/DraftCard";
 
 export default function Home() {
   const [user,setUser] = useContext(AuthContext)
@@ -45,6 +47,8 @@ export default function Home() {
   const [OrgName, setOrgName] = useState("");
   const [OrgDescription, setOrgDescription] = useState("");
   const [OrgData, setOrgData] = useState<any>([]);
+  const [CatData, setCatData] = useState<any>([]);
+  const [Drafts, setDrafts] = useState<any>([]);
   const [Documents, setDocuments] = useState<any>([]);
 
 
@@ -65,10 +69,28 @@ export default function Home() {
   const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,undefined))
 ,onSuccess(data) {
-  console.log(data)
     setOrgData(data.value)
 }
 },)
+
+
+const GetCatergories = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Catergories"]
+,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Catergory,undefined,undefined,undefined))
+,onSuccess(data) {
+    setCatData(data.value)
+
+}
+},)
+
+
+const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Drafts"]
+,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`CreatedBy eq '${user?.Id}'`))
+,onSuccess(data) {
+    console.log(data)
+    setDrafts(data.value)
+
+}
+})
 
 //   const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,DocLookUp/Id,DocLookUp/Document,DocLookUp/Catergory,DocLookUp/Organisation,DocLookUp/CreatedAt,DocLookUp/EditedAt,DocLookUp/SectionOrder,DocLookUp/CurrentCommit,DocLookUp/Name"
 //   ,"DocLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'document')`)),
@@ -232,7 +254,7 @@ onSuccess(data) {
                     else{
                        const DocCardData = {
                       ...item,
-                      Role:undefined
+                      Role:"None"
                     }
                       return  <DocumentCard key={item.Document} {...DocCardData}></DocumentCard>
                     }
@@ -248,6 +270,42 @@ onSuccess(data) {
     
                    
         </div>
+
+      <div className="flex flex-col space-y-4">
+            <div className="flex flex-row justify-between">
+              <p className="font-bold text-xl">Your Drafts</p>
+              <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400" onClick={()=>{
+                                navigate("/documents")
+              }}>
+                View All 
+                <ArrowRight className="ml-2"></ArrowRight>
+              </Button>
+            </div>
+            <div className="border"></div>
+            {GetDrafts.isSuccess && getPermissions.isSuccess?
+                    <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden"> 
+                {Drafts?.map((item:any)=>{
+                  return <DraftCard key={item.Draft} {...item}></DraftCard>
+                })}
+                    
+                    </div> 
+
+               
+                   
+            : 
+            <div>
+              <p>Loading</p>
+            </div>
+            }
+          
+            
+            
+            
+    
+                   
+        </div>
+
+
          <div className="flex flex-col space-y-4">
             <div className="flex flex-row justify-between">
               <p className="font-bold text-xl">Organizations</p>
@@ -283,7 +341,7 @@ onSuccess(data) {
                         else{
                            const OrgCardData = {
                             ...item,
-                            Role:undefined
+                            Role:"None"
                           }
                           return     <OrgansationCard key={item.org} {...OrgCardData}></OrgansationCard>
 
@@ -302,7 +360,59 @@ onSuccess(data) {
             
         </div>
 
-       
+             <div className="flex flex-col space-y-4">
+            <div className="flex flex-row justify-between">
+              <p className="font-bold text-xl">Categories</p>
+              <Button className="bg-white text-slate-300 hover:bg-white hover:text-slate-400" onClick={()=>{
+                                                navigate(`/organizations`)
+
+              }}>
+                View All 
+                <ArrowRight className="ml-2"></ArrowRight>
+              </Button>
+            </div>
+            <div className="border"></div>
+            {GetOrgnisations.isSuccess && getPermissions.isSuccess?
+            <div className="flex flex-row space-x-6 overflow-x-auto overflow-hidden">
+
+                
+            {
+            CatData?.map((item:any)=>{
+                          // console.log(OrgData)
+                          const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Cat)
+                                              console.log(permissons)
+
+                          if (permissons.length != 0) {
+
+                          const permisson = permissons[0].Role
+                          const CatCardData = {
+                            ...item,
+                            Role:permisson
+                          }
+                          return     <CategoryCard key={item.Cat} {...CatCardData}></CategoryCard>
+                        }
+
+                        else{
+                           const CatCardData = {
+                            ...item,
+                            Role:"None"
+                          }
+                          return     <CategoryCard key={item.Cat} {...CatCardData}></CategoryCard>
+
+
+
+                        }
+
+            })}
+
+
+          </div> :
+          <div>
+            <p>Loading</p>
+          </div>
+            }
+            
+        </div>
       </div>
     </div>
     <Footer></Footer>

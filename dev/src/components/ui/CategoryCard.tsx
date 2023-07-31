@@ -39,6 +39,7 @@ import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import InviteModal from "./InviteModal";
 import {ResolvePermissions} from "@/shared/utils/crud/helper"
+import { useToast } from "@/components/ui/use-toast"
 
 interface CatergoryProps extends Catergory {
   Role: string;
@@ -47,6 +48,7 @@ interface CatergoryProps extends Catergory {
 
 const CategoryCard = ({Id,Cat,Name,Org,Owner,Role}:CatergoryProps) => {
     const token = useToken()
+    const {toast} = useToast()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
     const permissions = ResolvePermissions(Role)
@@ -68,8 +70,22 @@ const CategoryCard = ({Id,Cat,Name,Org,Owner,Role}:CatergoryProps) => {
     return ( 
         <div>
             <Card className="w-[440px]">
-                <CardHeader className="text-lg font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/category/${Cat}`)}>{Name}</CardHeader>
-                <CardContent  className="hover:cursor-pointer" onClick={()=>navigate(`/category/${Cat}`)}>
+                <CardHeader className="text-lg font-bold hover:cursor-pointer hover:underline" onClick={permissions.OrgViewer===false ?()=>toast({
+          title: "No Permission",
+          description: `You do not have permission to view this organisation.`,
+          variant: "destructive"
+                                }):
+                                ()=>navigate(`/category/${Cat}`)
+                              
+                              }>{Name}</CardHeader>
+                <CardContent  className="hover:cursor-pointer" onClick={permissions.OrgViewer===false ?()=>toast({
+          title: "No Permission",
+          description: `You do not have permission to view this organisation.`,
+          variant: "destructive"
+                                }):
+                                ()=>navigate(`/category/${Cat}`)
+                              
+                              }>
                 </CardContent>
                                 <CardFooter className="flex flex-row justify-between pr-5">
                     <div className="flex flex-col">
