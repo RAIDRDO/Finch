@@ -115,6 +115,7 @@ export default function Organizations() {
                 }
                   AddOrgnisation(data)?.then((res)=>{
                     addPermission(token.data.FormDigestValue,data.org,res.d.Id,data.owner,user.Email,"organization","Org-Owner")
+        
                     navigate(`/organization/${res.d.org}`)
                 }).then(()=>  toast({
           title: "Organisation Created",

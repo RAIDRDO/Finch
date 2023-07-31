@@ -41,6 +41,7 @@ import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import InviteModal from "./InviteModal";
 
 import {ResolvePermissions} from "@/shared/utils/crud/helper"
+import { useToast } from "@/components/ui/use-toast"
 
 interface OrganisationProps extends Organisation {
   Role: string;
@@ -48,6 +49,7 @@ interface OrganisationProps extends Organisation {
 
 const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
       const token = useToken()
+      const {toast} = useToast()
     const permissions = ResolvePermissions(Role)
     const queryClient = useQueryClient()
       const navigate = useNavigate()
@@ -72,10 +74,29 @@ const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
     return ( 
         <div>
             <Card className="w-[440px]">
-                <CardHeader className="text-lg font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/organization/${org}`)}>{name}</CardHeader>
-                <CardContent className="hover:cursor-pointer" onClick={()=>navigate(`/organization/${org}`)}>
+                                <CardHeader className="text-lg font-bold hover:cursor-pointer hover:underline" onClick={permissions.OrgViewer===false ?()=>toast({
+          title: "No Permission",
+          description: `You do not have permission to view this organisation.`,
+          variant: "destructive"
+                                }):
+                                ()=>navigate(`/organization/${org}`)
+                              
+                              }>{name}</CardHeader>
+      
+                
+           
+                    <CardContent className="hover:cursor-pointer" onClick={permissions.OrgViewer===false ?()=>toast({
+          title: "No Permission",
+          description: `You do not have permission to view this organisation.`,
+          variant: "destructive"
+                                }):
+                                ()=>navigate(`/organization/${org}`)
+                              
+                              }>
                     {desc}
                 </CardContent>
+                
+             
                                 <CardFooter className="flex flex-row justify-between pr-5">
                     <div className="flex flex-col">
                     <div className="flex flex-row items-center text-slate-500 mt-1">

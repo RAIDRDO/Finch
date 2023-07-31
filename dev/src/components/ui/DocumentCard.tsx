@@ -44,13 +44,14 @@ import {DateTime} from "luxon"
 
 
 import InviteModal from "./InviteModal";
+import { useToast } from "@/components/ui/use-toast"
 interface DocumentProps extends Documents {
   Role: string;
 }
 
 const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,SectionOrder,Name,Role}:DocumentProps) => {
     const token = useToken()
-    console.log(Role)
+    const {toast} = useToast()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
     const  Delete = (Id: number) =>{
@@ -77,13 +78,25 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
             </div> */}
             <Card className="w-[270px] ">
                 <CardContent>
-                    <div className="w-[200px] h-[200px] hover:cursor-pointer" onClick={()=>navigate(`/viewer/${Document}`)}>
-                        
+                  
+                    <div className="w-[200px] h-[200px] hover:cursor-pointer" onClick={permissions.DocViewer===false?
+                      ()=>toast({
+          title: "No Permission",
+          description: `You do not have permission to view this document.`,
+          variant: "destructive"
+                                })
+                      : ()=>navigate(`/viewer/${Document}`)}>
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-row justify-between px-5">
                     <div className="flex flex-col">
-                    <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/viewer/${Document}`)}>{Name}</h1>
+                    <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={permissions.DocViewer===false?
+                      ()=>toast({
+          title: "No Permission",
+          description: `You do not have permission to view this document.`,
+          variant: "destructive"
+                                })
+                      : ()=>navigate(`/viewer/${Document}`)}>{Name}</h1>
                     <div className="flex flex-row items-center text-slate-500 mt-1">
                         <Calendar className="w-3 h-3 mr-1"></Calendar>
                         <p className="text-sm">{DateTime.fromMillis(Date.parse(EditedAt)).toFormat("MM-dd-yyyy")}</p>

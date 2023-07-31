@@ -65,6 +65,7 @@ export default function Home() {
   const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,undefined))
 ,onSuccess(data) {
+  console.log(data)
     setOrgData(data.value)
 }
 },)
@@ -224,11 +225,16 @@ onSuccess(data) {
                       ...item,
                       Role:permisson
                     }
-                return <DocumentCard key={item.Document} {...DocCardData}></DocumentCard>
+                    
+                    return <DocumentCard key={item.Document} {...DocCardData}></DocumentCard>
 
                     }
                     else{
-                      return null
+                       const DocCardData = {
+                      ...item,
+                      Role:undefined
+                    }
+                      return  <DocumentCard key={item.Document} {...DocCardData}></DocumentCard>
                     }
                    
               })}
@@ -262,6 +268,8 @@ onSuccess(data) {
             OrgData?.map((item:any)=>{
                           // console.log(OrgData)
                           const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)
+                                              console.log(permissons)
+
                           if (permissons.length != 0) {
 
                           const permisson = permissons[0].Role
@@ -271,9 +279,18 @@ onSuccess(data) {
                           }
                           return     <OrgansationCard key={item.org} {...OrgCardData}></OrgansationCard>
                         }
+
                         else{
-                          return null
+                           const OrgCardData = {
+                            ...item,
+                            Role:undefined
+                          }
+                          return     <OrgansationCard key={item.org} {...OrgCardData}></OrgansationCard>
+
+
+
                         }
+
             })}
 
 
