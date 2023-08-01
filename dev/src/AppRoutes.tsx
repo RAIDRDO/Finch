@@ -17,7 +17,7 @@ import { config } from './config';
 import Viewer from './pages/Viewer';
 const AppRoutes = () => {
     // const url = config.apiUrl + `web/currentUser`;
-    const url = config.apiUrl + `web/getuserbyid('1')`;
+    const url = config.apiUrl + `web/getuserbyid('2')`;
 
     const user = useQuery({enabled:true,queryKey:["user"],queryFn:constructReadQueryFn(url), onSuccess(data) {
         setUser(data)

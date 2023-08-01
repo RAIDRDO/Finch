@@ -36,7 +36,7 @@ import { MoreVertical , X ,User} from "lucide-react"
 import { Organisation} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
-import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
+import { deleteQuery,CascadeDelete,SendEmail } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import InviteModal from "./InviteModal";
 
@@ -119,7 +119,7 @@ const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
 
 {CanEditPerm ? <InviteModal type={"Org"} resourceId={Id!} resourceUUID={org!}></InviteModal>
 :<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
-<p className="">
+<p className="" onClick={()=>SendEmail(token.data.FormDigestValue,"finch@testmail.com",["test1@defencemail.gov.sg"],"test email","test email from finch")}>
 Request permission 
 </p>
 </div>}

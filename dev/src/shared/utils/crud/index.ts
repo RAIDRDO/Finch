@@ -236,3 +236,34 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
         console.log(error)
       }
   }
+
+
+
+export async function SendEmail(token:string,from:string,to:string[],body:string,subject:string){
+  const url = `${config.apiUrl}SP.Utilities.Utility.SendEmail`
+  const data = {
+    'properties': {
+        '__metadata': {
+            'type': 'SP.Utilities.EmailProperties'
+        },
+        'From': from,
+        'To': {
+            'results': to
+        },
+        'Body': body,
+        'Subject': subject
+    }
+}
+  try {
+    const res = await axios.post(url, data, {
+      headers: {
+        'Accept': 'application/json; odata=verbose',
+        'content-type': 'application/json; odata=verbose',
+        'X-RequestDigest': token,
+      }
+    });
+    console.log(res)
+  } catch (error) {
+    console.log('Error:', error);
+  }
+}
