@@ -116,13 +116,7 @@ const CategoryCard = ({Id,Cat,Name,Org,Owner,Role}:CatergoryProps) => {
   "request",
   user?.Id,
   Org,
-  Name,
-
-
-
-
-
-).then(()=>{
+  Name,).then(()=>{
   toast({
     title: "Request Permission Sent",
     description: `Your request has been sent to the category owner.`,

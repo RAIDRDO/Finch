@@ -47,9 +47,16 @@ export default function Workspace() {
 
   const [OrgName, setOrgName] = useState("");
   const [OrgDescription, setOrgDescription] = useState("");
+  const [OrgList, setOrgList] = useState<any>([]);
+  const [selectedOrg, setselectedOrg] = useState<any>();
+  const [CatList, setCatList] = useState<any>([]);
+  const [selectedCat, setselectedCat] = useState<any>();
 
   const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
-  const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
+  
+  
+  
+  const GetDocuments = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Documents"]
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,undefined))
 ,onSuccess(data) {
     setDocuments(data.value)
@@ -64,6 +71,37 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
 
 }
 })
+
+    const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,OrgLookUp/Id,OrgLookUp/org,OrgLookUp/desc,OrgLookUp/name"
+  ,"OrgLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'organization')`))
+,onSuccess(data) {
+   const orgnames  = data.value.filter((item:any)=>item.Role.includes("Contributor") || item.Role.includes("Owner")).map((item:any)=>{
+    
+    return { 
+      Id:item.OrgLookUp.org,
+      Name:item.OrgLookUp.name
+    }})
+  setOrgList(orgnames)
+}
+},)
+
+    const GetCatergories = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Catergories"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,CatLookUp/Id,CatLookUp/Org,CatLookUp/Cat,CatLookUp/Desc,CatLookUp/Name"
+  ,"CatLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'category')`))
+,onSuccess(data) {
+  console.log(data)
+   const catnames  = data.value.filter((item:any)=>item.Role.includes("Contributor") || item.Role.includes("Owner")).map((item:any)=>{
+    
+    return { 
+      Id:item.CatLookUp.Org,
+      Name:item.CatLookUp.Name
+    }})
+  setCatList(catnames)
+}
+},)
+
+
 
   const AddOrgnisation = (Organisationdata:Organisation)=> {
       const payload = {
@@ -162,7 +200,11 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
 
                     }
                     else{
-                      return null
+                      const DocCardData = {
+                      ...item,
+                      Role:"None"
+                    }
+                      return <DocumentCard key={item.Document} {...DocCardData}></DocumentCard>
                     }
                    
               })}

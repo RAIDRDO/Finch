@@ -25,23 +25,41 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom";
-import { constructReadQueryFn, constructUrl, createQuery,addPermission } from "@/shared/utils/crud";
-import { useQuery } from "react-query";
+import { constructReadQueryFn, constructUrl,ReadQuery, createQuery,addPermission } from "@/shared/utils/crud";
+import { ResolveRole,ResolvePermissions } from "@/shared/utils/crud/helper";
+
+import { useQuery ,useQueryClient} from "react-query";
 import { useState,useContext} from "react";
 import useToken from "@/shared/utils/crud/useToken";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { useToast } from "@/components/ui/use-toast"
 import CategoryCard from "@/components/ui/CategoryCard";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 
 export default function Categories() {
   const token = useToken()
   const [user,setUser] = useContext(AuthContext)
   const { toast } = useToast()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const [CatergoryName, setCatergoryName] = useState("");
   const [CatergoryDescription, setCatergoryDescription] = useState("");
   const [CatData, setCatData] = useState<any>([]);
+  const [OrgList, setOrgList] = useState<any>([]);
+  const [selectedOrg, setselectedOrg] = useState<any>();
+
+
+
   const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
 
   const GetCatergories = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Catergories"]
@@ -52,7 +70,53 @@ export default function Categories() {
 }
 },)
 
-   const AddCategory = (Categorydata:Catergory)=> {
+  const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
+  ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,OrgLookUp/Id,OrgLookUp/org,OrgLookUp/desc,OrgLookUp/name"
+  ,"OrgLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'organization')`))
+,onSuccess(data) {
+   const orgnames  = data.value.filter((item:any)=>item.Role.includes("Contributor") || item.Role.includes("Owner")).map((item:any)=>{
+    
+    return { 
+      Id:item.OrgLookUp.org,
+      Name:item.OrgLookUp.name
+    }})
+  setOrgList(orgnames)
+}
+},)
+
+
+
+
+
+
+
+  
+  // const GetOrgnisations = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Orgnisations"]
+  // ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Organisation,undefined,undefined,undefined)),
+  // onSuccess(data) {
+  // const orgnames  = data.value.map((item:any)=>{
+    
+  //   return { 
+  //     Id:item.org,
+  //     Name:item.name
+  //   }})
+  // setOrgList(orgnames)
+  // }
+  // })
+
+
+
+
+
+ async function getSelectedOrgPerm(OrgId:string,UserId:string,permissons:any) {
+   permissons.filter((perm:any)=>perm.Resource == OrgId && perm.User == UserId)
+   console.log(permissons[0].Role)
+   return permissons[0].Role
+
+  
+
+ }
+ const AddCategory = (Categorydata:Catergory)=> {
       const payload = {
            __metadata:{
         type: `SP.Data.${config.ListNames.Catergory}ListItem`,
@@ -61,9 +125,9 @@ export default function Categories() {
       
       ...Categorydata
       }
-      createQuery(config.ListNames.Catergory,payload,token.data.FormDigestValue)
+      const res = createQuery(config.ListNames.Catergory,payload,token.data.FormDigestValue)
       try {
-        return true
+        return res
       } catch (error) {
         console.log(error)
       }
@@ -91,9 +155,28 @@ export default function Categories() {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
+        <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="category_name" className="text-right">
               Organization Name
+            </Label>
+                <Select onValueChange={(e)=>setselectedOrg(e)}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select a Organization" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {OrgList?.map((item:any)=>{
+            return <SelectItem key={item.Id} value={item}>{item.Name}</SelectItem>
+          })}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+
+      
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="category_name" className="text-right">
+              Category Name
             </Label>
             <Input id="category_name"  className="col-span-3" onChange={
               (e)=>{setCatergoryName(e.target.value)}
@@ -101,7 +184,7 @@ export default function Categories() {
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="category_desc" className="text-right">
-              Organization Description 
+              Category Description 
             </Label>
             <Input id="category_desc" className="col-span-3" onChange={
               (e)=>{setCatergoryDescription(e.target.value)}
@@ -110,7 +193,29 @@ export default function Categories() {
         
         </div>
         <DialogFooter>
-          <Button type="submit"
+          <Button type="submit" 
+          disabled={OrgList.lenght == 0?true:false}
+          onClick={
+            async () => {
+              const data ={Cat:uuidv4(),Org:selectedOrg.Id,Owner:user.Id,Name:CatergoryName}
+              const OrgPermissions = await  getSelectedOrgPerm(selectedOrg.Id,user.Id,getPermissions.data.value)
+              AddCategory(data)?.then((res:any) => {
+                addPermission(token.data.FormDigestValue,data.Cat,res.d.Id,user.Id,user.Email,"category",ResolveRole(OrgPermissions,"create"))
+                queryClient.invalidateQueries("Catergories")
+                return res
+              }).then((res:any) => {
+                navigate(`/category/${res.d.Cat}`)
+              }).then(() => toast({
+          title: "Category Created",
+
+          description: `Your category ${data.Name} has been created successfully.`,
+          
+        }))
+
+            }
+          }
+          
+          
           >Create</Button>
         </DialogFooter>
       </DialogContent>
