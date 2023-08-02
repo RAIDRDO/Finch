@@ -11,7 +11,7 @@ import Footer from "@/components/ui/Footer";
 import MergeBar from "@/components/ui/MergeBar";
 import { Button } from "@/components/ui/button";
 import { Plus,GitPullRequest,FilePlus,ArrowRight } from "lucide-react";
-import {Organisation} from "@/shared/types/";
+import {Documents} from "@/shared/types/";
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -28,18 +28,29 @@ import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom";
 import { constructReadQueryFn, constructUrl, createQuery,addPermission } from "@/shared/utils/crud";
 import { useQuery } from "react-query";
-import { useState,useContext} from "react";
+import { useState,useContext,useEffect} from "react";
 import useToken from "@/shared/utils/crud/useToken";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { useToast } from "@/components/ui/use-toast"
 import DraftCard from "@/components/ui/DraftCard";
-
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { ResolveRole,ResolvePermissions } from "@/shared/utils/crud/helper";
+import { useQueryClient } from "react-query";
 export default function Workspace() {
   const token = useToken()
     const { toast } = useToast()
   const [user,setUser] = useContext(AuthContext)
 
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const [Documents, setDocuments] = useState<any>([]);
   const [Drafts, setDrafts] = useState<any>([]);
@@ -50,6 +61,8 @@ export default function Workspace() {
   const [OrgList, setOrgList] = useState<any>([]);
   const [selectedOrg, setselectedOrg] = useState<any>();
   const [CatList, setCatList] = useState<any>([]);
+  const [FilteredCatList, setFilteredCatList] = useState<any>([]);
+
   const [selectedCat, setselectedCat] = useState<any>();
 
   const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
@@ -94,7 +107,8 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
    const catnames  = data.value.filter((item:any)=>item.Role.includes("Contributor") || item.Role.includes("Owner")).map((item:any)=>{
     
     return { 
-      Id:item.CatLookUp.Org,
+      Id:item.CatLookUp.Cat,
+      Org:item.CatLookUp.Org,
       Name:item.CatLookUp.Name
     }})
   setCatList(catnames)
@@ -103,22 +117,70 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
 
 
 
-  const AddOrgnisation = (Organisationdata:Organisation)=> {
+   const AddDocument = (Documentsdata:Documents)=> {
       const payload = {
            __metadata:{
-        type: `SP.Data.${config.ListNames.Organisation}ListItem`,
+        type: `SP.Data.${config.ListNames.Documents}ListItem`,
 
     },
       
-      ...Organisationdata
+      ...Documentsdata
       }
-      const res = createQuery(config.ListNames.Organisation,payload,token.data.FormDigestValue)
+      const res = createQuery(config.ListNames.Documents,payload,token.data.FormDigestValue)
       try {
         return res
       } catch (error) {
         console.log(error)
       }
   }
+
+
+
+  useEffect(() => {
+    if (selectedOrg) {
+      const filteredCat = CatList.filter((item:any) => item.Org === selectedOrg.Id);
+      console.log(filteredCat);
+      setFilteredCatList(filteredCat);
+    }
+  }, [selectedOrg]);
+
+   async function getSelectedOrgPerm(OrgId:string,UserId:string,permissons:any) {
+   permissons.filter((perm:any)=>perm.Resource == OrgId && perm.User == UserId)
+   console.log(permissons[0].Role)
+   return permissons[0].Role
+
+  
+
+ }
+
+
+  async function getSelectedCatPerm(CatId:string,UserId:string,permissons:any) {
+   permissons.filter((perm:any)=>perm.Resource == CatId && perm.User == UserId)
+   console.log(permissons[0].Role)
+   return permissons[0].Role
+
+  
+
+ }
+
+
+  function filterCatByOrg(OrgId:string,CatList:any) {
+    const filteredCat = CatList.filter((item:any)=>item.Org == OrgId)
+    console.log(filteredCat)
+    setFilteredCatList(filteredCat)
+    console.log("filtered prop",FilteredCatList)
+
+  }
+   const handleOrgChange = (e:any) => {
+    const selectedOrg = e;
+    setselectedOrg(selectedOrg);
+    // filterCatByOrg(selectedOrg, CatList);
+  };
+
+
+
+
+
   return (
     <>
     <NavBar></NavBar>
@@ -143,6 +205,45 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="category_name" className="text-right">
+              Organization Name
+            </Label>
+                <Select onValueChange={(e:any)=>handleOrgChange(e)}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select a Organization" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {OrgList?.map((item:any)=>{
+            return <SelectItem key={item.Id} value={item}>{item.Name}</SelectItem>
+          })}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+
+      
+          </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="category_name" className="text-right">
+              Category Name
+            </Label>
+                <Select onValueChange={(e:any)=>setselectedCat(e)} disabled={FilteredCatList.length== 0?true:false}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select a Category" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {FilteredCatList?.map((item:any)=>{
+            console.log(item)
+            return <SelectItem key={item.Id} value={item}>{item.Name}</SelectItem>
+          })}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+
+      
+          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="document_name" className="text-right">
               Document Name
@@ -154,32 +255,35 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
         
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={
-                () => {
-                  const data = {
-                  org:uuidv4(),
-                  owner: user.Id,
-                  desc:OrgDescription,
-                  name:OrgName
+          <Button type="submit" 
+          disabled={(OrgList.lenght == 0 && CatList.lenght ==0) || FilteredCatList.lenght ==0 ?true:false}
 
+         onClick={
+            async () => {
+              const catperms = await getSelectedCatPerm(selectedCat.Id,user?.Id,getPermissions.data.value)
+              console.log(catperms)
+              const data ={Document:uuidv4(),Organisation:selectedOrg.Org,Catergory:selectedCat.Id,CreatedAt:Date(),EditedAt:Date(),SectionOrder:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName}
+              AddDocument(data)?.then((res)=>
+                {
+                addPermission(token.data.FormDigestValue,data.Document,res.d.Id,user?.Id,user?.Email,'document',ResolveRole(catperms,"create"))
+
+                
                 }
-                  AddOrgnisation(data)?.then((res)=>{
-                    addPermission(token.data.FormDigestValue,data.org,res.d.Id,data.owner,user.Email,"organization","Org-Owner")
-        
-                    navigate(`/organization/${res.d.org}`)
-                }).then(()=>  toast({
-          title: "Organisation Created",
 
-          description: `Your organisation ${data.name} has been created successfully.`,
+              ).then(()=>              
+              queryClient.invalidateQueries(["Documents","Permissions"])
+).then(()=>toast({
+          title: "Document Created",
+
+          description: `Your Document ${data.Name} has been created successfully.`,
           
-        })
-                  
-                )
+        }))
 
 
-              
-              }
-            }>Create</Button>
+            }
+          }
+          
+          >Create</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
