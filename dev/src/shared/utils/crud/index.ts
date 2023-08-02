@@ -239,6 +239,88 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
 
 
 
+
+export async function getUserDetailsBtId(token:string,userId:string){
+  const url = `${config.apiUrl}web/getuserbyid('${userId}')`
+  try {
+    const res = await axios.get(url, {
+      headers: {
+        'Accept': 'application/json; odata=verbose',
+        'content-type': 'application/json; odata=verbose',
+        'X-RequestDigest': token,
+      }
+    });
+    return res
+  } catch (error) {
+    console.log('Error:', error);
+  }
+}
+
+export async function getOwnerDetails(token:string,ResourceId:string,level:string){
+  const url = `${config.apiUrl}web/lists/GetByTitle('${config.ListNames.Permissions}')/items?$select=User,Email&$filter=(Resource eq '${ResourceId}') and (Role eq '${level}-Owner')`
+  try {
+    const res = await axios.get(url, {
+      headers: {
+        'Accept': 'application/json; odata=verbose',
+        'content-type': 'application/json; odata=verbose',
+        'X-RequestDigest': token,
+      }
+    });
+    console.log(res)
+    return res
+  } catch (error) {
+    console.log('Error:', error);
+  }
+
+}
+
+
+export async function ComposeEmailBody(token:string,level:string,type:string,sender_title:string,recipient_title:string,resource_name:string){
+  if (type == "request"){
+      switch (level) {
+        case "Org":
+          return "Dear " +recipient_title+" User " + sender_title + " has requested access to your organization " + resource_name + "."
+          ;
+        case "Cat":
+          return "Dear " +recipient_title+"User " + sender_title + " has requested access to your category " + resource_name + "."
+
+          ;
+        case "Doc":
+          return "Dear " +recipient_title+" User " + sender_title + " has requested access to your document " + resource_name + "."
+          ;
+        default:
+          return"Dear" +recipient_title+" User " + sender_title + " has requested access to your resource " + resource_name + "."
+          
+      }
+ 
+}
+ else if (type == "grant"){
+  switch (level) {
+    case "Org":
+      return "Dear " +recipient_title+" User " + sender_title + " has granted you access to their organization " + resource_name + "."
+      ;
+    case "Cat":
+      return "Dear " +recipient_title+" User " + sender_title + " has granted you access to their category " + resource_name + "."
+
+      ;
+    case "Doc":
+      return "Dear " +recipient_title+" User " + sender_title + " has granted you access to their document " + resource_name + "."
+      ;
+    default:
+      return "Dear " +recipient_title+" User " + sender_title + " has granted you access to their resource " + resource_name + "."
+
+
+  }
+
+}
+
+  else{
+    return "invalid email type"
+  }
+
+}
+
+
 export async function SendEmail(token:string,from:string,to:string[],body:string,subject:string){
   const url = `${config.apiUrl}SP.Utilities.Utility.SendEmail`
   const data = {
@@ -246,7 +328,6 @@ export async function SendEmail(token:string,from:string,to:string[],body:string
         '__metadata': {
             'type': 'SP.Utilities.EmailProperties'
         },
-        'From': from,
         'To': {
             'results': to
         },
@@ -265,5 +346,25 @@ export async function SendEmail(token:string,from:string,to:string[],body:string
     console.log(res)
   } catch (error) {
     console.log('Error:', error);
+  }
+}
+
+
+
+export async function composeEmail(token:string,level:string,type:string,sender_userId:string,ResourceId:string,resource_name:string){
+  try{
+  const sender = await getUserDetailsBtId(token,sender_userId.toString())
+  const owner = await getOwnerDetails(token,ResourceId,level)
+  const recipient = await getUserDetailsBtId(token,owner?.data.value[0].User)
+  const body = await ComposeEmailBody(token,level,type,sender?.data.Title,recipient?.data.Title,resource_name)
+  const subject = type == "request" ? "Access Request For " + resource_name + " in Finch": "Access Granted For " + resource_name + " in Finch"
+  const from = sender?.data.Email
+  const to = [recipient?.data.Email]
+  console.log(from,to,body,subject)
+  const res = await SendEmail(token,from,to,body,subject)
+  return res
+  }
+  catch(error){
+    console.log(error)
   }
 }

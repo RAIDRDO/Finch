@@ -36,20 +36,24 @@ import { MoreVertical , X ,User} from "lucide-react"
 import { Organisation} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
-import { deleteQuery,CascadeDelete,SendEmail } from "@/shared/utils/crud"
+import { deleteQuery,CascadeDelete,composeEmail } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import InviteModal from "./InviteModal";
 
 import {ResolvePermissions} from "@/shared/utils/crud/helper"
 import { useToast } from "@/components/ui/use-toast"
 
+import { useContext } from "react";
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
 interface OrganisationProps extends Organisation {
   Role: string;
 }
 
 const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
-      const token = useToken()
-      const {toast} = useToast()
+    const [user,setUser] = useContext(AuthContext)
+    const token = useToken()
+    const {toast} = useToast()
+
     const permissions = ResolvePermissions(Role)
     const queryClient = useQueryClient()
       const navigate = useNavigate()
@@ -119,7 +123,24 @@ const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
 
 {CanEditPerm ? <InviteModal type={"Org"} resourceId={Id!} resourceUUID={org!}></InviteModal>
 :<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
-<p className="" onClick={()=>SendEmail(token.data.FormDigestValue,"finch@testmail.com",["test1@defencemail.gov.sg"],"test email","test email from finch")}>
+<p className="" onClick={()=>composeEmail(
+  token.data.FormDigestValue,
+  "Org",
+  "request",
+  user?.Id,
+  org,
+  name
+
+
+
+
+
+).then(()=>{
+  toast({
+    title: "Request Permission Sent",
+    description: `Your request has been sent to the organisation owner.`,
+  })
+})}>
 Request permission 
 </p>
 </div>}
