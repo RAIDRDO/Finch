@@ -257,7 +257,7 @@ export async function getUserDetailsBtId(token:string,userId:string){
 }
 
 export async function getOwnerDetails(token:string,ResourceId:string,level:string){
-  const url = `${config.apiUrl}web/lists/GetByTitle('${config.ListNames.Permissions}')/items?$select=User,Email&$filter=(Resource eq '${ResourceId}') and (Role eq '${level}-Owner')`
+  const url = `${config.apiUrl}web/lists/GetByTitle('${config.ListNames.Permissions}')/items?$select=User,Email,Role&$filter=(Resource eq '${ResourceId}')`
   try {
     const res = await axios.get(url, {
       headers: {
@@ -266,7 +266,8 @@ export async function getOwnerDetails(token:string,ResourceId:string,level:strin
         'X-RequestDigest': token,
       }
     });
-    console.log(res)
+    res.data.value = res.data.value.filter((item:any) => item.Role.includes("Owner"))
+
     return res
   } catch (error) {
     console.log('Error:', error);
@@ -360,7 +361,6 @@ export async function composeEmail(token:string,level:string,type:string,sender_
   const subject = type == "request" ? "Access Request For " + resource_name + " in Finch": "Access Granted For " + resource_name + " in Finch"
   const from = sender?.data.Email
   const to = [recipient?.data.Email]
-  console.log(from,to,body,subject)
   const res = await SendEmail(token,from,to,body,subject)
   return res
   }

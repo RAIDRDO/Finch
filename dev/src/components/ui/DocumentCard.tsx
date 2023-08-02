@@ -37,7 +37,7 @@ import { cn } from "@/lib/utils"
 import {Documents} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
-import { deleteQuery ,CascadeDelete} from "@/shared/utils/crud"
+import { deleteQuery ,CascadeDelete,composeEmail} from "@/shared/utils/crud"
 import {ResolvePermissions} from "@/shared/utils/crud/helper"
 
 import {DateTime} from "luxon"  
@@ -45,12 +45,16 @@ import {DateTime} from "luxon"
 
 import InviteModal from "./InviteModal";
 import { useToast } from "@/components/ui/use-toast"
+import { useContext } from "react";
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
 interface DocumentProps extends Documents {
   Role: string;
 }
 
 const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,CurrentCommit,CurrentMerge,SectionOrder,Name,Role}:DocumentProps) => {
     const token = useToken()
+          const [user,setUser] = useContext(AuthContext)
+
     const {toast} = useToast()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
@@ -118,7 +122,24 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
 
 {CanEditPerm ? <InviteModal type={"Doc"} resourceId={Id!} resourceUUID={Document!}></InviteModal>
 :<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
-<p className="">
+<p className="" onClick={()=>composeEmail(
+  token.data.FormDigestValue,
+  "Doc",
+  "request",
+  user?.Id,
+  Document,
+  Name,
+
+
+
+
+
+).then(()=>{
+  toast({
+    title: "Request Permission Sent",
+    description: `Your request has been sent to the category owner.`,
+  })
+})}>
 Request permission 
 </p>
 </div>}

@@ -35,12 +35,13 @@ import { MoreVertical , X ,User} from "lucide-react"
 import {Catergory} from "@/shared/types"
 import { useQuery ,useQueryClient} from "react-query";
 import useToken from "@/shared/utils/crud/useToken";
-import { deleteQuery,CascadeDelete } from "@/shared/utils/crud"
+import { deleteQuery,CascadeDelete,composeEmail } from "@/shared/utils/crud"
 import { useNavigate, useLocation ,useParams} from "react-router-dom";
 import InviteModal from "./InviteModal";
 import {ResolvePermissions} from "@/shared/utils/crud/helper"
 import { useToast } from "@/components/ui/use-toast"
-
+import { useContext } from "react";
+import { AuthContext } from "@/shared/utils/context/authContextProvider";
 interface CatergoryProps extends Catergory {
   Role: string;
 }
@@ -48,6 +49,7 @@ interface CatergoryProps extends Catergory {
 
 const CategoryCard = ({Id,Cat,Name,Org,Owner,Role}:CatergoryProps) => {
     const token = useToken()
+      const [user,setUser] = useContext(AuthContext)
     const {toast} = useToast()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
@@ -108,7 +110,24 @@ const CategoryCard = ({Id,Cat,Name,Org,Owner,Role}:CatergoryProps) => {
 <div className="flex flex-col">
 {CanEditPerm ? <InviteModal type={"Cat"} resourceId={Id!} resourceUUID={Cat!}></InviteModal>
 :<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
-<p className="">
+<p className="" onClick={()=>composeEmail(
+  token.data.FormDigestValue,
+  "Cat",
+  "request",
+  user?.Id,
+  Org,
+  Name,
+
+
+
+
+
+).then(()=>{
+  toast({
+    title: "Request Permission Sent",
+    description: `Your request has been sent to the category owner.`,
+  })
+})}>
 Request permission 
 </p>
 </div>}
