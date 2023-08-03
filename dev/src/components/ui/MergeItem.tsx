@@ -182,7 +182,7 @@ for (const section in Sections ){
 }
 
 }
-console.log("crud",crud)
+// console.log("crud",crud)
 
 MergeChanges(crud)
 updateMetadata(DocId,DraftId,MergeRequest)

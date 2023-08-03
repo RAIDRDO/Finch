@@ -110,7 +110,7 @@ export default function Categories() {
 
  async function getSelectedOrgPerm(OrgId:string,UserId:string,permissons:any) {
    permissons.filter((perm:any)=>perm.Resource == OrgId && perm.User == UserId)
-   console.log(permissons[0].Role)
+  //  console.log(permissons[0].Role)
    return permissons[0].Role
 
   

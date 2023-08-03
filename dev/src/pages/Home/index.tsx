@@ -326,7 +326,7 @@ onSuccess(data) {
             OrgData?.map((item:any)=>{
                           // console.log(OrgData)
                           const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.org)
-                                              console.log(permissons)
+                                              // console.log(permissons)
 
                           if (permissons.length != 0) {
 
@@ -380,7 +380,7 @@ onSuccess(data) {
             CatData?.map((item:any)=>{
                           // console.log(OrgData)
                           const permissons = getPermissions.data?.value.filter((perm:any)=>perm.Resource == item.Cat)
-                                              console.log(permissons)
+                                              // console.log(permissons)
 
                           if (permissons.length != 0) {
 
