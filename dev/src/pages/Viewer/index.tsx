@@ -184,7 +184,11 @@ const Viewer = () => {
       </div>
       <div className='mr-8'>
         {CanEdit(permissions)? 
-        <Button  onClick={()=>CreateDraft().then((data)=>navigate(`/editor/${data.Draft}`))}> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
+        <Button  onClick={async ()=>{
+          const data = await CreateDraft()
+          queryClient.invalidateQueries(["Drafts"])
+          navigate(`/editor/${data.Draft}`)
+        }}> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
         :
         <Button disabled> Create Draft <FileEdit className='h-4 w-4 ml-2'/></Button>
         

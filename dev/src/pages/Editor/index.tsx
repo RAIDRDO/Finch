@@ -51,6 +51,7 @@ const Editor = () => {
 
     const token = useToken()
     const navigate = useNavigate()
+    const location = useLocation()
     const params = useParams();
     const queryClient = useQueryClient()
     const [Cells, setCells] = useState<ChangesProps>([]);
@@ -58,9 +59,12 @@ const Editor = () => {
     const [Staged, setStaged] = useState<any>({});
     const [Order, setOrder] = useState<any>([]);
     const DragControls = useDragControls()
+    console.log(params)
 
-    const GetDrafts = useQuery({queryKey:["Drafts"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`)),onSuccess:(data)=>{
-          console.log(data.value)
+ 
+
+    const GetDrafts = useQuery({enabled:params.DraftId!=undefined,queryKey:["Draft"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`)),onSuccess:(data)=>{
+          console.log("fired draft")
           if (data.value[0].SectionOrder == "" || data.value[0].SectionOrder == null ){
             setOrder([])
           }
@@ -68,7 +72,9 @@ const Editor = () => {
             setOrder(JSON.parse(data.value[0].SectionOrder))
           }
     }})
-    const GetDocument = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Documents"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${GetDrafts.data?.value[0].Document}'`))})
+    console.log(GetDrafts)
+    const DocId = GetDrafts.data?.value[0].Document == undefined ? "" : GetDrafts.data?.value[0].Document
+    const GetDocument = useQuery({enabled:GetDrafts.isSuccess && DocId != "",queryKey:["Document"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${DocId}'`))})
     const GetSections = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Changes"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Changes,undefined,undefined,`Draft eq '${params.DraftId}'`))
   ,onSuccess(data) {
