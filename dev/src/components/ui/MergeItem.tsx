@@ -87,7 +87,7 @@ try{
       const Commits = await ReadQuery(
   constructUrl(config.ListNames.Commits, undefined, undefined, `Draft eq '${DraftId}'`)
 ).then((data) => {
-  console.log(data)
+  // console.log(data)
   return FormatPatches(groupBy(data, "Section"));
 });
 

@@ -196,7 +196,36 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
 
 
  export const addPermission = (token:string,Id:string,IdSP:any,UserId:string,Email:string,type:string,Role:string) => {
+  if (config.staging == true){
   const data =  {
+        Permission:uuidv4(),
+        User:UserId,
+        Email:Email,
+        Resource:Id,
+        // OrgLookUp:null,
+        // CatLookUp:null,
+        // DocLookUp:null,
+        OrgLookUpId:null,
+        CatLookUpId:null,
+        DocLookUpId:null,
+        ResourceType:type,
+        Role:Role
+      
+      }
+   switch (type) {
+    case "organization":
+      data.OrgLookUpId = IdSP
+      break;
+    case "category":
+      data.CatLookUpId = IdSP
+      break;
+    case "document":
+      data.DocLookUpId = IdSP
+      break;
+
+  }}
+  else{
+     const data =  {
         Permission:uuidv4(),
         User:UserId,
         Email:Email,
@@ -220,6 +249,7 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
       break;
 
   }
+   
   
   const payload = {
            __metadata:{
@@ -236,7 +266,7 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
         console.log(error)
       }
   }
-
+ }
 
 
 

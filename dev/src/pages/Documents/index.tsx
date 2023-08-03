@@ -79,7 +79,7 @@ export default function Workspace() {
 const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Drafts"]
 ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`CreatedBy eq '${user?.Id}'`))
 ,onSuccess(data) {
-    console.log(data)
+    // console.log(data)
     setDrafts(data.value)
 
 }
@@ -103,7 +103,7 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
   ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,"User,Role,CatLookUp/Id,CatLookUp/Org,CatLookUp/Cat,CatLookUp/Desc,CatLookUp/Name"
   ,"CatLookUp",`(User eq ${user?.Id}) and (ResourceType eq 'category')`))
 ,onSuccess(data) {
-  console.log(data)
+  // console.log(data)
    const catnames  = data.value.filter((item:any)=>item.Role.includes("Contributor") || item.Role.includes("Owner")).map((item:any)=>{
     
     return { 
@@ -139,14 +139,14 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
   useEffect(() => {
     if (selectedOrg) {
       const filteredCat = CatList.filter((item:any) => item.Org === selectedOrg.Id);
-      console.log(filteredCat);
+      // console.log(filteredCat);
       setFilteredCatList(filteredCat);
     }
   }, [selectedOrg]);
 
    async function getSelectedOrgPerm(OrgId:string,UserId:string,permissons:any) {
    permissons.filter((perm:any)=>perm.Resource == OrgId && perm.User == UserId)
-   console.log(permissons[0].Role)
+  //  console.log(permissons[0].Role)
    return permissons[0].Role
 
   
@@ -156,7 +156,7 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
 
   async function getSelectedCatPerm(CatId:string,UserId:string,permissons:any) {
    permissons.filter((perm:any)=>perm.Resource == CatId && perm.User == UserId)
-   console.log(permissons[0].Role)
+  //  console.log(permissons[0].Role)
    return permissons[0].Role
 
   
@@ -166,9 +166,9 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
 
   function filterCatByOrg(OrgId:string,CatList:any) {
     const filteredCat = CatList.filter((item:any)=>item.Org == OrgId)
-    console.log(filteredCat)
+    // console.log(filteredCat)
     setFilteredCatList(filteredCat)
-    console.log("filtered prop",FilteredCatList)
+    // console.log("filtered prop",FilteredCatList)
 
   }
    const handleOrgChange = (e:any) => {
@@ -235,7 +235,6 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
       <SelectContent>
         <SelectGroup>
           {FilteredCatList?.map((item:any)=>{
-            console.log(item)
             return <SelectItem key={item.Id} value={item}>{item.Name}</SelectItem>
           })}
         </SelectGroup>
@@ -261,7 +260,7 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
          onClick={
             async () => {
               const catperms = await getSelectedCatPerm(selectedCat.Id,user?.Id,getPermissions.data.value)
-              console.log(catperms)
+              // console.log(catperms)
               const data ={Document:uuidv4(),Organisation:selectedOrg.Org,Catergory:selectedCat.Id,CreatedAt:Date(),EditedAt:Date(),SectionOrder:"",CurrentCommit:"",CurrentMerge:"",Name:DocumentName}
               AddDocument(data)?.then((res)=>
                 {

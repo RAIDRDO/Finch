@@ -64,7 +64,6 @@ const Editor = () => {
  
 
     const GetDrafts = useQuery({enabled:params.DraftId!=undefined,queryKey:["Draft"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`Draft eq '${params.DraftId}'`)),onSuccess:(data)=>{
-          console.log("fired draft")
           if (data.value[0].SectionOrder == "" || data.value[0].SectionOrder == null ){
             setOrder([])
           }
@@ -72,7 +71,6 @@ const Editor = () => {
             setOrder(JSON.parse(data.value[0].SectionOrder))
           }
     }})
-    console.log(GetDrafts)
     const DocId = GetDrafts.data?.value[0].Document == undefined ? "" : GetDrafts.data?.value[0].Document
     const GetDocument = useQuery({enabled:GetDrafts.isSuccess && DocId != "",queryKey:["Document"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${DocId}'`))})
     const GetSections = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Changes"]
@@ -251,7 +249,7 @@ const Editor = () => {
 
         
         editedCell.EditedAt = Date()
-        console.log(editedCell)
+        // console.log(editedCell)
         Cells[index]=editedCell;
         if (IsEdited[ChangeId] == undefined){
             const edited:any = {}
@@ -313,10 +311,10 @@ const Editor = () => {
                 const data = filterDataPayload(cell)
                 const StagedChanges = Staged[cell.Change]
                 const DiffPatch = StagedChanges.original_text != StagedChanges.new_text ? CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.new_text) :CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.original_text)
-                console.log("original",StagedChanges.original_text,StagedChanges.original_text)
-                console.log("new",StagedChanges.new_text)
+                // console.log("original",StagedChanges.original_text,StagedChanges.original_text)
+                // console.log("new",StagedChanges.new_text)
 
-                console.log("DiffPatch",DiffPatch)
+                // console.log("DiffPatch",DiffPatch)
                 const commit:Commit = {
                   CommitKey:uuidv4(),
                   Document:cell.Document,
@@ -345,7 +343,7 @@ const Editor = () => {
                ...data
                }
                try{
-                console.log(payload)
+                // console.log(payload)
                 updateQuery(config.ListNames.Changes,cell.Id,payload,token.data.FormDigestValue).then(() => {
                   queryClient.invalidateQueries("Changes")
                 }).then(() => {
@@ -553,7 +551,7 @@ const Editor = () => {
         <div className="flex flex-col w-9/12 h-full">
           <Reorder.Group values={Cells} onReorder={(value)=>{
             const reordered = value.map((cell:Sections)=>cell.Section)
-            console.log("reordered keys ",reordered)
+            // console.log("reordered keys ",reordered)
             setCells(value)
             setOrder(reordered)
             }}>

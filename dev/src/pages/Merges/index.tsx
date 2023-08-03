@@ -41,7 +41,7 @@ export default function Merges() {
           return MergeRequest
         }
       })
-      console.log(ParsedMergeRequest)
+      // console.log(ParsedMergeRequest)
       return ParsedMergeRequest
     }
     catch(error) {

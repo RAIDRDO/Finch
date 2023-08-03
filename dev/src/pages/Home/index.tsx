@@ -86,7 +86,7 @@ const GetCatergories = useQuery({enabled:!!user && getPermissions.isSuccess,quer
 const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:["Drafts"]
 ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Drafts,undefined,undefined,`CreatedBy eq '${user?.Id}'`))
 ,onSuccess(data) {
-    console.log(data)
+    // console.log(data)
     setDrafts(data.value)
 
 }
