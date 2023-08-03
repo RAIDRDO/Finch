@@ -298,17 +298,17 @@ export async function ComposeEmailBody(token:string,level:string,type:string,sen
  else if (type == "grant"){
   switch (level) {
     case "Org":
-      return "Dear " +recipient_title+" User " + sender_title + " has granted you access to their organization " + resource_name + "."
+      return "Dear " +sender_title+" User " +  recipient_title + " has granted you access to their organization " + resource_name + "."
       ;
     case "Cat":
-      return "Dear " +recipient_title+" User " + sender_title + " has granted you access to their category " + resource_name + "."
+      return "Dear " +sender_title+" User " + recipient_title + " has granted you access to their category " + resource_name + "."
 
       ;
     case "Doc":
-      return "Dear " +recipient_title+" User " + sender_title + " has granted you access to their document " + resource_name + "."
+      return "Dear " +sender_title+" User " + recipient_title + " has granted you access to their document " + resource_name + "."
       ;
     default:
-      return "Dear " +recipient_title+" User " + sender_title + " has granted you access to their resource " + resource_name + "."
+      return "Dear " +sender_title+" User " + recipient_title + " has granted you access to their resource " + resource_name + "."
 
 
   }
@@ -360,7 +360,8 @@ export async function composeEmail(token:string,level:string,type:string,sender_
   const body = await ComposeEmailBody(token,level,type,sender?.data.Title,recipient?.data.Title,resource_name)
   const subject = type == "request" ? "Access Request For " + resource_name + " in Finch": "Access Granted For " + resource_name + " in Finch"
   const from = sender?.data.Email
-  const to = [recipient?.data.Email]
+  const to = type =="request"?[recipient?.data.Email]:[sender?.data.Email]
+
   const res = await SendEmail(token,from,to,body,subject)
   return res
   }

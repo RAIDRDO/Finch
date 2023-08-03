@@ -37,7 +37,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { constructReadQueryFn, constructUrl, createQuery,addPermission,ReadQuery, updateQuery, deleteQuery} from "@/shared/utils/crud";
+import { constructReadQueryFn, constructUrl, createQuery,addPermission,ReadQuery, updateQuery, deleteQuery,composeEmail} from "@/shared/utils/crud";
 
 import {config} from "@/config";
 
@@ -68,7 +68,7 @@ async function emailExist(email:string) {
 }
 
 
-async function onSubmit (email:string,permission:string,type:string,token:string,resourceId:number,resourceUUID:string) {
+async function onSubmit (email:string,permission:string,type:string,token:string,resourceId:number,resourceUUID:string,resourceName:string) {
   const url = `${config.apiUrl}web/SiteUsers?` +  `&$filter=` +  `Email eq `+ `'${email.trim()}'`
   const res = await ReadQuery(url)
   let resource = ""
@@ -85,8 +85,8 @@ async function onSubmit (email:string,permission:string,type:string,token:string
   }
   const role = type +"-"+permission
   // console.log(role)
-  addPermission(token,resourceUUID,resourceId,res[0].Id,email,resource,role)
-
+  addPermission(token,resourceUUID,resourceId,res[0].Id,email,resource,role)?.then(()=>{
+  composeEmail(token,type,"grant",res[0].Id,resourceUUID,resourceName)})
 
 
   
@@ -95,7 +95,7 @@ async function onSubmit (email:string,permission:string,type:string,token:string
 
 
 
-const InviteModal = ({type,resourceId,resourceUUID}:{type:string,resourceId:number,resourceUUID:string}) => {
+const InviteModal = ({type,resourceId,resourceUUID,resourceName}:{type:string,resourceId:number,resourceUUID:string,resourceName:string}) => {
   const token = useToken()
   const queryClient = useQueryClient()
 
@@ -190,7 +190,7 @@ async function savePermissions (new_permissions:any,deleted_permissions:any,toke
       <form className="flex flex-row space-x-2" onSubmit={form.handleSubmit(
         e => {
         // console.log(form.getValues())
-        onSubmit(form.getValues().email,form.getValues().permission,type,token.data.FormDigestValue,resourceId,resourceUUID)
+        onSubmit(form.getValues().email,form.getValues().permission,type,token.data.FormDigestValue,resourceId,resourceUUID,resourceName)
        }
       )}>
         <FormField

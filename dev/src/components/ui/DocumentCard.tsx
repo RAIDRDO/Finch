@@ -120,7 +120,7 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
 
 <div className="flex flex-col">
 
-{CanEditPerm ? <InviteModal type={"Doc"} resourceId={Id!} resourceUUID={Document!}></InviteModal>
+{CanEditPerm ? <InviteModal type={"Doc"} resourceId={Id!} resourceUUID={Document!} resourceName={Name}></InviteModal>
 :<div className="flex flex-row items-center p-4 hover:bg-blue-200 hover:text-blue-500 hover:cursor-pointer">
 <p className="" onClick={()=>composeEmail(
   token.data.FormDigestValue,
