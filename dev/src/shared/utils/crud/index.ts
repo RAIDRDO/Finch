@@ -271,7 +271,8 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
 
 
 export async function getUserDetailsBtId(token:string,userId:string){
-  const url = `${config.apiUrl}web/getuserbyid('${userId}')`
+  const url = config.staging==true? `${config.apiUrl}web/getuserbyid('${userId}')`: `${config.apiUrl}web/getuserbyid(${userId})`
+  
   try {
     const res = await axios.get(url, {
       headers: {

@@ -6,7 +6,7 @@ import { env } from 'process'
 
 const dev = {
   
-    staging:true,
+    staging:false,
     DevMode:true,
 
 
