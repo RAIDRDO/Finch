@@ -37,7 +37,7 @@ function App() {
          {showDevtools ? (
         <React.Suspense fallback={null}>
           <ReactQueryDevtoolsProduction />
-          {/* <Console></Console>  */}
+          <Console></Console> 
 
         </React.Suspense>
       ) : null}
