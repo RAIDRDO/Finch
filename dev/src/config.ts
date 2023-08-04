@@ -20,7 +20,7 @@ export const config = {
 
   // Insert list IDs, e.g.
   ListNames: {
-    Documents:"Documents",
+    Documents:"Docs",
 
     // Documents:"Docs",
               Drafts:"Drafts",

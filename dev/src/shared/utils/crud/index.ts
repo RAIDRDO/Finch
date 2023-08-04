@@ -196,77 +196,57 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
 
 
  export const addPermission = (token:string,Id:string,IdSP:any,UserId:string,Email:string,type:string,Role:string) => {
-  if (config.staging == true){
-  const data =  {
-        Permission:uuidv4(),
-        User:UserId,
-        Email:Email,
-        Resource:Id,
-        // OrgLookUp:null,
-        // CatLookUp:null,
-        // DocLookUp:null,
-        OrgLookUpId:null,
-        CatLookUpId:null,
-        DocLookUpId:null,
-        ResourceType:type,
-        Role:Role
-      
-      }
-   switch (type) {
-    case "organization":
-      data.OrgLookUpId = IdSP
-      break;
-    case "category":
-      data.CatLookUpId = IdSP
-      break;
-    case "document":
-      data.DocLookUpId = IdSP
-      break;
+  try{
+    const data =  {
+      Permission:uuidv4(),
+      User:UserId,
+      Email:Email,
+      Resource:Id,
+      // OrgLookUp:null,
+      // CatLookUp:null,
+      // DocLookUp:null,
+      OrgLookUpId:null,
+      CatLookUpId:null,
+      DocLookUpId:null,
+      ResourceType:type,
+      Role:Role
+    
+    }
+ switch (type) {
+  case "organization":
+    data.OrgLookUpId = IdSP
+    break;
+  case "category":
+    data.CatLookUpId = IdSP
+    break;
+  case "document":
+    data.DocLookUpId = IdSP
+    break;
 
-  }}
-  else{
-     const data =  {
-        Permission:uuidv4(),
-        User:UserId,
-        Email:Email,
-        Resource:Id,
-        OrgLookUp:null,
-        CatLookUp:null,
-        DocLookUp:null,
-        ResourceType:type,
-        Role:Role
-      
-      }
-  switch (type) {
-    case "organization":
-      data.OrgLookUp = IdSP
-      break;
-    case "category":
-      data.CatLookUp = IdSP
-      break;
-    case "document":
-      data.DocLookUp = IdSP
-      break;
+}
+const payload = {
+  __metadata:{
+type: `SP.Data.${config.ListNames.Permissions}ListItem`,
 
-  }
+},
+
+...data
+}
+const res = createQuery(config.ListNames.Permissions,payload,token)
+return res
+}
+
+catch(error){
+  console.log(error)
+}
+
+}
+
+  
    
   
-  const payload = {
-           __metadata:{
-        type: `SP.Data.${config.ListNames.Permissions}ListItem`,
-
-    },
-      
-      ...data
-      }
-      const res = createQuery(config.ListNames.Permissions,payload,token)
-      try {
-        return res
-      } catch (error) {
-        console.log(error)
-      }
-  }
- }
+ 
+ 
 
 
 
