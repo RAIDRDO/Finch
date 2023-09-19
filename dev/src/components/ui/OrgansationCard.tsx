@@ -78,25 +78,12 @@ const OrgansationCard = ({Id,org,name,desc,owner,Role}:OrganisationProps) => {
     return ( 
         <div>
             <Card className="w-[440px]">
-                                <CardHeader className="text-lg font-bold hover:cursor-pointer hover:underline" onClick={permissions.OrgViewer===false ?()=>toast({
-          title: "No Permission",
-          description: `You do not have permission to view this organisation.`,
-          variant: "destructive"
-                                }):
-                                ()=>navigate(`/organization/${org}`)
-                              
+                                <CardHeader className="text-lg font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/organization/${org}`)
                               }>{name}</CardHeader>
       
                 
            
-                    <CardContent className="hover:cursor-pointer" onClick={permissions.OrgViewer===false ?()=>toast({
-          title: "No Permission",
-          description: `You do not have permission to view this organisation.`,
-          variant: "destructive"
-                                }):
-                                ()=>navigate(`/organization/${org}`)
-                              
-                              }>
+                    <CardContent className="hover:cursor-pointer" onClick={()=>navigate(`/organization/${org}`)}>
                     {desc}
                 </CardContent>
                 

@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom"
+import { Survey } from "../survey"
+import { BugForm } from "../BugReport/bugFrom"
+import { BugReport } from "../BugReport"
 const NavBar = () => {
     const navigate = useNavigate()
     return ( 
@@ -41,20 +44,18 @@ const NavBar = () => {
     <div >
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="hover:cursor-pointer hover:ring-offset-2 ring-2 ">
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-      <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+       <p className="font-semibold text-zinc-500 hover:cursor-pointer hover:text-black hover:underline">Submit bug/feedback</p>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>Bug report and Feedback</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
+         <Survey></Survey>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+         <BugReport></BugReport>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
       </DropdownMenuContent>

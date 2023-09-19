@@ -83,24 +83,12 @@ const DocumentCard = ({Id,Document,Catergory,Organisation,CreatedAt,EditedAt,Cur
             <Card className="w-[270px] ">
                 <CardContent>
                   
-                    <div className="w-[200px] h-[200px] hover:cursor-pointer" onClick={permissions.DocViewer===false?
-                      ()=>toast({
-          title: "No Permission",
-          description: `You do not have permission to view this document.`,
-          variant: "destructive"
-                                })
-                      : ()=>navigate(`/viewer/${Document}`)}>
+                    <div className="w-[200px] h-[200px] hover:cursor-pointer" onClick={()=>navigate(`/viewer/${Document}`)}>
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-row justify-between px-5">
                     <div className="flex flex-col">
-                    <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={permissions.DocViewer===false?
-                      ()=>toast({
-          title: "No Permission",
-          description: `You do not have permission to view this document.`,
-          variant: "destructive"
-                                })
-                      : ()=>navigate(`/viewer/${Document}`)}>{Name}</h1>
+                    <h1 className="text-base font-bold hover:cursor-pointer hover:underline" onClick={()=>navigate(`/viewer/${Document}`)}>{Name}</h1>
                     <div className="flex flex-row items-center text-slate-500 mt-1">
                         <Calendar className="w-3 h-3 mr-1"></Calendar>
                         <p className="text-sm">{DateTime.fromMillis(Date.parse(EditedAt)).toFormat("MM-dd-yyyy")}</p>

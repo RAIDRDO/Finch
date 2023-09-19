@@ -141,7 +141,7 @@ const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess && getPermission
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="category_name" className="text-right">
-              Category Name
+              Document Name
             </Label>
             <Input id="category_name"  className="col-span-3" onChange={
               (e) => {
@@ -163,7 +163,10 @@ const GetDrafts = useQuery({enabled:getCatPermissions.isSuccess && getPermission
                 
                 }
 
-              ).then(()=>              queryClient.invalidateQueries(["Documents","Permissions"])
+              ).then(()=>
+             {console.log("invalidateQueries") 
+              queryClient.invalidateQueries(["Documents"])
+             queryClient.invalidateQueries(["Permissions"])}
 ).then(()=>toast({
           title: "Document Created",
 

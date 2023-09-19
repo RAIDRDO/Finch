@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import { env } from 'process'
+import { Survey } from './components/survey'
 // dotenv.config()
 
 //     console.log(process.env.STAGING)
@@ -32,7 +33,9 @@ export const config = {
         Users:"Users",
       Permissions:"Permissions",
       Organisation:"Organisations",
-      Catergory:"Catergories"},
+      Catergory:"Catergories",
+    Survey:"Survey",
+  BugReport:"BugReport",},
   staleTime: Infinity,
   DevMode:dev.DevMode,
   staging:dev.staging,

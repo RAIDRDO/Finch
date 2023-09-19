@@ -2,13 +2,13 @@ import { ResourcePermissions } from "@/shared/types";
 import {createPatch,parsePatch} from "diff"
 export const ResolvePermissions = (role: string):ResourcePermissions => {
     const permissions:ResourcePermissions = {
-        OrgViewer:false,
+        OrgViewer:true,
         OrgEditor:false,
         OrgContributor :false,
-        CatViewer:false,
+        CatViewer:true,
         CatEditor:false,
         CatContributor:false,
-        DocViewer:false,
+        DocViewer:true,
         DocEditor:false,
         DocContributor:false,
         OrgOwner:false,

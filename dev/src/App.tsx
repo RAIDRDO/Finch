@@ -19,6 +19,7 @@ import useUser from "@/shared/utils/crud/useUser"
 import AppRoutes from './AppRoutes';
 import { Toaster } from "@/components/ui/toaster"
 import Console from './react_console'
+import { Survey } from './components/survey';
 
 // Create client
 const queryClient = new QueryClient();
@@ -37,7 +38,7 @@ function App() {
          {showDevtools ? (
         <React.Suspense fallback={null}>
           <ReactQueryDevtoolsProduction />
-          <Console></Console> 
+          {/* <Console></Console>  */}
 
         </React.Suspense>
       ) : null}

@@ -152,3 +152,30 @@ export interface ResourcePermissions {
     CatOwner:boolean,
     DocOwner:boolean
 }
+
+
+export interface SurveyFrom{
+  App: string;
+  lookAndFeel: number | "1" | "2" | "3" | "4" | "5";
+  easeOfUse: number | "1" | "2" | "3" | "4" | "5";
+  meetNeeds: number | "1" | "2" | "3" | "4" | "5";
+  likeMost: string;
+  likeLeast: string;
+  suggestions: string;
+  overall: number | "1" | "2" | "3" | "4" | "5";
+}
+
+
+
+export interface BugFrom{
+  App: string;
+  Issue: string;
+}
+
+export interface SurveyType extends SurveyFrom{
+  Survey?:string,
+}
+
+export interface BugType extends BugFrom{
+  Bug?:string,
+}
