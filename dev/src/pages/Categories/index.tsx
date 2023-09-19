@@ -201,10 +201,15 @@ export default function Categories() {
               const OrgPermissions = await  getSelectedOrgPerm(selectedOrg.Id,user.Id,getPermissions.data.value)
               AddCategory(data)?.then((res:any) => {
                 addPermission(token.data.FormDigestValue,data.Cat,res.d.Id,user.Id,user.Email,"category",ResolveRole(OrgPermissions,"create"))
-                queryClient.invalidateQueries("Catergories")
+               
                 return res
               }).then((res:any) => {
                 navigate(`/category/${res.d.Cat}`)
+              }).then(()=>{
+                queryClient.invalidateQueries(["Catergories"])
+                queryClient.invalidateQueries(["Permissions"])
+                queryClient.invalidateQueries(["Orgnisations"])
+
               }).then(() => toast({
           title: "Category Created",
 

@@ -64,6 +64,7 @@ export default function Workspace() {
   const [FilteredCatList, setFilteredCatList] = useState<any>([]);
 
   const [selectedCat, setselectedCat] = useState<any>();
+  const [dialogState, setdialogState] = useState(false);
 
   const getPermissions = useQuery({enabled:!!user,queryKey:["Permissions"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Permissions,undefined,undefined,`User eq '${user?.Id}'`))})
   
@@ -190,7 +191,7 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
             <div className="flex flex-row justify-between flex-wrap">
               <p className="font-bold text-xl">Documents</p>
 
-          <Dialog>
+          <Dialog open={dialogState} onOpenChange={setdialogState} >
       <DialogTrigger asChild>
  <Button className="">
                 Add  Document
@@ -255,7 +256,7 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
         </div>
         <DialogFooter>
           <Button type="submit" 
-          disabled={(OrgList.lenght == 0 && CatList.lenght ==0) || FilteredCatList.lenght ==0 ?true:false}
+          disabled={(OrgList.lenght == 0 && CatList.lenght ==0) || FilteredCatList.lenght ==0 || (selectedOrg ==undefined || selectedCat == undefined || DocumentName =="") ?true:false}
 
          onClick={
             async () => {
@@ -270,8 +271,13 @@ const GetDrafts = useQuery({enabled:!!user && getPermissions.isSuccess,queryKey:
                 }
 
               ).then(()=>              
-              queryClient.invalidateQueries(["Documents","Permissions"])
-).then(()=>toast({
+{              queryClient.invalidateQueries(["Documents"])
+              queryClient.invalidateQueries(["Permissions"])
+              queryClient.invalidateQueries(["Catergories"])
+              queryClient.invalidateQueries(["Orgnisations"])
+              queryClient.invalidateQueries(["Drafts"])
+
+}).then(()=>setdialogState(false)).then(()=>toast({
           title: "Document Created",
 
           description: `Your Document ${data.Name} has been created successfully.`,

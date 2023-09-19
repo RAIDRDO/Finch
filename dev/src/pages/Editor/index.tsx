@@ -73,7 +73,7 @@ const Editor = () => {
     }})
     const DocId = GetDrafts.data?.value[0].Document == undefined ? "" : GetDrafts.data?.value[0].Document
     const GetDocument = useQuery({enabled:GetDrafts.isSuccess && DocId != "",queryKey:["Document"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${DocId}'`))})
-    const GetSections = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Changes"]
+    const GetChanges = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Changes"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Changes,undefined,undefined,`Draft eq '${params.DraftId}'`))
   ,onSuccess(data) {
 
@@ -495,8 +495,10 @@ const Editor = () => {
           </Reorder.Group>
 
         </div>
+        <button disabled={GetDocument.isSuccess && GetChanges.isSuccess && GetDrafts.isSuccess == true ?false : true} onClick={()=>{addCell(params.DraftId!)}}>
+        <PlusCircle  className='mt-2 text-slate-400 hover:text-slate-500 hover:cursor-pointer h-8 w-8'   />
 
-        <PlusCircle className='mt-2 text-slate-400 hover:text-slate-500 hover:cursor-pointer' size={32} onClick={()=>{addCell(params.DraftId!)}} />
+        </button>
         </div>
 
 

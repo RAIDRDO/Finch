@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom";
 import { constructReadQueryFn, constructUrl, createQuery,addPermission } from "@/shared/utils/crud";
-import { useQuery } from "react-query";
+import { QueryClient, useQuery ,useQueryClient} from "react-query";
 import { useState,useContext} from "react";
 import useToken from "@/shared/utils/crud/useToken";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
@@ -37,6 +37,7 @@ export default function Organizations() {
   const token = useToken()
     const { toast } = useToast()
   const [user,setUser] = useContext(AuthContext)
+  const queryClient = useQueryClient()
 
   const navigate = useNavigate()
 
@@ -123,6 +124,10 @@ export default function Organizations() {
                   AddOrgnisation(data)?.then((res)=>{
                     addPermission(token.data.FormDigestValue,data.org,res.d.Id,data.owner,user.Email,"organization","Org-Owner")
                     navigate(`/organization/${res.d.org}`)
+                }).then(()=>{
+                  queryClient.invalidateQueries(["Orgnisations"])
+                  queryClient.invalidateQueries(["Permissions"])
+
                 }).then(()=>  toast({
           title: "Organisation Created",
 
