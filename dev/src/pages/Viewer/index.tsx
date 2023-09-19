@@ -176,10 +176,14 @@ const Viewer = () => {
         <div>
         <div className='flex flex-row justify-between items-center'>
       <div className='flex flex-row items-center  mt-4 ml-4'>
-        <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900' onClick={()=>navigate(`/category/${GetDocuments.data?.value[0]?.Catergory}`)}></ArrowLeft>
+        <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900'onClick={()=>navigate(`/category/${GetDocuments.data.value[0].Catergory}`)}></ArrowLeft>
     <div className=' flex flex-col'>
-    <Input className='w-36 ml-3'  disabled></Input>
-   
+    {GetDocuments.isSuccess?
+    <Input className='w-36 ml-3' disabled value={GetDocuments.data.value[0].Name}></Input>
+
+    :    <Input className='w-36 ml-3' disabled></Input>
+
+  }   
     </div>
       </div>
       <div className='mr-8'>
