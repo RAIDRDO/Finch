@@ -38,6 +38,8 @@ import { format, parse } from 'path';
 import Merges from '../Merges';
 import { Reorder,useDragControls } from "framer-motion"
 import { Console } from 'console';
+import { useToast } from "@/components/ui/use-toast"
+import { object } from 'zod';
 
 interface IsEdited{
     Edited?:boolean
@@ -48,6 +50,7 @@ interface IsEditeds extends Array<IsEdited>{}
 const Editor = () => {
   
     const [user,setUser] = useContext(AuthContext)
+    const { toast } = useToast()
 
     const token = useToken()
     const navigate = useNavigate()
@@ -59,6 +62,7 @@ const Editor = () => {
     const [Staged, setStaged] = useState<any>({});
     const [Order, setOrder] = useState<any>([]);
     const DragControls = useDragControls()
+    
     console.log(params)
 
  
@@ -302,7 +306,7 @@ const Editor = () => {
         
     }
 
-    const SaveCells = (order:any) =>{
+    const SaveCells = async (order:any) =>{
       try{
           const EditedCells = FilterEdited(Cells)
 
@@ -445,7 +449,7 @@ const Editor = () => {
     <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900' onClick={()=>navigate(`/category/${GetDrafts.data?.value[0]?.Catergory}`)}></ArrowLeft>
     <div className=' flex flex-col'>
     {GetDocument.isSuccess?
-    <Input className='w-36 ml-3' disabled value={GetDocument.data.value[0].Name}></Input>
+    <Input className='w-36 ml-3' disabled value={GetDocument.data?.value[0]?.Name}></Input>
 
     :    <Input className='w-36 ml-3' disabled></Input>
 
@@ -456,7 +460,10 @@ const Editor = () => {
         <MenubarContent>
     
           <MenubarItem onClick={()=>{
-            SaveCells(Order)
+            SaveCells(Order).then(()=>toast({
+              title: "Saved",
+              description: "Your changes have been saved",
+          }))
           }}>
             Save <MenubarShortcut>⌘S</MenubarShortcut>
           </MenubarItem>
@@ -469,7 +476,13 @@ const Editor = () => {
 
       </div>
           <div className='mr-8'>
-        <Button onClick={()=>CreateMergeRequest()} > Create Merge Request </Button>
+        <Button 
+        disabled ={Object.keys(Staged).length === 0 ? false : true }
+        
+        onClick={()=>CreateMergeRequest().then(()=>toast({
+              title: "Merge Request Created",
+              description: "Your Merge Request has been created",
+          }))} > Create Merge Request </Button>
       </div>
   </div>
 

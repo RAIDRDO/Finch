@@ -202,36 +202,36 @@ export async function CascadeDelete(token:string,UUID:string,level:string,) {
       User:UserId,
       Email:Email,
       Resource:Id,
-      // OrgLookUp:null,
-      // CatLookUp:null,
-      // DocLookUp:null,
-      OrgLookUpId:null,
-      CatLookUpId:null,
-      DocLookUpId:null,
+      OrgLookUp:null,
+      CatLookUp:null,
+      DocLookUp:null,
+      // OrgLookUpId:null,
+      // CatLookUpId:null,
+      // DocLookUpId:null,
       ResourceType:type,
       Role:Role
     
     }
  switch (type) {
-  // case "organization":
-  //   data.OrgLookUp = IdSP
-  //   break;
-  // case "category":
-  //   data.CatLookUp = IdSP
-  //   break;
-  // case "document":
-  //   data.DocLookUp = IdSP
-  //   break;
-
   case "organization":
-    data.OrgLookUpId = IdSP
+    data.OrgLookUp = IdSP
     break;
   case "category":
-    data.CatLookUpId = IdSP
+    data.CatLookUp = IdSP
     break;
   case "document":
-    data.DocLookUpId = IdSP
+    data.DocLookUp = IdSP
     break;
+
+  // case "organization":
+  //   data.OrgLookUpId = IdSP
+  //   break;
+  // case "category":
+  //   data.CatLookUpId = IdSP
+  //   break;
+  // case "document":
+  //   data.DocLookUpId = IdSP
+  //   break;
 
 }
 const payload = {
