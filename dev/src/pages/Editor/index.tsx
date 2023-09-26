@@ -477,7 +477,6 @@ const Editor = () => {
       </div>
           <div className='mr-8'>
         <Button 
-        disabled ={Object.keys(Staged).length === 0 ? false : true }
         
         onClick={()=>CreateMergeRequest().then(()=>toast({
               title: "Merge Request Created",
