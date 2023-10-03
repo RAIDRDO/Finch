@@ -15,72 +15,74 @@ import { useState ,useContext} from "react";
 import App from "@/App";
 import { useQuery, useQueryClient } from "react-query";
 import {DateTime} from "luxon"  
+import DiffViewer from "../diff/diffViewer";
+
 
 const MergeItem = ({Id,MergeRequest,Document,Draft,DocumentName,DraftName,SubmittedDate,MergeMsg,ApporvedBy,ApprovalDate}:any) => {
 const token = useToken()
 const [user,setUser] = useContext(AuthContext)
 const queryClient = useQueryClient()
 
-const filterDataPayload = (data:any) =>{
-        const  {Id,Old_Id,...NewData} = data
-        return NewData
-    }
+// const filterDataPayload = (data:any) =>{
+//         const  {Id,Old_Id,...NewData} = data
+//         return NewData
+//     }
 
-const MergeChanges = async(crud:any)=>{
-try{
-  crud["create"].forEach((section:any)=>{
-    const payload = {
-             __metadata:{
-          type: `SP.Data.${config.ListNames.Sections}ListItem`,
+// const MergeChanges = async(crud:any)=>{
+// try{
+//   crud["create"].forEach((section:any)=>{
+//     const payload = {
+//              __metadata:{
+//           type: `SP.Data.${config.ListNames.Sections}ListItem`,
   
-      },
+//       },
         
-        ...section
-        }
-    createQuery(config.ListNames.Sections,payload,token.data.FormDigestValue)
-  })
+//         ...section
+//         }
+//     createQuery(config.ListNames.Sections,payload,token.data.FormDigestValue)
+//   })
   
-  crud["update"].forEach((section:any)=>{
-    const payload = {
-             __metadata:{
-          type: `SP.Data.${config.ListNames.Sections}ListItem`,
+//   crud["update"].forEach((section:any)=>{
+//     const payload = {
+//              __metadata:{
+//           type: `SP.Data.${config.ListNames.Sections}ListItem`,
   
-      },
+//       },
         
-        ...section
-        }
-    const filteredPayload = filterDataPayload(payload)
-    updateQuery(config.ListNames.Sections,section.Id,filteredPayload,token.data.FormDigestValue)
-  })
+//         ...section
+//         }
+//     const filteredPayload = filterDataPayload(payload)
+//     updateQuery(config.ListNames.Sections,section.Id,filteredPayload,token.data.FormDigestValue)
+//   })
   
-  crud["delete"].forEach((section:any)=>{
-    deleteQuery(config.ListNames.Sections,section.Id,token.data.FormDigestValue)
-  })
-}
-catch(error){
-  console.log(error)
-}
+//   crud["delete"].forEach((section:any)=>{
+//     deleteQuery(config.ListNames.Sections,section.Id,token.data.FormDigestValue)
+//   })
+// }
+// catch(error){
+//   console.log(error)
+// }
 
-}
+// }
 
 
-const updateMetadata = async (DocId:string,DraftId:string,MergeRequestId:string) =>{
-  const Document = await ReadQuery(
-  constructUrl(config.ListNames.Documents, undefined, undefined, `Document eq '${DocId}'`)
-  )
-  const Draft = await ReadQuery(
-  constructUrl(config.ListNames.Drafts, undefined, undefined, `Draft eq '${DraftId}'`)
-  )
-  const payload = {
-    __metadata:{
-      type: `SP.Data.${config.ListNames.Documents}ListItem`,
-    },
-    SectionOrder:Draft[0].SectionOrder,
-    CurrentMerge:MergeRequestId
-  }
-  updateQuery(config.ListNames.Documents,Document[0].Id,payload,token.data.FormDigestValue)
+// const updateMetadata = async (DocId:string,DraftId:string,MergeRequestId:string) =>{
+//   const Document = await ReadQuery(
+//   constructUrl(config.ListNames.Documents, undefined, undefined, `Document eq '${DocId}'`)
+//   )
+//   const Draft = await ReadQuery(
+//   constructUrl(config.ListNames.Drafts, undefined, undefined, `Draft eq '${DraftId}'`)
+//   )
+//   const payload = {
+//     __metadata:{
+//       type: `SP.Data.${config.ListNames.Documents}ListItem`,
+//     },
+//     SectionOrder:Draft[0].SectionOrder,
+//     CurrentMerge:MergeRequestId
+//   }
+//   updateQuery(config.ListNames.Documents,Document[0].Id,payload,token.data.FormDigestValue)
 
-}
+// }
 
 const Merge = async (DocId:string,DraftId:string) =>{
 try{
@@ -183,9 +185,13 @@ for (const section in Sections ){
 
 }
 // console.log("crud",crud)
+console.log("sections",Sections)
 
-MergeChanges(crud)
-updateMetadata(DocId,DraftId,MergeRequest)
+
+return {
+  preview:Sections,
+  crud:crud
+}
 }
 catch(error){
   console.log(error)
@@ -211,9 +217,16 @@ return (
             <div>
                 {MergeMsg}
             </div>
-            {ApporvedBy == "" || ApporvedBy == null? 
             <div className="mr-4">
-                    <Button className="bg-blue-500 hover:bg-blue-600" onClick={()=>Merge(Document,Draft).then(()=>{
+              
+
+            </div>
+            {ApporvedBy == "" || ApporvedBy == null? 
+
+            <div className="mr-4">
+                    {/* <Button className="bg-blue-500 hover:bg-blue-600" onClick={()=>Merge(Document,Draft).then((data)=>{
+                        MergeChanges(data?.crud).then(()=>{
+                          updateMetadata(Document,Draft,Id).then(()=>{
                       const payload = {
                         __metadata:{
                           type: `SP.Data.${config.ListNames.MergeRequests}ListItem`,
@@ -225,10 +238,15 @@ return (
                       updateQuery(config.ListNames.MergeRequests,Id,payload,token.data.FormDigestValue).then(()=>{
                         queryClient.invalidateQueries("MergeRequests")
                       })
-})}>
+})
+
+                        })
+                    })
+                   }>
                         Review Changes <Pencil className="w-4 h-4 ml-2"></Pencil>
 
-                    </Button>
+                    </Button> */}
+                    <DiffViewer Id={Id} token={token} Document={Document} Draft={Draft} Merge={Merge} ></DiffViewer>
             </div>
 : <div></div>}
         </div>

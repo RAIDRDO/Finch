@@ -173,7 +173,7 @@ const Viewer = () => {
     }
 
     return ( 
-        <div>
+    <div>
         <div className='flex flex-row justify-between items-center'>
       <div className='flex flex-row items-center  mt-4 ml-4'>
         <ArrowLeft className='h-10 w-10 text-slate-400 hover:text-slate-900'onClick={()=>navigate(`/category/${GetDocuments.data.value[0].Catergory}`)}></ArrowLeft>
