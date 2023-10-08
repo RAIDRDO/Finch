@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "../ui/use-toast"
+import { ScrollArea } from "../ui/scroll-area"
 
 
 
@@ -47,7 +48,8 @@ export function SurveyForm({handleSubmitFeedBack}: {handleSubmitFeedBack: (surve
   // ...
 
   return (
-    <Form {...form} >
+    <ScrollArea className="max-h-[600px]">
+       <Form {...form} >
       <form className="space-y-8" onSubmit={form.handleSubmit(
         e=>{
         
@@ -347,5 +349,8 @@ export function SurveyForm({handleSubmitFeedBack}: {handleSubmitFeedBack: (surve
         </div>
       </form>
     </Form>
+
+    </ScrollArea>
+   
   )
 }

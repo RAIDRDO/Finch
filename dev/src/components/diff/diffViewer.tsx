@@ -16,6 +16,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { useState ,useContext, useEffect} from "react";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { set } from "lodash";
+import { ScrollArea } from "../ui/scroll-area";
 
 const DiffViewer = ({Id,token,Document,Draft,Merge}:{Id:number,token:any,Document:string,Draft:any,Merge:any}) => {
 const queryClient = useQueryClient()
@@ -128,11 +129,15 @@ const updateMergeRequest = async (MergeRequestId:number) =>{
     </DialogHeader>
 
     <div className="flex flex-col">
-    <div className="flex flex-col w-9/12 h-full items-center">
+      <ScrollArea>
+        <div className="flex flex-col w-9/12 h-full items-center">
         {newSections.map((section:any)=>{
             return  <MarkdownRendrer key={section.Section} text={section.Content}></MarkdownRendrer>
 })}
     </div>
+
+      </ScrollArea>
+ 
     <div className="flex flex-row justify-end">
       <Button className="bg-blue-500 hover:bg-blue-600"
       onClick={()=>MergeChanges(crud).then(()=>updateMetadata(Document,Draft,Id).then(()=>updateMergeRequest(Id)))}

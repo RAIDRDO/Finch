@@ -35,6 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { FormInputIcon, Smile } from "lucide-react"
+import { ScrollArea } from "../ui/scroll-area"
 
 export function Survey() {
     const token = useToken()
@@ -74,7 +75,7 @@ export function Survey() {
           <span>Feedback From</span>
         </DropdownMenuItem>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Feedback From</DialogTitle>
           <DialogDescription>
@@ -82,7 +83,7 @@ export function Survey() {
 
           </DialogDescription>
         </DialogHeader>
-        <SurveyForm handleSubmitFeedBack={handleSubmitFeedBack}></SurveyForm>
+                  <SurveyForm handleSubmitFeedBack={handleSubmitFeedBack}></SurveyForm>
         <DialogFooter>
         </DialogFooter>
       </DialogContent>
