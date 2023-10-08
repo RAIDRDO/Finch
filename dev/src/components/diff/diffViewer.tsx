@@ -17,12 +17,15 @@ import { useState ,useContext, useEffect} from "react";
 import { AuthContext } from "@/shared/utils/context/authContextProvider";
 import { set } from "lodash";
 import { ScrollArea } from "../ui/scroll-area";
+import { Separator } from "../ui/separator";
+import { useToast } from "@/components/ui/use-toast"
 
 const DiffViewer = ({Id,token,Document,Draft,Merge}:{Id:number,token:any,Document:string,Draft:any,Merge:any}) => {
 const queryClient = useQueryClient()
 const [user,setUser] = useContext(AuthContext)
 const [newSections, setnewSections] = useState([]);
 const [crud, setcrud] = useState();
+const { toast } = useToast()
 
 
   const filterDataPayload = (data:any) =>{
@@ -123,24 +126,26 @@ const updateMergeRequest = async (MergeRequestId:number) =>{
         Review Changes <Pencil className="w-4 h-4 ml-2"></Pencil>
     </Button>
   </DialogTrigger>
-  <DialogContent>
+  <DialogContent className="max-w-[700px]">
     <DialogHeader>
       <DialogTitle>Reviewing changes for </DialogTitle>
     </DialogHeader>
-
+<Separator></Separator>
     <div className="flex flex-col">
-      <ScrollArea>
-        <div className="flex flex-col w-9/12 h-full items-center">
+      <ScrollArea className="max-h-[400px]">
+        <div className="flex flex-col w-9/12 h-full items-start">
         {newSections.map((section:any)=>{
             return  <MarkdownRendrer key={section.Section} text={section.Content}></MarkdownRendrer>
 })}
     </div>
 
       </ScrollArea>
+      <Separator></Separator>
+
  
-    <div className="flex flex-row justify-end">
+    <div className="flex flex-row justify-end mt-4">
       <Button className="bg-blue-500 hover:bg-blue-600"
-      onClick={()=>MergeChanges(crud).then(()=>updateMetadata(Document,Draft,Id).then(()=>updateMergeRequest(Id)))}
+      onClick={()=>MergeChanges(crud).then(()=>updateMetadata(Document,Draft,Id).then(()=>updateMergeRequest(Id)).then(()=>toast({title:"Merge Approved",description:"the changes have been merged successfully"})))}
       >Approve Merge</Button>
     </div>
 
