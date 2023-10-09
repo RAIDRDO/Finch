@@ -132,7 +132,7 @@ const updateMergeRequest = async (MergeRequestId:number) =>{
     </DialogHeader>
 <Separator></Separator>
     <div className="flex flex-col">
-      <ScrollArea className="max-h-[400px]">
+      <ScrollArea className="max-h-[400px] sm:max-h-[400px]">
         <div className="flex flex-col w-9/12 h-full items-start">
         {newSections.map((section:any)=>{
             return  <MarkdownRendrer key={section.Section} text={section.Content}></MarkdownRendrer>

@@ -48,7 +48,7 @@ export function SurveyForm({handleSubmitFeedBack}: {handleSubmitFeedBack: (surve
   // ...
 
   return (
-    <ScrollArea className="max-h-[600px]">
+    <ScrollArea className="max-h-[600px] sm:max-h-[400px]">
        <Form {...form} >
       <form className="space-y-8" onSubmit={form.handleSubmit(
         e=>{
