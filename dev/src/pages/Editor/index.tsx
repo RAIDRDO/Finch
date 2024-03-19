@@ -39,7 +39,7 @@ import Merges from '../Merges';
 import { Reorder,useDragControls } from "framer-motion"
 import { Console } from 'console';
 import { useToast } from "@/components/ui/use-toast"
-import { object } from 'zod';
+import { array, object } from 'zod';
 
 interface IsEdited{
     Edited?:boolean
@@ -77,6 +77,7 @@ const Editor = () => {
     }})
     const DocId = GetDrafts.data?.value[0].Document == undefined ? "" : GetDrafts.data?.value[0].Document
     const GetDocument = useQuery({enabled:GetDrafts.isSuccess && DocId != "",queryKey:["Document"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Documents,undefined,undefined,`Document eq '${DocId}'`))})
+    const GetSections = useQuery({enabled:GetDocument.isSuccess,queryKey:["Sections"],queryFn:constructReadQueryFn(constructUrl(config.ListNames.Sections,undefined,undefined,`Document eq '${DocId}'`))})
     const GetChanges = useQuery({enabled:GetDrafts.isSuccess,queryKey:["Changes"]
     ,queryFn:constructReadQueryFn(constructUrl(config.ListNames.Changes,undefined,undefined,`Draft eq '${params.DraftId}'`))
   ,onSuccess(data) {
@@ -165,28 +166,27 @@ const Editor = () => {
         return res
       })
 
-      const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,"","")
-      const commit:Commit = {
-        CommitKey:uuidv4(),
-        Document:GetDrafts.data.value[0].Document,
-        Draft:params.DraftId!,
-        Section:CellData.Section,
-        Change:CellData.Change,
-        Patch:JSON.stringify(DiffPatch?.Patch),
-        Diff:DiffPatch?.DiffStr,
-        CommitType:"create",
-        CommittedAt:Date(),
-        User:user?.Id,
-        Classification:CellData.Classification
-      }
-      const CommitPayload = {
-        __metadata:{
-      type: `SP.Data.${config.ListNames.Commits}ListItem`,
-  },
-  ...commit
-  }
-   createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue)
-
+  //     const DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,"","")
+  //     const commit:Commit = {
+  //       CommitKey:uuidv4(),
+  //       Document:GetDrafts.data.value[0].Document,
+  //       Draft:params.DraftId!,
+  //       Section:CellData.Section,
+  //       Change:CellData.Change,
+  //       Patch:JSON.stringify(DiffPatch?.Patch),
+  //       Diff:DiffPatch?.DiffStr,
+  //       CommitType:"create",
+  //       CommittedAt:Date(),
+  //       User:user?.Id,
+  //       Classification:CellData.Classification
+  //     }
+  //     const CommitPayload = {
+  //       __metadata:{
+  //     type: `SP.Data.${config.ListNames.Commits}ListItem`,
+  // },
+  // ...commit
+  // }
+  //  createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue)
 
       return res
    
@@ -301,7 +301,9 @@ const Editor = () => {
 
       }
       catch(error){
+        
         console.log("FilterEdited",error)
+        return []
       }
         
     }
@@ -314,30 +316,34 @@ const Editor = () => {
           EditedCells?.map((cell:Changes) => {
                 const data = filterDataPayload(cell)
                 const StagedChanges = Staged[cell.Change]
-                const DiffPatch = StagedChanges.original_text != StagedChanges.new_text ? CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.new_text) :CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.original_text)
+                // const DiffPatch = StagedChanges.original_text != StagedChanges.new_text ? CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.new_text) :CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.original_text)
                 // console.log("original",StagedChanges.original_text,StagedChanges.original_text)
                 // console.log("new",StagedChanges.new_text)
 
                 // console.log("DiffPatch",DiffPatch)
-                const commit:Commit = {
-                  CommitKey:uuidv4(),
-                  Document:cell.Document,
-                  Draft:cell.Draft,
-                  Section:cell.Section,
-                  Change:cell.Change,
-                  Patch:JSON.stringify(DiffPatch?.Patch),
-                  Diff:DiffPatch?.DiffStr,
-                  CommitType:"edit",
-                  CommittedAt:Date(),
-                  User:user?.Id,
-                  Classification: StagedChanges.new_class != StagedChanges.old_class? StagedChanges.new_class:StagedChanges.old_class
-                }
-                const CommitPayload = {
-                  __metadata:{
-                type: `SP.Data.${config.ListNames.Commits}ListItem`,
-            },
-            ...commit
-            }
+            //     const commit:Commit = {
+            //       CommitKey:uuidv4(),
+            //       Document:cell.Document,
+            //       Draft:cell.Draft,
+            //       Section:cell.Section,
+            //       Change:cell.Change,
+            //       Patch:JSON.stringify(DiffPatch?.Patch),
+            //       Diff:DiffPatch?.DiffStr,
+            //       CommitType:"edit",
+            //       CommittedAt:Date(),
+            //       User:user?.Id,
+            //       Classification: StagedChanges.new_class != StagedChanges.old_class? StagedChanges.new_class:StagedChanges.old_class
+            //     }
+
+
+
+            //     const CommitPayload = {
+            //       __metadata:{
+            //     type: `SP.Data.${config.ListNames.Commits}ListItem`,
+            // },
+            // ...commit
+            // }
+
                 const payload = {
                     __metadata:{
                  type: `SP.Data.${config.ListNames.Changes}ListItem`,
@@ -364,14 +370,14 @@ const Editor = () => {
              
 
 
-              try {
-                createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue).then(() => {
-                  setStaged({})
-                })
+              // try {
+              //   createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue).then(() => {
+              //     setStaged({})
+              //   })
                 
-              } catch (error) {
-                console.log(error)
-              }
+              // } catch (error) {
+              //   console.log(error)
+              // }
                 
             })
           changeOrder(order)
@@ -384,11 +390,78 @@ const Editor = () => {
             
 
     }
-    const  CreateMergeRequest = async () =>{
-      const commits = await ReadQuery(constructUrl(config.ListNames.Commits,undefined,undefined,`Draft eq '${params.DraftId}'`))
+
+    const createCommits = async (OriginalCells:Array<Sections>,EditedCells:ChangesProps): Promise<Array<Commit>> =>{
+      console.log("creating commits")
+      console.log("OriginalCells",OriginalCells)
+      console.log("EditedCells",EditedCells)
+         const commits =  EditedCells?.map((cell:Changes) => {
+                const data = filterDataPayload(cell)
+                const original =  OriginalCells.filter((original:Sections) => original.Section == cell.Section)
+                var DiffPatch
+                if  (original.length == 0){
+                   DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,"",cell.Content)
+                }
+                else{
+                   DiffPatch = CreateCommit(GetDrafts.data.value[0].Name,original[0].Content,cell.Content)
+                }
+                console.log("StagedChanges")
+                // const DiffPatch = StagedChanges.original_text != StagedChanges.new_text ? CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.new_text) :CreateCommit(GetDrafts.data.value[0].Name,StagedChanges.original_text,StagedChanges.original_text)
+                console.log("DiffPatch",DiffPatch)
+
+                const commit:Commit = {
+                  CommitKey:uuidv4(),
+                  Document:cell.Document,
+                  Draft:cell.Draft,
+                  Section:cell.Section,
+                  Change:cell.Change,
+                  Patch:JSON.stringify(DiffPatch?.Patch),
+                  Diff:DiffPatch?.DiffStr,
+                  CommitType:"edit",
+                  CommittedAt:Date(),
+                  User:user?.Id,
+                  Classification: ( original.length ==0 || original[0].Classification != cell.Classification)? cell.Classification:original[0].Classification
+
+                }
+              const CommitPayload = {
+                  __metadata:{
+                type: `SP.Data.${config.ListNames.Commits}ListItem`,
+            },
+            ...commit
+
+
+
+            }
+
+              try {
+                createQuery(config.ListNames.Commits,CommitPayload,token.data.FormDigestValue).then(() => {
+                  setStaged({})
+                })
+                
+              } catch (error) {
+                console.log(error)
+              }
+
+              return commit
+              
+              
+              
+              })
+
+              return commits
+
+
+    }
+
+    const  CreateMergeRequest = async (order:any) =>{
+      // save cells first
+      SaveCells(order)
+      const EditedCells = FilterEdited(Cells)
+      //create commits first        
+      const commits = await createCommits(GetSections.data.value,Cells)
+      console.log("commits",commits)
       const formattedCommits = FormatPatches(groupBy(commits,"Section"))
       const MergeRequestId = uuidv4()
-
       const Merges = formattedCommits.map((commit:any) => {
         const Merge = {
         Merge:uuidv4(),
@@ -478,7 +551,7 @@ const Editor = () => {
           <div className='mr-8'>
         <Button 
         
-        onClick={()=>CreateMergeRequest().then(()=>toast({
+        onClick={()=>CreateMergeRequest(Order).then(()=>toast({
               title: "Merge Request Created",
               description: "Your Merge Request has been created",
           }))} > Create Merge Request </Button>
